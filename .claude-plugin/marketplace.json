@@ -16,6 +16,15 @@
       "skills": [
         "./skills/paper-notebook-landing"
       ]
+    },
+    {
+      "name": "noir-gradient-law",
+      "description": "Law-firm and advisory websites in a noir gradient style: pure black, bronze statue photography, a yellow-orange-red fire gradient, giant uppercase headlines, duotone-halftone photos and a 3D review carousel.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/noir-gradient-law"
+      ]
     }
   ]
 }

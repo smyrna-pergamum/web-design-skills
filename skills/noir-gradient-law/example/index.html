@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atlasio Law · Noir Gradient Example</title>
+<meta name="description" content="Template homepage for a fictional business law firm in a black, fire-gradient, statue-and-halftone style.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Montserrat:wght@300;400;600;700;900&display=swap">
+<style>
+/* Layout: noir law firm. Pure black stage, monochrome bronze statue photography, one fire gradient
+   (yellow → orange → red) for lines, borders, buttons and the brand mark; giant uppercase Unbounded headlines;
+   Montserrat for everything else. A thin vertical gradient rule runs down the left of each section.
+   Deliberately dark-only. */
+:root{
+  color-scheme:dark;
+  --black:#050505; --ink:#0c0c0c; --card:#111111; --line:#262626;
+  --white:#ffffff; --text:#e9e6e1; --muted:#a8a29a;
+  --yellow:#febd01; --amber:#f7a701; --orange:#f26b0f; --red:#b12418; --signal:#e8501a; --magenta:#a3195b;
+  --fire:linear-gradient(90deg,#febd01 0%,#f7a701 22%,#f26b0f 58%,#b12418 100%);
+  --fire-diag:linear-gradient(135deg,#febd01 0%,#f26b0f 55%,#b12418 100%);
+  --f-display:"Unbounded","Archivo Black",Impact,sans-serif;
+  --f-body:"Montserrat","Helvetica Neue",Arial,sans-serif;
+  --gutter:max(20px,env(safe-area-inset-left,0px));
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--black);color:var(--text);font:400 17px/1.65 var(--f-body);-webkit-font-smoothing:antialiased;overflow-x:clip}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3,p{margin:0}
+h1,h2{font-family:var(--f-display);font-weight:700;text-transform:uppercase;color:var(--white);letter-spacing:-.01em;line-height:.98;text-wrap:balance}
+.wrap{max-width:1240px;margin:0 auto;padding-left:var(--gutter);padding-right:max(20px,env(safe-area-inset-right,0px))}
+:focus-visible{outline:2px solid var(--yellow);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- shared pieces ---------- */
+.eyebrow{font:600 15px/1.3 var(--f-body);letter-spacing:.32em;text-transform:uppercase;color:var(--yellow)}
+.lead{color:var(--text);max-width:52ch}
+.btn{display:inline-flex;align-items:center;gap:22px;padding:17px 26px;font:900 13px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;
+  text-decoration:none;color:#fff;background:var(--fire);border:0;cursor:pointer;transition:filter .2s,transform .2s}
+.btn:hover{filter:brightness(1.08) saturate(1.1);transform:translateY(-1px)}
+.btn svg{width:30px;height:10px;flex:none}
+.btn.ghost{background:none;color:var(--yellow);padding-inline:0}
+.btn.solid{background:var(--yellow);color:#000}
+.marker{display:flex;align-items:center;gap:18px;margin-bottom:56px}
+.marker .sq{width:56px;height:56px;flex:none;background:var(--fire-diag);display:grid;place-items:center}
+.marker .sq svg{width:34px;height:30px}
+.marker span{font:500 14px/1.3 var(--f-body);letter-spacing:.32em;text-transform:uppercase;color:var(--signal)}
+.rail{position:relative;padding-left:clamp(28px,8vw,120px)}
+.rail::before{content:"";position:absolute;left:clamp(8px,1.6vw,22px);top:0;bottom:0;width:1.5px;background:linear-gradient(180deg,var(--signal),rgba(177,36,24,.15) 70%,transparent)}
+.gborder{border:1.5px solid transparent;background:linear-gradient(var(--card),var(--card)) padding-box,var(--fire-diag) border-box}
+
+/* duotone + halftone treatment for any photo (the look of the halftone reference image) */
+.duo{position:relative;overflow:hidden;background:#000;isolation:isolate}
+.duo img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.25) brightness(.78)}
+.duo::before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(254,189,1,.65),rgba(242,107,15,.45) 45%,rgba(163,25,91,.6));mix-blend-mode:color;z-index:1}
+.duo::after{content:"";position:absolute;inset:0;z-index:2;opacity:.55;mix-blend-mode:multiply;
+  background-image:radial-gradient(rgba(0,0,0,.75) 1px,transparent 1.7px);background-size:5px 5px}
+.scratch{position:absolute;inset:0;z-index:3;pointer-events:none}
+
+/* ---------- header ---------- */
+.topbar{position:fixed;inset:0 0 auto;height:4px;background:var(--fire);z-index:60}
+header.site{position:fixed;top:4px;left:0;right:0;z-index:50;transition:background .3s}
+header.site.solid{background:rgba(5,5,5,.88);backdrop-filter:blur(8px)}
+.head{display:flex;align-items:center;gap:24px;height:84px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}
+.logo .word{font:600 25px/1 var(--f-body);letter-spacing:.14em}
+.logo svg{width:52px;height:46px;margin-left:-6px}
+.logo .sub{font:500 10px/1.2 var(--f-body);letter-spacing:.3em;color:#ddd;border-left:1px solid #444;padding-left:10px}
+.head .right{margin-left:auto;display:flex;align-items:center;gap:22px}
+.phone{font:600 19px var(--f-body);text-decoration:none;color:#efefef}
+.lang{display:flex;border:1px solid #333}
+.lang button{background:none;border:0;color:var(--muted);font:600 12px/1 var(--f-body);letter-spacing:.14em;padding:9px 11px;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--fire);color:#fff}
+.burger{width:44px;height:44px;display:grid;place-content:center;gap:6px;background:none;border:0;cursor:pointer}
+.burger i{display:block;width:24px;height:2px;background:#fff}
+.menu{position:fixed;inset:0;z-index:70;background:rgba(5,5,5,.97);display:grid;align-content:center;padding:80px var(--gutter)}
+.menu[hidden]{display:none}
+.menu ul{list-style:none;margin:0 auto;padding:0;display:grid;gap:10px;max-width:1240px;width:100%}
+.menu a{font:700 clamp(30px,5vw,58px)/1.15 var(--f-display);text-transform:uppercase;text-decoration:none;color:#fff;transition:color .2s}
+.menu a:hover{background:var(--fire);-webkit-background-clip:text;background-clip:text;color:transparent}
+.menu .close{position:absolute;top:22px;right:var(--gutter);background:none;border:1px solid #333;color:#fff;font:600 13px var(--f-body);letter-spacing:.2em;padding:12px 16px;cursor:pointer}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:min(100vh,940px);display:grid;align-items:center;padding-block:140px 80px;overflow:hidden}
+.hero .bigA{position:absolute;left:-6%;top:-4%;width:min(980px,90vw);height:auto;z-index:0}
+.bigA path{fill:none;stroke:url(#fire);stroke-width:7;stroke-linejoin:miter;stroke-dasharray:2600;stroke-dashoffset:0;animation:draw 2.2s cubic-bezier(.6,0,.2,1) both}
+@keyframes draw{from{stroke-dashoffset:2600}to{stroke-dashoffset:0}}
+.hero .statue{position:absolute;left:0;bottom:0;width:min(46vw,640px);height:94%;z-index:1;
+  -webkit-mask-image:linear-gradient(90deg,#000 55%,transparent 98%),linear-gradient(0deg,transparent,#000 18%);
+  -webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,#000 55%,transparent 98%);mask-composite:intersect}
+.hero .statue img{width:100%;height:100%;object-fit:cover;object-position:46% 22%;filter:grayscale(1) contrast(1.3) brightness(.85)}
+.hero .copy{position:relative;z-index:2;margin-left:auto;width:min(100%,720px);display:grid;gap:30px;padding-left:20px}
+.hero h1{font-size:clamp(52px,7.6vw,108px)}
+.hero h1 .x{background:var(--fire);-webkit-background-clip:text;background-clip:text;color:transparent}
+.scroll-cue{position:absolute;right:var(--gutter);bottom:34px;z-index:2;width:22px;height:40px;border:1.5px solid var(--yellow);border-radius:12px}
+.scroll-cue::after{content:"";position:absolute;left:50%;top:8px;width:3px;height:8px;margin-left:-1.5px;border-radius:2px;background:var(--yellow);animation:cue 1.8s infinite}
+@keyframes cue{50%{transform:translateY(10px);opacity:.3}}
+
+/* ---------- about ---------- */
+.about{padding-block:110px 120px;position:relative}
+.about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.about h2{font-size:clamp(40px,5.2vw,74px);margin:14px 0 30px}
+.btn-row{display:flex;flex-wrap:wrap;gap:16px 40px;align-items:center;margin-top:38px}
+.slash{justify-self:center;width:120px;height:150px;background:var(--fire-diag);clip-path:polygon(78% 0,100% 0,22% 100%,0 100%)}
+
+/* ---------- who we help ---------- */
+.who{position:relative;padding-block:140px 90px;overflow:hidden}
+.who .bg{position:absolute;inset:0;z-index:0}
+.who .bg img{width:100%;height:100%;object-fit:cover;object-position:70% 30%;filter:grayscale(1) contrast(1.1) brightness(.32)}
+.who .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--black) 0,transparent 30%,transparent 60%,var(--black))}
+.who .wrap{position:relative;z-index:1}
+.who h2{font-size:clamp(38px,5vw,70px);margin:14px 0 28px;max-width:16ch}
+.audience{display:flex;align-items:center;gap:26px;margin-top:70px}
+.chev{width:110px;height:110px;flex:none}
+.chev path{fill:none;stroke:url(#fire);stroke-width:9;stroke-linecap:square}
+.marquee{overflow:hidden;flex:1;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.track{display:flex;gap:16px;width:max-content;animation:slide 38s linear infinite}
+.marquee:hover .track{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-50%)}}
+.pill{width:230px;height:110px;border-radius:14px;display:grid;place-items:center;text-align:center;padding:12px;
+  font:600 14px/1.3 var(--f-body);letter-spacing:.24em;text-transform:uppercase;color:var(--yellow);background:linear-gradient(#070707,#070707) padding-box,var(--fire-diag) border-box;border:1.5px solid transparent}
+.center{text-align:center;margin-top:70px}
+
+/* ---------- practice ---------- */
+.practice{padding-block:110px 120px}
+.prac-head{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.practice h2{font-size:clamp(40px,5.2vw,74px);margin:14px 0 28px}
+.neon{justify-self:center;width:min(300px,70%);filter:drop-shadow(0 0 14px rgba(242,107,15,.75)) drop-shadow(0 0 40px rgba(177,36,24,.5))}
+.neon *{fill:none;stroke:url(#fire);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.mission{margin-top:80px;border-radius:22px;background:linear-gradient(90deg,#c12a14,#e2531a 45%,#f08a0c);padding:clamp(28px,5vw,58px) clamp(24px,6vw,72px);
+  display:grid;grid-template-columns:.9fr auto 1.2fr;gap:clamp(20px,4vw,48px);align-items:center;color:#fff}
+.mission h3{font:700 clamp(26px,2.8vw,38px)/1.05 var(--f-display);text-transform:uppercase}
+.mission .bar{width:1.5px;align-self:stretch;background:rgba(255,255,255,.6)}
+.mission p{font:700 clamp(18px,1.6vw,22px)/1.45 var(--f-body)}
+.mission .btn.ghost{color:#fff;margin-top:18px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:40px}
+.pcard{position:relative;border-radius:18px;padding:1.5px;background:var(--fire-diag);text-decoration:none;color:#fff;transition:transform .3s}
+.pcard .in{position:relative;border-radius:16.5px;overflow:hidden;height:340px;background:#000}
+.pcard .duo{position:absolute;inset:0}
+.pcard .duo img{filter:grayscale(1) contrast(1.2) brightness(.42)}
+.pcard .txt{position:absolute;inset:auto 0 0;z-index:4;padding:28px 24px;text-align:center;display:grid;gap:10px}
+.pcard h3{font:700 19px/1.25 var(--f-body);letter-spacing:.24em;text-transform:uppercase}
+.pcard p{font-size:14px;line-height:1.5;color:#ddd;max-height:0;opacity:0;overflow:hidden;transition:max-height .4s,opacity .3s}
+.pcard:hover,.pcard:focus-visible{transform:translateY(-6px)}
+.pcard:hover p,.pcard:focus-visible p{max-height:120px;opacity:1}
+
+/* ---------- halftone editorial band ---------- */
+.band{position:relative;padding-block:120px;background:#0a0a0a;border-block:1px solid var(--line)}
+.band-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,70px);align-items:center}
+.band h2{font-size:clamp(40px,5.2vw,76px);margin:14px 0 34px}
+.principles{list-style:none;margin:0;padding:0;display:grid;gap:0;border-top:1px solid var(--line)}
+.principles li{display:grid;grid-template-columns:70px 1fr;gap:16px;padding:22px 0;border-bottom:1px solid var(--line)}
+.principles b{font:700 22px var(--f-display);background:var(--fire);-webkit-background-clip:text;background-clip:text;color:transparent}
+.principles strong{display:block;font:700 18px var(--f-body);color:#fff;text-transform:uppercase;letter-spacing:.06em}
+.principles span{color:var(--muted);font-size:15px}
+.poster{position:relative;aspect-ratio:1000/1279;border-radius:4px;overflow:hidden;box-shadow:0 40px 80px -30px rgba(242,107,15,.35)}
+.poster img{width:100%;height:100%;object-fit:cover}
+.poster .tag{position:absolute;left:18px;bottom:18px;z-index:4;background:#000;color:var(--yellow);font:600 12px var(--f-body);letter-spacing:.3em;padding:10px 14px;text-transform:uppercase}
+
+/* ---------- reviews: 3D carousel ---------- */
+.reviews{padding-block:120px 110px;overflow:hidden}
+.rev-head{display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center}
+.reviews h2{font-size:clamp(38px,5vw,70px);margin:14px 0 0}
+.ring{width:170px;height:170px;border-radius:50%;padding:6px;background:var(--fire-diag);box-shadow:0 0 50px rgba(242,107,15,.45)}
+.ring div{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#2a1206,#000 70%);display:grid;place-items:center}
+.ring svg{width:62%}
+.ring svg *{fill:none;stroke:url(#fire);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.carousel{position:relative;height:470px;margin-top:70px;perspective:1400px}
+.rcard{position:absolute;left:50%;top:0;width:min(340px,82vw);height:440px;margin-left:calc(min(340px,82vw) / -2);border-radius:26px;border:1.5px solid #e9e6e1;background:#000;
+  padding:40px 34px 30px;display:grid;grid-template-rows:auto 1fr auto auto;gap:18px;text-align:center;transition:transform .6s cubic-bezier(.3,.7,.2,1),opacity .6s,filter .6s}
+.rcard .stars{color:#fff;letter-spacing:.25em;font-size:18px}
+.rcard blockquote{margin:0;font:500 16px/1.6 var(--f-body);color:#eee}
+.rcard .rname{font:600 15px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:#fff}
+.rcard .note{font:600 11px var(--f-body);letter-spacing:.28em;text-transform:uppercase;color:var(--yellow)}
+.rcard[data-pos="0"]{transform:translateX(0) translateZ(0);z-index:3}
+.rcard[data-pos="-1"]{transform:translateX(-82%) translateZ(-180px) rotateY(32deg);z-index:2;opacity:.55;filter:blur(1px)}
+.rcard[data-pos="1"]{transform:translateX(82%) translateZ(-180px) rotateY(-32deg);z-index:2;opacity:.55;filter:blur(1px)}
+.rcard[data-pos="-2"]{transform:translateX(-140%) translateZ(-360px) rotateY(40deg);opacity:0;z-index:1}
+.rcard[data-pos="2"]{transform:translateX(140%) translateZ(-360px) rotateY(-40deg);opacity:0;z-index:1}
+.rcard[data-pos="hidden"]{opacity:0;transform:translateZ(-500px);pointer-events:none}
+.arrow{position:absolute;top:50%;z-index:5;width:52px;height:52px;margin-top:-26px;border:0;background:none;cursor:pointer;color:#fff}
+.arrow svg{width:22px;height:40px}
+.arrow.prev{left:max(0px,calc(50% - 470px))}.arrow.next{right:max(0px,calc(50% - 470px))}
+
+/* ---------- insights ---------- */
+.lab{display:flex;align-items:center;gap:18px;margin-bottom:70px}
+.lab::before{content:"";flex:1;height:1.5px;background:#ddd}
+.lab .sq{width:76px;height:76px;background:var(--fire-diag);display:grid;place-items:center}
+.lab .sq svg{width:46px;height:40px}
+.lab span{font:600 15px var(--f-body);letter-spacing:.32em;color:#fff;margin-right:var(--gutter)}
+.insights{padding-block:110px}
+.insights h2{font-size:clamp(38px,5vw,70px);margin:14px 0 70px}
+.posts{display:grid;gap:56px}
+.post{display:grid;grid-template-columns:400px 1fr;gap:40px;align-items:center}
+.post .duo{border-radius:16px;aspect-ratio:4/3}
+.post .duo img{filter:grayscale(1) contrast(1.15) brightness(.7)}
+.post .meta{font:400 14px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.post h3{font:700 clamp(20px,2vw,26px)/1.3 var(--f-body);color:#fff;margin:10px 0 14px}
+.post p{color:var(--text);max-width:68ch}
+.post .foot{display:flex;flex-wrap:wrap;gap:12px 36px;align-items:center;margin-top:24px;font:400 13px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.post .btn.solid{padding:13px 20px}
+
+/* ---------- contact ---------- */
+.contact{padding-block:110px 130px;position:relative;overflow:hidden}
+.contact .bigA{position:absolute;right:-12%;top:8%;width:min(760px,70vw);opacity:.35}
+.contact-grid{position:relative;display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(30px,5vw,80px);align-items:start}
+.contact h2{font-size:clamp(28px,3vw,40px);letter-spacing:.12em;line-height:1.2;margin:14px 0 30px}
+.addr{list-style:none;margin:0;padding:0;display:grid;gap:12px;font:300 15px var(--f-body);letter-spacing:.3em;text-transform:uppercase}
+.addr a{text-decoration:none}
+.addr strong{font-weight:600;color:#fff}
+form.gborder{padding:clamp(24px,4vw,44px);border-radius:20px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{display:grid;gap:8px}
+.field.full{grid-column:1/-1}
+.field label{font:600 12px var(--f-body);letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.field input,.field select,.field textarea{width:100%;background:#050505;border:1px solid #333;color:#fff;font:400 16px var(--f-body);padding:14px 14px;border-radius:0}
+.field textarea{min-height:130px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 1px var(--orange)}
+.consent{grid-column:1/-1;display:flex;gap:12px;align-items:flex-start;font-size:14px;color:var(--muted)}
+.consent input{margin-top:4px;accent-color:var(--orange)}
+form .btn{grid-column:1/-1;justify-self:start}
+.ok{grid-column:1/-1;border-left:3px solid var(--yellow);padding:12px 16px;color:#fff;background:#151007}
+.err{color:#ff8a65;font-size:13px}
+
+/* ---------- footer ---------- */
+footer.site{border-top:1px solid var(--line);padding-block:70px 40px;position:relative}
+footer.site::before{content:"";position:absolute;inset:-1px 0 auto;height:3px;background:var(--fire)}
+.fgrid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:40px}
+.fgrid p{color:var(--muted);font-size:15px;margin-top:18px;max-width:34ch}
+.fgrid h4{margin:0 0 16px;font:600 13px var(--f-body);letter-spacing:.28em;text-transform:uppercase;color:var(--yellow)}
+.fgrid ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:15px}
+.fgrid a{text-decoration:none;color:#ddd}
+.fgrid a:hover{color:var(--yellow)}
+.legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-top:60px;padding-top:24px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1000px){
+  .phone{display:none}
+  .hero .statue{width:80vw;opacity:.45}
+  .hero .copy{margin-left:0;padding-left:0}
+  .about-grid,.prac-head,.band-grid,.contact-grid{grid-template-columns:1fr}
+  .slash{display:none}
+  .mission{grid-template-columns:1fr}.mission .bar{width:100%;height:1.5px}
+  .cards{grid-template-columns:1fr 1fr}
+  .post{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr 1fr}
+  .rcard[data-pos="-1"],.rcard[data-pos="1"]{opacity:.25}
+}
+@media (max-width:640px){
+  .head{height:72px}
+  .logo .sub{display:none}
+  .logo .word{font-size:20px}
+  .cards{grid-template-columns:1fr}
+  .chev{display:none}
+  .rev-head{grid-template-columns:1fr}.ring{display:none}
+  .rcard[data-pos="-1"],.rcard[data-pos="1"]{opacity:0}
+  form.gborder{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr}
+  .pcard p{max-height:120px;opacity:1}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<!-- shared gradient + brand glyph -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="fire" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#febd01"/><stop offset=".25" stop-color="#f7a701"/><stop offset=".6" stop-color="#f26b0f"/><stop offset="1" stop-color="#b12418"/>
+    </linearGradient>
+    <symbol id="mark" viewBox="0 0 60 52"><path d="M5 49 30 5 55 49M17 34h26" fill="none" stroke="url(#fire)" stroke-width="7" stroke-linejoin="miter"/></symbol>
+    <symbol id="mark-dark" viewBox="0 0 60 52"><path d="M5 49 30 5 55 49M17 34h26" fill="none" stroke="#000" stroke-width="7"/></symbol>
+    <symbol id="arrow" viewBox="0 0 30 10"><path d="M0 5h28M23 1l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="scales" viewBox="0 0 120 120">
+      <path d="M60 14v86M38 104h44M24 30h72M60 14l-5 8h10z"/>
+      <path d="M24 30 10 64h28zM96 30 82 64h28z"/>
+      <path d="M8 64c2 9 9 14 16 14s14-5 16-14zM80 64c2 9 9 14 16 14s14-5 16-14z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="topbar" aria-hidden="true"></div>
+<header class="site" id="top">
+  <div class="wrap head">
+    <a class="logo" href="#" aria-label="Atlasio Law home">
+      <span class="word">ATLASIO</span>
+      <svg aria-hidden="true"><use href="#mark"/></svg>
+      <span class="sub">BUSINESS<br>LAW</span>
+    </a>
+    <div class="right">
+      <a class="phone" href="#contact">+90 212 000 00 00</a>
+      <div class="lang" role="group" aria-label="Language">
+        <button id="lang-en" aria-pressed="true">EN</button>
+        <button id="lang-tr" aria-pressed="false">TR</button>
+      </div>
+      <button class="burger" id="menu-open" aria-label="Open menu" aria-controls="menu" aria-expanded="false"><i></i><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<nav class="menu" id="menu" hidden aria-label="Main">
+  <button class="close" id="menu-close">CLOSE ✕</button>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#practice">Practice areas</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#insights">Insights</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <svg class="bigA" viewBox="0 0 1000 900" aria-hidden="true">
+      <path d="M90 880 430 40h140l340 840H760L500 230 240 880Z"/>
+      <path d="M330 640h340l-52-130H382Z"/>
+    </svg>
+    <div class="statue" aria-hidden="true"><img src="assets/justice-library.jpg" alt=""></div>
+    <div class="wrap">
+      <div class="copy">
+        <p class="eyebrow">Business lawyers · Istanbul &amp; Berlin</p>
+        <h1>Law that<br>holds<br>the <span class="x">line</span></h1>
+        <div><a class="btn" href="#contact">Book a free consultation <svg aria-hidden="true"><use href="#arrow"/></svg></a></div>
+      </div>
+    </div>
+    <span class="scroll-cue" aria-hidden="true"></span>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="wrap">
+      <div class="marker"><span class="sq"><svg aria-hidden="true"><use href="#mark-dark"/></svg></span><span>Where balance meets business</span></div>
+      <div class="rail about-grid">
+        <div>
+          <p class="eyebrow">About us</p>
+          <h2>Clear counsel.<br>Firm ground.</h2>
+          <p class="lead">Growing companies need answers they can act on, not memos they have to translate. Atlasio Law keeps the legal side of your business simple, fast and on your side, from the first incorporation to the deal that changes everything.</p>
+          <div class="btn-row">
+            <a class="btn" href="#contact">Contact us <svg aria-hidden="true"><use href="#arrow"/></svg></a>
+            <a class="btn ghost" href="#reviews">Reviews <svg aria-hidden="true"><use href="#arrow"/></svg></a>
+          </div>
+        </div>
+        <span class="slash" aria-hidden="true"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO WE HELP -->
+  <section class="who">
+    <div class="bg" aria-hidden="true"><img src="assets/justice-profile.jpg" alt=""></div>
+    <div class="wrap">
+      <div class="rail">
+        <p class="eyebrow">Who we help</p>
+        <h2>Counsel for bold founders</h2>
+        <p class="lead">We work with people who build things: founders, small teams and family businesses that move fast and cannot afford legal surprises. Plain language, clear fees and attention to the details that protect you later.</p>
+      </div>
+      <div class="audience">
+        <svg class="chev" viewBox="0 0 110 110" aria-hidden="true"><path d="M14 18l34 37-34 37M50 18l34 37-34 37"/></svg>
+        <div class="marquee" aria-label="Clients we serve">
+          <div class="track">
+            <span class="pill">Startups</span><span class="pill">Founders</span><span class="pill">Small business</span><span class="pill">Investors</span><span class="pill">Software teams</span><span class="pill">Family business</span><span class="pill">Creators</span>
+            <span class="pill" aria-hidden="true">Startups</span><span class="pill" aria-hidden="true">Founders</span><span class="pill" aria-hidden="true">Small business</span><span class="pill" aria-hidden="true">Investors</span><span class="pill" aria-hidden="true">Software teams</span><span class="pill" aria-hidden="true">Family business</span><span class="pill" aria-hidden="true">Creators</span>
+          </div>
+        </div>
+      </div>
+      <div class="center"><a class="btn" href="#contact">Book a free consultation <svg aria-hidden="true"><use href="#arrow"/></svg></a></div>
+    </div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section class="practice" id="practice">
+    <div class="wrap">
+      <div class="marker"><span class="sq"><svg aria-hidden="true"><use href="#mark-dark"/></svg></span><span>How can we help you?</span></div>
+      <div class="rail">
+        <div class="prac-head">
+          <div>
+            <p class="eyebrow">Practice areas</p>
+            <h2>Legal strategy, built to scale</h2>
+            <p class="lead">From company formation and contracts to investment rounds, trademarks, employment and disputes, we cover the legal work a growing business meets, with one team that already knows your file.</p>
+          </div>
+          <svg class="neon" viewBox="0 0 120 120" aria-hidden="true"><use href="#scales"/></svg>
+        </div>
+
+        <div class="mission">
+          <h3>Our mission is simple:</h3>
+          <span class="bar" aria-hidden="true"></span>
+          <div>
+            <p>Keep founders building, not litigating, with contracts that hold and advice you can act on the same day.</p>
+            <a class="btn ghost" href="#contact">Talk to us <svg aria-hidden="true"><use href="#arrow"/></svg></a>
+          </div>
+        </div>
+
+        <div class="cards">
+          <a class="pcard" href="#contact"><div class="in"><div class="duo"><img src="assets/justice-library.jpg" alt="" style="object-position:50% 30%"></div><div class="txt"><h3>Company formation</h3><p>Choosing the right structure, articles of association, shareholder registers and the first board decisions.</p></div></div></a>
+          <a class="pcard" href="#contact"><div class="in"><div class="duo"><img src="assets/justice-profile.jpg" alt="" style="object-position:30% 30%"></div><div class="txt"><h3>Contracts &amp; negotiation</h3><p>Customer, supplier, SaaS and partnership agreements, drafted to be read and enforced.</p></div></div></a>
+          <a class="pcard" href="#contact"><div class="in"><div class="duo"><img src="assets/justice-halftone.jpg" alt="" style="object-position:30% 20%"></div><div class="txt"><h3>Investment &amp; M&amp;A</h3><p>Term sheets, due diligence, share transfers and exits, on both sides of the table.</p></div></div></a>
+          <a class="pcard" href="#contact"><div class="in"><div class="duo"><img src="assets/justice-winged.jpg" alt="" style="object-position:50% 40%"></div><div class="txt"><h3>IP &amp; trademarks</h3><p>Brand searches, filings in several markets, licences and protection against copies.</p></div></div></a>
+          <a class="pcard" href="#contact"><div class="in"><div class="duo"><img src="assets/justice-profile.jpg" alt="" style="object-position:70% 70%"></div><div class="txt"><h3>Employment</h3><p>Contracts, remote and cross-border hires, policies and fair, documented exits.</p></div></div></a>
+          <a class="pcard" href="#contact"><div class="in"><div class="duo"><img src="assets/justice-library.jpg" alt="" style="object-position:60% 80%"></div><div class="txt"><h3>Disputes &amp; litigation</h3><p>Early settlement where it serves you, a firm hand in court where it does not.</p></div></div></a>
+        </div>
+        <div class="center"><a class="btn" href="#contact">See all practice areas <svg aria-hidden="true"><use href="#arrow"/></svg></a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HALFTONE BAND -->
+  <section class="band">
+    <div class="wrap band-grid">
+      <div class="rail">
+        <p class="eyebrow">How we work</p>
+        <h2>The scales, redrawn.</h2>
+        <ul class="principles">
+          <li><b>01</b><div><strong>Fixed-fee options</strong><span>Know the cost of routine work before it starts.</span></div></li>
+          <li><b>02</b><div><strong>One business day</strong><span>A first answer to every client question within one working day.</span></div></li>
+          <li><b>03</b><div><strong>Three languages</strong><span>Counsel in English, Turkish and German.</span></div></li>
+        </ul>
+      </div>
+      <figure class="poster duo-scratch" style="margin:0">
+        <img src="assets/justice-halftone.jpg" alt="Halftone collage of a blindfolded Lady Justice holding scales, crossed by yellow lines">
+        <svg class="scratch" data-seed="7" data-count="14" aria-hidden="true"></svg>
+        <figcaption class="tag">Justitia · Est. 2026</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="reviews" id="reviews">
+    <div class="wrap">
+      <div class="marker"><span class="sq"><svg aria-hidden="true"><use href="#mark-dark"/></svg></span><span>Hear what clients say about us</span></div>
+      <div class="rail rev-head">
+        <div>
+          <p class="eyebrow">Sample client reviews</p>
+          <h2>Counsel that keeps up</h2>
+        </div>
+        <div class="ring" aria-hidden="true"><div><svg viewBox="0 0 120 120"><use href="#scales"/></svg></div></div>
+      </div>
+    </div>
+    <div class="carousel" id="carousel" role="region" aria-roledescription="carousel" aria-label="Sample reviews">
+      <button class="arrow prev" id="rev-prev" aria-label="Previous review"><svg viewBox="0 0 22 40" aria-hidden="true"><path d="M20 2 2 20l18 18" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+      <article class="rcard"><div class="stars" aria-label="5 out of 5">★★★★★</div><blockquote>“They turned a forty-page investor draft into five decisions we actually had to make. We closed the round two weeks early.”</blockquote><div class="rname">Selin A.</div><div class="note">Sample review</div></article>
+      <article class="rcard"><div class="stars" aria-label="5 out of 5">★★★★★</div><blockquote>“Fast, direct and always one step ahead. Our trademark was filed in both markets before the launch.”</blockquote><div class="rname">Jonas M.</div><div class="note">Sample review</div></article>
+      <article class="rcard"><div class="stars" aria-label="5 out of 5">★★★★★</div><blockquote>“A supplier dispute that could have taken a year was settled in a month, on our terms.”</blockquote><div class="rname">Deniz K.</div><div class="note">Sample review</div></article>
+      <article class="rcard"><div class="stars" aria-label="5 out of 5">★★★★★</div><blockquote>“Clear fees, clear language. For the first time I understood every clause I signed.”</blockquote><div class="rname">Mara L.</div><div class="note">Sample review</div></article>
+      <article class="rcard"><div class="stars" aria-label="5 out of 5">★★★★★</div><blockquote>“They set up our company and our first hires across two countries without a single surprise.”</blockquote><div class="rname">Emre T.</div><div class="note">Sample review</div></article>
+      <button class="arrow next" id="rev-next" aria-label="Next review"><svg viewBox="0 0 22 40" aria-hidden="true"><path d="M2 2l18 18L2 38" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+    </div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section class="insights" id="insights">
+    <div class="lab"><span class="sq"><svg aria-hidden="true"><use href="#mark-dark"/></svg></span><span>LAB</span></div>
+    <div class="wrap">
+      <p class="eyebrow">From the case files</p>
+      <h2>Stay a move ahead</h2>
+      <div class="posts">
+        <article class="post">
+          <div class="duo"><img src="assets/justice-winged.jpg" alt=""></div>
+          <div>
+            <p class="meta">7 min. read</p>
+            <h3>Founders' agreements: ten clauses to settle before day one</h3>
+            <p>Vesting, decision rights, deadlock and exits are easy to agree on while everyone is still friends. Here is the short list we go through with every founding team.</p>
+            <div class="foot"><span>Nov 2026</span><span>Atlasio Law</span><a class="btn solid" href="#">Read more</a></div>
+          </div>
+        </article>
+        <article class="post">
+          <div class="duo"><img src="assets/justice-profile.jpg" alt="" style="object-position:40% 25%"></div>
+          <div>
+            <p class="meta">5 min. read</p>
+            <h3>Trademark first, launch second: protecting a brand in two markets</h3>
+            <p>A name that is free in one country can be taken in the next. How to search, file and budget before the logo goes on the product.</p>
+            <div class="foot"><span>Oct 2026</span><span>Atlasio Law</span><a class="btn solid" href="#">Read more</a></div>
+          </div>
+        </article>
+        <article class="post">
+          <div class="duo"><img src="assets/justice-library.jpg" alt="" style="object-position:50% 20%"></div>
+          <div>
+            <p class="meta">6 min. read</p>
+            <h3>Remote hires across borders: employment basics for startups</h3>
+            <p>Contractor or employee, which law applies, and what to put in writing when your first engineer works from another country.</p>
+            <div class="foot"><span>Sep 2026</span><span>Atlasio Law</span><a class="btn solid" href="#">Read more</a></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <svg class="bigA" viewBox="0 0 1000 900" aria-hidden="true"><path d="M90 880 430 40h140l340 840H760L500 230 240 880Z" style="animation:none"/><path d="M330 640h340l-52-130H382Z" style="animation:none"/></svg>
+    <div class="wrap contact-grid">
+      <div>
+        <p class="eyebrow">Contact us</p>
+        <h2>Get your free consultation</h2>
+        <ul class="addr">
+          <li><strong>Atlasio Law</strong></li>
+          <li>Levent, Istanbul</li>
+          <li>Mitte, Berlin</li>
+          <li><a href="#contact">+90 212 000 00 00</a></li>
+          <li><span>hello@atlasio.example</span></li>
+        </ul>
+      </div>
+      <form class="gborder" id="contact-form" novalidate>
+        <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" autocomplete="name" required></div>
+        <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="f-company">Company</label><input id="f-company" name="company" autocomplete="organization"></div>
+        <div class="field"><label for="f-topic">Topic</label>
+          <select id="f-topic" name="topic">
+            <option>Company formation</option><option>Contracts &amp; negotiation</option><option>Investment &amp; M&amp;A</option>
+            <option>IP &amp; trademarks</option><option>Employment</option><option>Disputes &amp; litigation</option>
+          </select></div>
+        <div class="field full"><label for="f-msg">How can we help?</label><textarea id="f-msg" name="message" required></textarea></div>
+        <label class="consent" for="f-consent"><input id="f-consent" type="checkbox" required> I agree that Atlasio Law may contact me about this request.</label>
+        <p class="err" id="form-err" hidden>Please fill in your name, a valid email, your message and the consent box.</p>
+        <button class="btn" type="submit">Send my request <svg aria-hidden="true"><use href="#arrow"/></svg></button>
+        <p class="ok" id="form-ok" hidden>Thank you. This is a template, so nothing was sent.</p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <a class="logo" href="#" aria-label="Atlasio Law home"><span class="word">ATLASIO</span><svg aria-hidden="true"><use href="#mark"/></svg></a>
+        <p>Business law for founders and growing companies. A fictional firm for this template.</p>
+      </div>
+      <div><h4>Practice</h4><ul><li><a href="#practice">Company formation</a></li><li><a href="#practice">Contracts</a></li><li><a href="#practice">Investment</a></li><li><a href="#practice">IP &amp; trademarks</a></li></ul></div>
+      <div><h4>Firm</h4><ul><li><a href="#about">About</a></li><li><a href="#reviews">Reviews</a></li><li><a href="#insights">Insights</a></li><li><a href="#contact">Contact</a></li></ul></div>
+      <div><h4>Legal</h4><ul><li><a href="#">Privacy policy</a></li><li><a href="#">Imprint</a></li><li><a href="#">Cookies</a></li></ul></div>
+    </div>
+    <div class="legal"><span>© 2026 Atlasio Law · Template, fictional firm</span><span>This site does not provide legal advice.</span></div>
+  </div>
+</footer>
+
+<script>
+/* ---------- translations: English source → Turkish ---------- */
+const I18N={
+  "BUSINESS":"İŞ",
+  "LAW":"HUKUKU",
+  "About":"Hakkımızda","Practice areas":"Uzmanlık alanları","Reviews":"Yorumlar","Insights":"Yazılar","Contact":"İletişim",
+  "CLOSE ✕":"KAPAT ✕",
+  "Business lawyers · Istanbul & Berlin":"İş hukuku avukatları · İstanbul & Berlin",
+  "Law that":"Çizgiyi",
+  "holds":"koruyan",
+  "the":"",
+  "line":"hukuk",
+  "Book a free consultation":"Ücretsiz görüşme ayarlayın",
+  "Where balance meets business":"Dengenin işle buluştuğu yer",
+  "About us":"Hakkımızda",
+  "Clear counsel.":"Net tavsiye.",
+  "Firm ground.":"Sağlam zemin.",
+  "Growing companies need answers they can act on, not memos they have to translate. Atlasio Law keeps the legal side of your business simple, fast and on your side, from the first incorporation to the deal that changes everything.":"Büyüyen şirketlerin çevirmesi gereken notlara değil, hemen uygulanabilecek cevaplara ihtiyacı var. Atlasio Law, ilk kuruluştan her şeyi değiştiren anlaşmaya kadar işinizin hukuki tarafını basit, hızlı ve sizden yana tutar.",
+  "Contact us":"Bize ulaşın",
+  "Who we help":"Kimlere yardım ediyoruz",
+  "Counsel for bold founders":"Cesur kurucuların avukatı",
+  "We work with people who build things: founders, small teams and family businesses that move fast and cannot afford legal surprises. Plain language, clear fees and attention to the details that protect you later.":"Bir şey inşa edenlerle çalışıyoruz: hızlı ilerleyen ve hukuki sürprizi kaldıramayacak kurucular, küçük ekipler ve aile şirketleri. Sade dil, net ücretler ve ileride sizi koruyacak ayrıntılara özen.",
+  "Startups":"Girişimler","Founders":"Kurucular","Small business":"KOBİ'ler","Investors":"Yatırımcılar","Software teams":"Yazılım ekipleri","Family business":"Aile şirketleri","Creators":"İçerik üreticileri",
+  "How can we help you?":"Size nasıl yardımcı olabiliriz?",
+  "Legal strategy, built to scale":"Büyümeye hazır hukuki strateji",
+  "From company formation and contracts to investment rounds, trademarks, employment and disputes, we cover the legal work a growing business meets, with one team that already knows your file.":"Şirket kuruluşu ve sözleşmelerden yatırım turlarına, markaya, iş hukukuna ve uyuşmazlıklara kadar, büyüyen bir işin karşılaştığı hukuki işleri dosyanızı zaten tanıyan tek bir ekiple yürütüyoruz.",
+  "Our mission is simple:":"Misyonumuz basit:",
+  "Keep founders building, not litigating, with contracts that hold and advice you can act on the same day.":"Kurucuların dava değil iş kurmasını sağlamak: ayakta kalan sözleşmeler ve aynı gün uygulanabilecek tavsiyelerle.",
+  "Talk to us":"Konuşalım",
+  "Company formation":"Şirket kuruluşu",
+  "Choosing the right structure, articles of association, shareholder registers and the first board decisions.":"Doğru şirket türü, esas sözleşme, pay defteri ve ilk yönetim kurulu kararları.",
+  "Contracts & negotiation":"Sözleşmeler ve müzakere",
+  "Customer, supplier, SaaS and partnership agreements, drafted to be read and enforced.":"Müşteri, tedarikçi, SaaS ve ortaklık sözleşmeleri; okunması ve uygulanması için yazılmış.",
+  "Investment & M&A":"Yatırım ve birleşme-devralma",
+  "Term sheets, due diligence, share transfers and exits, on both sides of the table.":"Term sheet, hukuki inceleme, pay devri ve çıkışlar; masanın iki tarafında da.",
+  "IP & trademarks":"Fikri mülkiyet ve marka",
+  "Brand searches, filings in several markets, licences and protection against copies.":"Marka araştırması, birden fazla pazarda tescil, lisanslar ve taklide karşı koruma.",
+  "Employment":"İş hukuku",
+  "Contracts, remote and cross-border hires, policies and fair, documented exits.":"İş sözleşmeleri, uzaktan ve yurt dışı istihdam, politikalar ve belgelenmiş, adil ayrılıklar.",
+  "Disputes & litigation":"Uyuşmazlık ve dava",
+  "Early settlement where it serves you, a firm hand in court where it does not.":"İşinize yarıyorsa erken uzlaşma, yaramıyorsa mahkemede kararlı bir duruş.",
+  "See all practice areas":"Tüm uzmanlık alanları",
+  "How we work":"Nasıl çalışıyoruz",
+  "The scales, redrawn.":"Terazi, yeniden çizildi.",
+  "Fixed-fee options":"Sabit ücret seçenekleri",
+  "Know the cost of routine work before it starts.":"Rutin işlerin maliyetini iş başlamadan bilin.",
+  "One business day":"Bir iş günü",
+  "A first answer to every client question within one working day.":"Her müvekkil sorusuna bir iş günü içinde ilk cevap.",
+  "Three languages":"Üç dil",
+  "Counsel in English, Turkish and German.":"İngilizce, Türkçe ve Almanca danışmanlık.",
+  "Justitia · Est. 2026":"Justitia · Kuruluş 2026",
+  "Hear what clients say about us":"Müvekkillerimiz ne diyor",
+  "Sample client reviews":"Örnek müvekkil yorumları",
+  "Counsel that keeps up":"Hızınıza yetişen hukuk",
+  "“They turned a forty-page investor draft into five decisions we actually had to make. We closed the round two weeks early.”":"“Kırk sayfalık yatırımcı taslağını gerçekten vermemiz gereken beş karara indirdiler. Turu iki hafta erken kapattık.”",
+  "“Fast, direct and always one step ahead. Our trademark was filed in both markets before the launch.”":"“Hızlı, net ve hep bir adım önde. Markamız lansmandan önce iki pazarda da tescile başvurmuştu.”",
+  "“A supplier dispute that could have taken a year was settled in a month, on our terms.”":"“Bir yıl sürebilecek tedarikçi uyuşmazlığı bir ayda, bizim şartlarımızla çözüldü.”",
+  "“Clear fees, clear language. For the first time I understood every clause I signed.”":"“Net ücret, net dil. İlk kez imzaladığım her maddeyi anladım.”",
+  "“They set up our company and our first hires across two countries without a single surprise.”":"“Şirketimizi ve iki ülkedeki ilk işe alımlarımızı tek bir sürpriz olmadan kurdular.”",
+  "Sample review":"Örnek yorum",
+  "From the case files":"Dosyalardan",
+  "Stay a move ahead":"Bir hamle önde olun",
+  "7 min. read":"7 dk. okuma","5 min. read":"5 dk. okuma","6 min. read":"6 dk. okuma",
+  "Founders' agreements: ten clauses to settle before day one":"Kurucular sözleşmesi: ilk günden önce netleşmesi gereken on madde",
+  "Vesting, decision rights, deadlock and exits are easy to agree on while everyone is still friends. Here is the short list we go through with every founding team.":"Hak ediş, karar hakları, kilitlenme ve çıkış konularında herkes hâlâ arkadaşken anlaşmak kolaydır. Her kurucu ekiple üzerinden geçtiğimiz kısa liste.",
+  "Trademark first, launch second: protecting a brand in two markets":"Önce marka, sonra lansman: bir markayı iki pazarda korumak",
+  "A name that is free in one country can be taken in the next. How to search, file and budget before the logo goes on the product.":"Bir ülkede boş olan isim diğerinde alınmış olabilir. Logo ürüne basılmadan önce nasıl araştırılır, tescil edilir ve bütçelenir.",
+  "Remote hires across borders: employment basics for startups":"Sınır ötesi uzaktan işe alım: girişimler için iş hukuku temelleri",
+  "Contractor or employee, which law applies, and what to put in writing when your first engineer works from another country.":"Serbest çalışan mı çalışan mı, hangi hukuk uygulanır ve ilk mühendisiniz başka bir ülkeden çalışırken neler yazılı olmalı.",
+  "Nov 2026":"Kas 2026","Oct 2026":"Eki 2026","Sep 2026":"Eyl 2026",
+  "Read more":"Devamını oku",
+  "Get your free consultation":"Ücretsiz görüşmenizi alın",
+  "Levent, Istanbul":"Levent, İstanbul",
+  "Name":"Ad soyad","Email":"E-posta","Company":"Şirket","Topic":"Konu","How can we help?":"Nasıl yardımcı olabiliriz?",
+  "I agree that Atlasio Law may contact me about this request.":"Atlasio Law'un bu talep hakkında benimle iletişime geçmesini kabul ediyorum.",
+  "Please fill in your name, a valid email, your message and the consent box.":"Lütfen adınızı, geçerli bir e-posta adresini, mesajınızı ve onay kutusunu doldurun.",
+  "Send my request":"Talebimi gönder",
+  "Thank you. This is a template, so nothing was sent.":"Teşekkürler. Bu bir şablon olduğu için hiçbir şey gönderilmedi.",
+  "Business law for founders and growing companies. A fictional firm for this template.":"Kurucular ve büyüyen şirketler için iş hukuku. Bu şablon için kurgusal bir büro.",
+  "Practice":"Uzmanlık","Firm":"Büro","Legal":"Yasal",
+  "Contracts":"Sözleşmeler","Investment":"Yatırım",
+  "Privacy policy":"Gizlilik politikası","Imprint":"Künye","Cookies":"Çerezler",
+  "© 2026 Atlasio Law · Template, fictional firm":"© 2026 Atlasio Law · Şablon, kurgusal büro",
+  "This site does not provide legal advice.":"Bu site hukuki tavsiye vermez."
+};
+const ATTR={ /* aria-labels */
+  "Open menu":"Menüyü aç","Previous review":"Önceki yorum","Next review":"Sonraki yorum","Sample reviews":"Örnek yorumlar",
+  "Clients we serve":"Hizmet verdiğimiz müvekkiller","Language":"Dil","Main":"Ana menü","Atlasio Law home":"Atlasio Law ana sayfa",
+  "Halftone collage of a blindfolded Lady Justice holding scales, crossed by yellow lines":"Elinde terazi tutan, gözleri bağlı Adalet heykelinin sarı çizgilerle kesilen raster kolajı"
+};
+let lang='en';
+const t=(map,s)=>lang==='en'?s:(s in map?map[s]:s);
+const textNodes=[];
+const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+for(let n;(n=walker.nextNode());){
+  if(n.parentElement.closest('script,style'))continue;
+  const raw=n.nodeValue,key=raw.replace(/\s+/g,' ').trim();
+  if(key&&key in I18N)textNodes.push({n,key,lead:raw.match(/^\s*/)[0],trail:raw.match(/\s*$/)[0]});
+}
+const attrNodes=[];
+document.querySelectorAll('[aria-label],[alt]').forEach(el=>['aria-label','alt'].forEach(a=>{const v=el.getAttribute(a);if(v&&v in ATTR)attrNodes.push({el,a,key:v});}));
+const langBtns=[...document.querySelectorAll('.lang button')];
+function setLang(l){
+  lang=l;document.documentElement.lang=l;
+  textNodes.forEach(x=>{const v=t(I18N,x.key);x.n.nodeValue=v?x.lead+v+x.trail:'';});
+  attrNodes.forEach(x=>x.el.setAttribute(x.a,t(ATTR,x.key)));
+  langBtns.forEach(b=>b.setAttribute('aria-pressed',String(b.id==='lang-'+l)));
+  try{localStorage.setItem('atlasio-law-lang',l)}catch(e){}
+}
+langBtns.forEach(b=>b.addEventListener('click',()=>setLang(b.id.slice(5))));
+let saved=null;try{saved=localStorage.getItem('atlasio-law-lang')}catch(e){}
+setLang(saved==='tr'?'tr':'en');
+
+/* ---------- header background after scrolling ---------- */
+const header=document.querySelector('header.site');
+const onScroll=()=>header.classList.toggle('solid',scrollY>40);
+addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* ---------- full-screen menu ---------- */
+const menu=document.getElementById('menu'),openBtn=document.getElementById('menu-open'),closeBtn=document.getElementById('menu-close');
+function setMenu(open){menu.hidden=!open;openBtn.setAttribute('aria-expanded',String(open));document.body.style.overflow=open?'hidden':'';(open?closeBtn:openBtn).focus();}
+openBtn.addEventListener('click',()=>setMenu(true));
+closeBtn.addEventListener('click',()=>setMenu(false));
+menu.addEventListener('click',e=>{if(e.target.closest('a'))setMenu(false)});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)setMenu(false)});
+
+/* ---------- 3D review carousel ---------- */
+const cards=[...document.querySelectorAll('.rcard')];let current=0;
+function layout(){
+  const n=cards.length;
+  cards.forEach((c,i)=>{let d=(i-current+n)%n;if(d>n/2)d-=n;c.dataset.pos=Math.abs(d)<=2?String(d):'hidden';c.setAttribute('aria-hidden',String(d!==0));});
+}
+const go=step=>{current=(current+step+cards.length)%cards.length;layout();};
+document.getElementById('rev-prev').addEventListener('click',()=>go(-1));
+document.getElementById('rev-next').addEventListener('click',()=>go(1));
+cards.forEach((c,i)=>c.addEventListener('click',()=>{if(c.dataset.pos!=='0'){current=i;layout();}}));
+document.getElementById('carousel').addEventListener('keydown',e=>{if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1);});
+let sx=null;const car=document.getElementById('carousel');
+car.addEventListener('pointerdown',e=>{sx=e.clientX});
+car.addEventListener('pointerup',e=>{if(sx!==null&&Math.abs(e.clientX-sx)>40)go(e.clientX<sx?1:-1);sx=null});
+layout();
+
+/* ---------- scratch lines over halftone images (deterministic) ---------- */
+document.querySelectorAll('svg.scratch').forEach(svg=>{
+  let s=+svg.dataset.seed||1;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
+  svg.setAttribute('viewBox','0 0 100 100');svg.setAttribute('preserveAspectRatio','none');
+  let d='';
+  for(let i=0;i<(+svg.dataset.count||10);i++){
+    const x=rnd()*100,y=rnd()*100,len=20+rnd()*60,ang=-.9+rnd()*.5;
+    d+=`M${x.toFixed(1)} ${y.toFixed(1)}l${(Math.cos(ang)*len).toFixed(1)} ${(Math.sin(ang)*len*-1).toFixed(1)}`;
+  }
+  svg.innerHTML=`<path d="${d}" fill="none" stroke="#f5e663" stroke-width=".25" vector-effect="non-scaling-stroke" style="stroke-width:1.2px" opacity=".85"/>`;
+});
+
+/* ---------- contact form (template: validates, sends nothing) ---------- */
+const form=document.getElementById('contact-form');
+form.addEventListener('submit',e=>{
+  e.preventDefault();
+  const ok=form.checkValidity();
+  document.getElementById('form-err').hidden=ok;
+  if(ok){document.getElementById('form-ok').hidden=false;form.querySelector('button[type=submit]').disabled=true;}
+});
+</script>
+</body>
+</html>
