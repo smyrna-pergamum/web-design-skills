@@ -1,6 +1,6 @@
 # paper-notebook-landing
 
-> Part of the [design-skills](../../README.md) library.
+> Part of the [web-design-skills](../../README.md) library.
 
 An AI skill (for Claude Code / Claude Agent Skills) that designs landing pages in a warm **paper-notebook style**:
 cream paper, chunky soft serif headlines, handwritten marker notes, yellow sticky notes,
@@ -44,8 +44,8 @@ paper-notebook-landing/
 As a Claude Code plugin (recommended):
 
 ```bash
-/plugin marketplace add smyrna-pergamum/design-skills
-/plugin install paper-notebook-landing@design-skills
+/plugin marketplace add smyrna-pergamum/web-design-skills
+/plugin install paper-notebook-landing@web-design-skills
 ```
 
 Or copy just this folder into `~/.claude/skills/paper-notebook-landing/` (all projects) or
@@ -59,7 +59,7 @@ Then ask, for example:
 
 ## View the example
 
-Live: **https://smyrna-pergamum.github.io/design-skills/skills/paper-notebook-landing/example/**
+Live: **https://smyrna-pergamum.github.io/web-design-skills/skills/paper-notebook-landing/example/**
 
 Or open `example/index.html` locally in any browser.
 
@@ -91,5 +91,5 @@ Code and documentation: [MIT](../../LICENSE).
 Bu klasör, sıcak "kâğıt defter" tarzında açılış sayfaları tasarlayan bir yapay zekâ skill'idir.
 `SKILL.md` stil kurallarını, bölüm kalıplarını ve kontrol listesini; `references/components.md` hazır kod parçalarını;
 `example/index.html` üç dilli (TR/EN/DE) kurgusal Atlasio örnek sitesini; `screenshots/` ise tüm bölümlerin görüntülerini içerir.
-Kurulum: `/plugin marketplace add smyrna-pergamum/design-skills` ve `/plugin install paper-notebook-landing@design-skills`,
+Kurulum: `/plugin marketplace add smyrna-pergamum/web-design-skills` ve `/plugin install paper-notebook-landing@web-design-skills`,
 ya da bu klasörü `~/.claude/skills/paper-notebook-landing` altına kopyalayın.

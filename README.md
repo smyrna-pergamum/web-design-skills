@@ -1,25 +1,25 @@
-# design-skills
+# Web Design Skills
 
-A library of AI design skills for Claude (Claude Code, Agent Skills). Each skill teaches the model one complete visual
+A library of AI web design skills for Claude (Claude Code, Agent Skills). Each skill teaches the model one complete visual
 style: the rules, the section patterns, the interactions and a finish checklist, plus a working reference site,
 screenshots and copy-ready components.
 
-**Gallery:** https://smyrna-pergamum.github.io/design-skills/
+**Gallery:** https://smyrna-pergamum.github.io/web-design-skills/
 
 ## Skills
 
 | | Skill | Style | Demo |
 |---|---|---|---|
-| <img src="skills/paper-notebook-landing/screenshots/01-hero.png" width="260" alt="Paper notebook landing page"> | [**paper-notebook-landing**](skills/paper-notebook-landing) | Warm paper-notebook landing pages: cream paper, chunky soft serif, handwritten notes, sticky notes, a notebook that opens as you scroll, comic strips, giant footer. TR/EN/DE example. | [Live](https://smyrna-pergamum.github.io/design-skills/skills/paper-notebook-landing/example/) |
-| <img src="skills/noir-gradient-law/screenshots/01-hero.png" width="260" alt="Noir gradient law firm website"> | [**noir-gradient-law**](skills/noir-gradient-law) | Law-firm and advisory sites: pure black, bronze statue photography, fire gradient (yellow → orange → red), giant uppercase headlines, duotone-halftone photos, 3D review carousel. EN/TR example. | [Live](https://smyrna-pergamum.github.io/design-skills/skills/noir-gradient-law/example/) |
+| <img src="skills/paper-notebook-landing/screenshots/01-hero.png" width="260" alt="Paper notebook landing page"> | [**paper-notebook-landing**](skills/paper-notebook-landing) | Warm paper-notebook landing pages: cream paper, chunky soft serif, handwritten notes, sticky notes, a notebook that opens as you scroll, comic strips, giant footer. TR/EN/DE example. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/paper-notebook-landing/example/) |
+| <img src="skills/noir-gradient-law/screenshots/01-hero.png" width="260" alt="Noir gradient law firm website"> | [**noir-gradient-law**](skills/noir-gradient-law) | Law-firm and advisory sites: pure black, bronze statue photography, fire gradient (yellow → orange → red), giant uppercase headlines, duotone-halftone photos, 3D review carousel. EN/TR example. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/noir-gradient-law/example/) |
 
 ## Install
 
 ### As a Claude Code plugin marketplace
 
 ```bash
-/plugin marketplace add smyrna-pergamum/design-skills
-/plugin install paper-notebook-landing@design-skills
+/plugin marketplace add smyrna-pergamum/web-design-skills
+/plugin install paper-notebook-landing@web-design-skills
 ```
 
 Each skill is its own plugin, so you install only the styles you want.
@@ -37,7 +37,7 @@ Ask for the style by what it looks like, or name the skill:
 ## Repository layout
 
 ```
-design-skills/
+web-design-skills/
 ├── .claude-plugin/marketplace.json   # one plugin entry per skill
 ├── index.html                        # gallery page (GitHub Pages)
 ├── skills/
@@ -67,7 +67,7 @@ Fonts are loaded from Google Fonts under their own licenses.
 
 ### Türkçe özet
 
-Claude için tasarım skill'lerinden oluşan bir kütüphane. Her skill bir görsel tarzı baştan sona öğretir: kurallar, bölüm
+Web Design Skills, Claude için web tasarım skill'lerinden oluşan bir kütüphane. Her skill bir görsel tarzı baştan sona öğretir: kurallar, bölüm
 kalıpları, etkileşimler, kontrol listesi, örnek site ve ekran görüntüleri. Kurulum:
-`/plugin marketplace add smyrna-pergamum/design-skills`, ardından istediğiniz skill için `/plugin install <ad>@design-skills`.
+`/plugin marketplace add smyrna-pergamum/web-design-skills`, ardından istediğiniz skill için `/plugin install <ad>@web-design-skills`.
 Yeni tasarım eklemek için [CONTRIBUTING.md](CONTRIBUTING.md) dosyasına bakın.

@@ -1,10 +1,10 @@
 {
-  "name": "design-skills",
+  "name": "web-design-skills",
   "owner": {
     "name": "smyrna-pergamum"
   },
   "metadata": {
-    "description": "A library of AI design skills: each one teaches Claude a complete visual style, with a reference site, screenshots and copy-ready components.",
+    "description": "A library of AI web design skills: each one teaches Claude a complete visual style, with a reference site, screenshots and copy-ready components.",
     "version": "1.0.0"
   },
   "plugins": [

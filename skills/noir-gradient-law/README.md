@@ -1,6 +1,6 @@
 # noir-gradient-law
 
-> Part of the [design-skills](../../README.md) library.
+> Part of the [web-design-skills](../../README.md) library.
 
 An AI skill (Claude Code / Agent Skills) for law-firm and advisory websites in a bold **noir gradient** style: pure black,
 monochrome bronze statue photography, one fire gradient (yellow → orange → red), giant uppercase Unbounded headlines,
@@ -42,8 +42,8 @@ noir-gradient-law/
 ## Install
 
 ```bash
-/plugin marketplace add smyrna-pergamum/design-skills
-/plugin install noir-gradient-law@design-skills
+/plugin marketplace add smyrna-pergamum/web-design-skills
+/plugin install noir-gradient-law@web-design-skills
 ```
 
 Or copy this folder to `~/.claude/skills/noir-gradient-law/`.
@@ -77,4 +77,4 @@ Code and documentation: [MIT](../../LICENSE). Example images: copyright-free (se
 
 Hukuk ve danışmanlık büroları için siyah zeminli, ateş gradyanlı (sarı → turuncu → kırmızı), heykel fotoğraflı cesur bir
 web tasarım skill'i. Örnek site kurgusal "Atlasio Law" (EN/TR). Kurulum:
-`/plugin marketplace add smyrna-pergamum/design-skills` ve `/plugin install noir-gradient-law@design-skills`.
+`/plugin marketplace add smyrna-pergamum/web-design-skills` ve `/plugin install noir-gradient-law@web-design-skills`.
