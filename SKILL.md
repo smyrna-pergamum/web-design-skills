@@ -1,16 +1,16 @@
 ---
-name: superr-style-landing
-description: Redesign or build a landing page in the warm "paper notebook" style of superr.ai — cream paper, chunky soft serif headlines, handwritten marker notes, yellow sticky notes, name-label notebooks, illustrated scenes with roman-numeral feature panels, doodle grids, lined-paper lists, comic-strip storytelling and a giant orange footer. Use when the user asks for a Superr-style / notebook / scrapbook / playful-education look, wants a site restyled "like superr.ai", or wants a friendly, trustworthy landing page for education, student services or family-facing products. Produces a single self-contained HTML file with scroll-driven notebook animation, auto-sizing comic speech bubbles and optional multi-language switching.
+name: paper-notebook-landing
+description: Redesign or build a landing page in a warm "paper notebook" style — cream paper, chunky soft serif headlines, handwritten marker notes, yellow sticky notes, name-label notebooks, illustrated scenes with roman-numeral feature panels, doodle grids, lined-paper lists, comic-strip storytelling and a giant orange footer. Use when the user asks for a paper-notebook / scrapbook / sticky-note / playful-education look, or wants a friendly, trustworthy landing page for education, student services or family-facing products. Produces a single self-contained HTML file with scroll-driven notebook animation, auto-sizing comic speech bubbles and optional multi-language switching.
 ---
 
-# Superr-style landing page
+# Paper-notebook landing page
 
-This skill turns any product's real content into a single-file landing page in the visual language of
-[superr.ai](https://www.superr.ai/): a warm, handmade, "school notebook" world that still reads as calm and trustworthy.
+This skill turns any product's real content into a single-file landing page in a warm, handmade
+"school notebook" visual language that still reads as calm and trustworthy.
 The reference build is `example/index.html` (Dreemli, a study-in-Germany platform, in TR/EN/DE). Open it before you start;
 `references/components.md` holds every pattern as copy-ready code. `screenshots/` shows what each section should look like.
 
-The style is *inspired by* Superr. Never copy Superr's logo, illustrations, product photos, wording or the "superr" wordmark.
+If the user points at a reference site, take the *style*, never its logo, illustrations, product photos, wording or wordmark.
 Use the client's own brand name, content and facts.
 
 ## 1. Before designing: read the real site
@@ -32,7 +32,7 @@ Use the client's own brand name, content and facts.
 | Ink | Cocoa `#2b1a07` for text, charcoal `#171717` for outlines, muted `#8a7b6a` for small print. |
 | Accent | Marker orange `#ff6f1e` for handwriting, underlines and the footer. Use the client's own accent if it is warm; otherwise keep orange as the "marker". |
 | Sticker colours | green `#22c55e`, blue `#3b82f6`, pink `#ff66cf`, sticky yellow `#fadb4b`. Each illustrated scene owns one of them for its highlighted words. |
-| Display type | Chunky, soft, slightly wonky serif. Superr uses Gelica (paid). Free substitute: **Fraunces** with `SOFT 100`, `WONK 1`, weight 800–900. |
+| Display type | Chunky, soft, slightly wonky serif, e.g. Gelica or Recoleta (paid). Free choice: **Fraunces** with `SOFT 100`, `WONK 1`, weight 800–900. |
 | Body / UI type | Geist (or Inter) for lists, buttons' small print, captions. Serif (Fraunces 400) for subtitles and quotes. |
 | Handwriting | **Caveat** (has Turkish/German glyphs). Only for annotations, sticky notes, labels on notebooks, comic speech. Never for paragraphs. |
 | Buttons | The "dibs" button: cream pill with a 4px cream outer ring, a 1.5px charcoal inner border, serif label, tiny shadow. |

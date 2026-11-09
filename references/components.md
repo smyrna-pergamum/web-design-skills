@@ -1,6 +1,6 @@
 # Components
 
-Copy-ready building blocks for the Superr-style landing page. Every snippet is taken from the working
+Copy-ready building blocks for the paper-notebook landing page. Every snippet is taken from the working
 reference in `../example/index.html`; open that file for the full context (responsive rules, every section filled with content).
 
 ## Contents
