@@ -1,0 +1,1068 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dreemli · Superr Style Example</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..900,100,0..1&family=Geist:wght@400;500&family=Caveat:wght@500;700&display=swap">
+<style>
+/* Layout: superr.ai yönü. Navigasyonsuz; köşede sabit logo, sağ üstte dil seçici + "dibs" butonu.
+   Hero defteri → kaydırınca açılan büyük defter → yapışkan notlar → öğrenci/üniversite çizim sahneleri
+   üstünde roma rakamlı paneller → doodle ızgarası → çizgili kâğıt → defter rehberler → yolculuk çizgi romanı
+   → SSS → dev turuncu footer. Bilinçli olarak tek (açık) tema. */
+:root{
+  color-scheme:light;
+  --paper:#fdfbf9;        /* Cream Paper */
+  --paper-2:#f6efea;      /* Dew Drop */
+  --ink:#2b1a07;          /* Cocoa Ink */
+  --charcoal:#171717;
+  --muted:#8a7b6a;
+  --line:#ded6d2;
+  --orange:#ff6f1e;       /* Marker Orange */
+  --orange-deep:#e85f12;
+  --green:#22c55e;  --blue:#3b82f6;  --pink:#ff66cf;
+  --sticky:#fadb4b; --sticky-2:#f5cf30;
+  --red:#e5484d;
+  --leather:#a86e40;
+  --f-display:"Fraunces","Gelica","Recoleta",Georgia,serif;
+  --f-body:"Geist","Inter",system-ui,sans-serif;
+  --f-hand:"Caveat","Segoe Print",cursive;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-display);font-variation-settings:"SOFT" 100,"WONK" 0;font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-weight:400;text-wrap:balance}
+a{color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.hand{font-family:var(--f-hand);color:var(--orange);font-weight:500;line-height:1}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+svg text{font-family:var(--f-hand)}
+
+/* ---- sabit köşe öğeleri ---- */
+.corner-logo{position:fixed;z-index:30;top:calc(18px + env(safe-area-inset-top,0px));left:calc(24px + env(safe-area-inset-left,0px));width:52px;height:52px;border-radius:50%;background:var(--paper);display:grid;place-items:center;text-decoration:none;box-shadow:0 1px 2px rgba(0,0,0,.25);
+  font:900 26px/1 var(--f-display);font-variation-settings:"SOFT" 100;color:var(--ink)}
+.corner-logo span{color:var(--orange)}
+.dibs{display:inline-flex;align-items:center;background:var(--paper);color:var(--ink);border:0;border-radius:20px;padding:4px;cursor:pointer;text-decoration:none;box-shadow:0 1px 2px rgba(0,0,0,.25);font:500 20px/1 var(--f-display);font-variation-settings:"SOFT" 100}
+.dibs span{display:block;border:1.5px solid var(--charcoal);border-radius:16px;padding:13px 20px;background:var(--paper);transition:background .15s}
+.dibs:hover span{background:#fff4ec}
+.corner-cta{position:fixed;z-index:30;top:calc(18px + env(safe-area-inset-top,0px));right:calc(24px + env(safe-area-inset-right,0px));display:flex;align-items:center;gap:10px}
+.corner-cta .login{font:500 15px var(--f-body);text-decoration:none;background:var(--paper);padding:9px 14px;border-radius:20px;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.corner-cta .dibs{font-size:17px}
+.corner-cta .dibs span{padding:10px 16px}
+.lang{display:flex;gap:2px;background:var(--paper);border-radius:20px;padding:4px;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.lang button{border:0;background:none;cursor:pointer;font:500 14px/1 var(--f-body);color:var(--muted);padding:8px 10px;border-radius:16px}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.lang button:hover:not([aria-pressed="true"]){color:var(--ink)}
+
+/* ---- hero ---- */
+.hero{padding-block:120px 60px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.hero-copy{display:grid;gap:22px;min-width:0}
+.hero .hand.greet{font-size:30px}
+.hero h1{font-size:clamp(60px,9vw,112px);line-height:.95;font-weight:900;letter-spacing:-.02em;font-variation-settings:"SOFT" 100,"WONK" 1,"opsz" 144}
+.sub{font-size:clamp(22px,2.4vw,28px);line-height:1.35;max-width:22ch}
+.anno{position:relative;display:inline-block}
+.anno .hand{position:absolute;left:100%;top:-.6em;margin-left:6px;font-size:28px;white-space:nowrap;transform:rotate(-6deg)}
+.hero .dibs{justify-self:start;margin-top:36px}
+.hero .note{font:500 17px var(--f-body);color:var(--muted)}
+.scroll-hint{font-size:24px;color:var(--muted);margin-top:8px}
+
+.book-stage{position:relative;height:520px}
+.book{position:absolute;right:40px;top:10px;width:380px;height:500px;border-radius:12px 26px 26px 12px;transform:rotate(-14deg);
+  background:linear-gradient(105deg,#7a4c2a 0 4%,#a26a3f 5% 12%,#b47a4b 30%,#9d6538 100%);box-shadow:inset -10px 0 24px rgba(0,0,0,.18),0 30px 50px -20px rgba(70,40,10,.45)}
+.book::after{content:"D.";position:absolute;right:24px;bottom:22px;font:900 30px var(--f-display);font-variation-settings:"SOFT" 100;color:rgba(255,255,255,.18)}
+.label{position:absolute;left:96px;top:96px;width:230px;background:#fff;border:2px solid #2a2a2a;border-radius:12px;box-shadow:0 0 0 5px #fff,0 3px 10px rgba(0,0,0,.25);font:500 11px var(--f-body);color:#333}
+.label .row{display:flex;gap:10px;align-items:baseline;padding:8px 12px;border-bottom:1.5px solid #2a2a2a}
+.label .row:last-child{border:0}
+.label .row b{font:700 30px/1 var(--f-hand);color:#1a1a1a}
+.label .split{display:grid;grid-template-columns:1fr 1fr}
+.label .split div{display:flex;gap:6px;align-items:baseline;padding:8px 12px}
+.label .split div+div{border-left:1.5px solid #2a2a2a}
+.label .split b{font:700 22px/1 var(--f-hand);color:#1a1a1a}
+.pencil{position:absolute;right:6px;top:120px;width:20px;height:380px;transform:rotate(-16deg);border-radius:4px 4px 0 0;
+  background:linear-gradient(90deg,#e7a900,#ffcf2e 40%,#f5bd00);box-shadow:2px 6px 10px rgba(0,0,0,.2)}
+.pencil::before{content:"";position:absolute;top:-22px;left:0;width:20px;height:24px;border-radius:6px 6px 0 0;background:linear-gradient(#ef8a8a 0 60%,#c9c9c9 60%)}
+.pencil::after{content:"";position:absolute;bottom:-30px;left:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:30px solid #f1d2a8}
+.book-stage .hand.tag{position:absolute;left:10px;bottom:30px;font-size:24px;transform:rotate(-4deg);color:var(--ink)}
+
+/* ---- kaydırınca açılan defter ---- */
+main{overflow-x:clip}
+.travel .book-slot{visibility:hidden}
+.opener{height:240vh;position:relative;z-index:5;--p:0;--dx:0;--dy:0;--rot:0;--s:1}
+.ob-stage{position:sticky;top:0;height:100vh;display:grid;place-items:center;padding-inline:max(12px,env(safe-area-inset-left,0px))}
+/* --dx/--dy/--rot/--s: hero'daki yerinden sahnenin ortasına taşınma; --p: kapağın açılması */
+.ob-book{position:relative;width:min(1000px,94vw);aspect-ratio:1.45;perspective:2400px;container-type:inline-size;transform-origin:75% 50%;
+  transform:translate(calc(var(--dx) * 1px),calc(var(--dy) * 1px)) translateX(calc(-25% * (1 - var(--p)))) rotate(calc(var(--rot) * 1deg)) scale(var(--s))}
+.ob-left{position:absolute;inset:0 50% 0 0;border-radius:3cqw 0 0 3cqw;background:linear-gradient(90deg,#9a6337,var(--leather));
+  box-shadow:inset 10px 0 30px rgba(0,0,0,.15);opacity:var(--p)}
+.ob-left .emb{position:absolute;left:6cqw;bottom:5cqw;font:900 5cqw/1 var(--f-display);font-variation-settings:"SOFT" 100;color:rgba(255,255,255,.18)}
+.ob-left .pocket{position:absolute;left:7cqw;right:7cqw;top:7cqw;height:20cqw;border:2px dashed rgba(255,255,255,.35);border-radius:1.6cqw;display:grid;place-items:center;
+  font:700 2.6cqw/1.1 var(--f-hand);color:rgba(255,255,255,.75);text-align:center}
+.ob-page{position:absolute;inset:1.4cqw 1.4cqw 1.4cqw 50%;background:#e9e5df;border-radius:0 2.6cqw 2.6cqw 0;padding:1.4cqw;box-shadow:0 30px 60px -30px rgba(40,25,10,.5)}
+.ob-page::before{content:"";position:absolute;inset:-1.4cqw -1.4cqw -1.4cqw 0;z-index:-1;border-radius:0 3cqw 3cqw 0;background:var(--leather)}
+.ob-screen{height:100%;background:#fdfaf4;border-radius:.6cqw 1.6cqw 1.6cqw .6cqw;display:grid;place-items:center;align-content:center;gap:1.4cqw;text-align:center;position:relative;padding:3cqw}
+.ob-screen .hi{font:500 1.9cqw var(--f-body)}
+.ob-screen h2{font:800 4.6cqw/1.08 var(--f-display);font-variation-settings:"SOFT" 100,"WONK" 1;color:#111}
+.ob-screen .go{font:700 2.4cqw var(--f-hand);letter-spacing:.06em;color:#222;text-decoration:none;margin-top:2cqw}
+.ob-screen .go:hover{color:var(--orange)}
+.stk{position:absolute;width:6cqw;height:6cqw}
+.stk.a{left:8%;top:8%;transform:rotate(-12deg)}
+.stk.b{right:9%;top:16%;transform:rotate(10deg)}
+.stk.c{left:9%;bottom:16%;transform:rotate(8deg)}
+.stk.d{right:10%;bottom:8%;transform:rotate(-8deg)}
+.ob-cover{position:absolute;inset:0 0 0 50%;transform-origin:left center;transform-style:preserve-3d;transform:rotateY(calc(-178deg * var(--p)))}
+.ob-cover .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:0 3cqw 3cqw 0}
+.ob-cover .front{background:linear-gradient(100deg,#8a5630 0 3%,#b47a4b 10%,#a86e40 60%,#9a6337);box-shadow:inset -1cqw 0 3cqw rgba(0,0,0,.15)}
+.ob-cover .back{transform:rotateY(180deg);background:linear-gradient(270deg,#9a6337,var(--leather))}
+.ob-cover .label{left:7cqw;top:8cqw;width:30cqw;font-size:1.2cqw;border-radius:1.4cqw}
+.ob-cover .label .row,.ob-cover .label .split div{padding:1cqw 1.4cqw}
+.ob-cover .label .row b{font-size:3.4cqw}
+.ob-cover .label .split b{font-size:2.5cqw}
+.ob-cover .front::after{content:"D.";position:absolute;right:3cqw;bottom:3cqw;font:900 4cqw var(--f-display);color:rgba(255,255,255,.18)}
+.ob-hint{position:absolute;bottom:4vh;left:0;right:0;text-align:center;font-size:24px;color:var(--muted);opacity:calc(1 - var(--p) * 2)}
+
+/* ---- yapışkan notlar ---- */
+.stickies{padding-block:90px 110px;text-align:center}
+.stickies h2{font-size:clamp(28px,3.6vw,40px);line-height:1.3}
+.notes{display:flex;justify-content:center;flex-wrap:wrap;gap:34px;margin-top:70px}
+.sticky{width:200px;aspect-ratio:1;max-width:100%;background:linear-gradient(180deg,var(--sticky-2) 0 14%,var(--sticky) 14%);display:grid;place-items:center;padding:20px;
+  font:500 30px/1.1 var(--f-hand);color:#2a2116;box-shadow:0 18px 22px -14px rgba(60,45,0,.45),0 2px 3px rgba(0,0,0,.08);transition:transform .2s}
+.sticky:nth-child(1){transform:rotate(-6deg) translateY(30px)}
+.sticky:nth-child(2){transform:rotate(3deg)}
+.sticky:nth-child(3){transform:rotate(-1deg) translateY(36px)}
+.sticky:nth-child(4){transform:rotate(-3deg)}
+.sticky:hover{transform:rotate(0) scale(1.04)}
+.sticky small{display:block;font-size:20px;margin-top:6px;opacity:.75}
+
+/* ---- çizim sahneleri + panel ---- */
+.scene{position:relative;min-height:660px;display:flex;align-items:center;padding-block:80px;overflow:hidden}
+.scene .decor{position:absolute;pointer-events:none}
+.scene.desk{background:
+  repeating-linear-gradient(178deg,rgba(90,50,20,.07) 0 2px,transparent 2px 22px),
+  repeating-linear-gradient(181deg,rgba(255,255,255,.06) 0 1px,transparent 1px 13px),
+  linear-gradient(160deg,#d4a06c,#c18852 60%,#b07945)}
+.scene.sky{background:
+  radial-gradient(ellipse 260px 90px at 12% 30%,rgba(255,255,255,.9),transparent 70%),
+  radial-gradient(ellipse 320px 110px at 85% 22%,rgba(255,255,255,.85),transparent 70%),
+  radial-gradient(ellipse 200px 60px at 55% 12%,rgba(255,255,255,.6),transparent 70%),
+  linear-gradient(180deg,#5d9be0,#a9cdf2 75%,#f2e2cc)}
+.scene.campus{background:linear-gradient(180deg,#f9e9d6 0 62%,#9ccc6a 62%,#7fb648)}
+.scene-inner{position:relative;z-index:1;width:100%;display:grid;grid-template-columns:420px 1fr;gap:56px;align-items:center}
+.scene.right .scene-inner{grid-template-columns:1fr 420px}
+.scene.right .panel{order:2}
+.panel{background:var(--paper);border:1.5px solid var(--charcoal);border-radius:12px;overflow:hidden;box-shadow:0 2px 20px rgba(0,0,0,.08);min-width:0}
+.panel h2{font-size:36px;line-height:1.2;padding:28px 28px 26px}
+.panel h2 em{font-style:normal}
+.desk .panel h2 em,.desk .feat[aria-current="true"]{color:#16a34a}
+.sky .panel h2 em,.sky .feat[aria-current="true"]{color:var(--blue)}
+.campus .panel h2 em,.campus .feat[aria-current="true"]{color:#e0359f}
+.feats{list-style:none;margin:0;padding:0}
+.feat{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;padding:13px 28px;border:0;border-top:1px solid var(--line);background:none;cursor:pointer;text-align:left;
+  font:400 19px/1.35 var(--f-body);color:var(--ink)}
+.feat[aria-current="true"]{font-weight:500}
+.feat:hover{background:#faf5f0}
+.feat i{font:400 19px var(--f-display);font-style:normal;flex:none}
+.panel .more{display:block;padding:14px 28px 18px;border-top:1px solid var(--line);font:500 16px var(--f-body);color:var(--muted)}
+.panel .more a{color:var(--ink)}
+
+.device{justify-self:center;width:min(100%,430px);aspect-ratio:3/4;background:#e9e7e2;border-radius:22px;padding:18px;box-shadow:0 30px 60px -25px rgba(0,0,0,.45),inset 0 0 0 2px #d5d2cb;transform:rotate(-4deg);display:grid}
+.scene.right .device{transform:rotate(3deg)}
+.screen{background:#fbf8f2;border-radius:8px;padding:26px 24px;display:grid;align-content:start;gap:14px;font-family:var(--f-body);color:#222;min-width:0}
+.screen .top{display:flex;justify-content:space-between;font-size:12px;color:#888}
+.screen h3{font:700 28px/1.15 var(--f-display);font-variation-settings:"SOFT" 100;color:#111}
+.screen .hand{font-size:24px;color:#333}
+.screen .box{border:1.5px solid #333;border-radius:8px;padding:12px 14px;font-size:15px;line-height:1.45}
+.steps-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.steps-list li{display:flex;gap:10px;align-items:center;font-size:16px;border:1.5px solid #333;border-radius:8px;padding:9px 12px;background:#fff}
+.steps-list li::before{content:"";width:14px;height:14px;border:1.5px solid #333;border-radius:50%;flex:none}
+.stage-bar{height:8px;border-radius:8px;background:#e8e2da;overflow:hidden;margin-top:6px}
+.stage-bar i{display:block;height:100%;background:var(--blue);border-radius:8px;transition:width .3s}
+.check{display:flex;gap:10px;align-items:center;font-size:16px;padding:6px 0;border-bottom:1px dashed #ccc}
+.check s{color:#999}
+.check .tick{width:18px;height:18px;border:1.5px solid #333;border-radius:4px;display:grid;place-items:center;font-size:12px;flex:none}
+.bubble{background:#fff;border:1.5px solid #333;border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:15px;max-width:90%}
+.bubble.me{justify-self:end;border-radius:14px 14px 4px 14px;background:#fff1f9}
+.blob{width:46px;height:46px;border-radius:14px;background:var(--orange);position:relative;justify-self:center}
+.blob::before,.blob::after{content:"";position:absolute;top:16px;width:9px;height:11px;background:#fff;border-radius:50%;box-shadow:inset 3px 0 0 #111}
+.blob::before{left:11px}.blob::after{right:11px}
+
+/* ---- doodle ızgarası (pazar yeri) ---- */
+.doodles{padding-block:110px}
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:70px 30px;align-items:center;justify-items:center}
+.doodle{display:grid;justify-items:center;gap:8px;text-align:center;text-decoration:none;color:var(--ink);transition:transform .2s}
+.doodle:hover{transform:rotate(-3deg) scale(1.05)}
+.doodle svg{width:64px;height:64px}
+.doodle .hand{color:var(--ink);font-size:23px;line-height:1.05;max-width:13ch}
+.doodle .offer{font:700 19px var(--f-hand);color:var(--orange)}
+.doodle:nth-child(odd) .hand{transform:rotate(-5deg)}
+.doodle:nth-child(even) .hand{transform:rotate(3deg)}
+.dcenter{text-align:center;display:grid;gap:4px;justify-items:center}
+.dcenter .hand{font-size:22px}
+.dcenter h2{font-size:clamp(26px,2.6vw,32px);line-height:1.2}
+.dcenter p{font:400 16px var(--f-body);color:var(--muted);max-width:30ch;margin-top:8px}
+.dcenter a{font:500 16px var(--f-body);color:var(--ink);margin-top:8px}
+
+/* ---- vize: çizgili kâğıt ---- */
+.secure{background:var(--paper-2);padding-block:90px 110px;text-align:center;position:relative;overflow:hidden}
+.secure h2{font-size:clamp(32px,3.6vw,40px)}
+.secure .lead{font-size:22px;color:var(--muted);margin-top:8px}
+.lined{position:relative;width:min(100%,380px);margin:56px auto 0;background:#fffefb;padding:34px 30px 40px 70px;text-align:left;transform:rotate(-2deg);box-shadow:0 20px 30px -18px rgba(60,40,20,.35);
+  background-image:linear-gradient(90deg,transparent 46px,#f08b8b 46px 48px,transparent 48px),repeating-linear-gradient(180deg,transparent 0 37px,#b9c9ef 37px 38px);background-position:0 0,0 22px}
+.lined ul{list-style:none;margin:0;padding:0}
+.lined li{font:500 27px/38px var(--f-hand);color:#2a2a2a;display:flex;gap:12px}
+.lined li::before{content:"✓";color:var(--green);font-weight:700}
+.lined li small{font-size:20px;color:var(--muted)}
+.sticker-lbl{position:absolute;display:grid;justify-items:center;gap:6px;width:150px}
+.sticker-lbl .hand{color:var(--ink);font-size:20px;line-height:1.05}
+.sticker-lbl .st{width:44px;height:44px;border-radius:12px;box-shadow:0 0 0 3px #fff,0 3px 6px rgba(0,0,0,.2)}
+.sl1{left:5%;top:32%}.sl2{right:5%;top:30%}.sl3{left:8%;bottom:14%}.sl4{right:8%;bottom:12%}
+.secure .src{font:400 14px var(--f-body);color:var(--muted);margin-top:46px}
+
+/* ---- rehberler: defterler ---- */
+.guides{padding-block:110px;text-align:center}
+.guides .hand{font-size:24px}
+.guides h2{font-size:clamp(32px,3.6vw,41px);line-height:1.15;margin-top:6px}
+.shelf{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:64px}
+.gbook{position:relative;aspect-ratio:3/4;border-radius:10px 22px 22px 10px;padding:26px 22px;display:grid;align-content:space-between;text-align:left;box-shadow:inset -8px 0 18px rgba(0,0,0,.12),0 24px 40px -22px rgba(0,0,0,.45);transition:transform .2s}
+.gbook:nth-child(1){background:radial-gradient(ellipse 70px 34px at 30% 30%,#fff 60%,transparent 62%),radial-gradient(ellipse 90px 40px at 75% 62%,#fff 60%,transparent 62%),radial-gradient(ellipse 60px 28px at 25% 85%,#fff 60%,transparent 62%),#9fd3f5;transform:rotate(-3deg)}
+.gbook:nth-child(2){background:#f5b7bd;transform:rotate(2deg)}
+.gbook:nth-child(3){background:#3d4fd6;transform:rotate(-1.5deg)}
+.gbook:hover{transform:rotate(0) translateY(-6px)}
+.glabel{background:#fff;border:2px solid #2a2a2a;border-radius:10px;box-shadow:0 0 0 4px #fff,0 2px 6px rgba(0,0,0,.2);font:500 11px var(--f-body);color:#444}
+.glabel div{padding:8px 12px;border-bottom:1.5px solid #2a2a2a}
+.glabel div:last-child{border:0;display:flex;justify-content:space-between;align-items:baseline}
+.glabel b{display:block;font:700 26px/1.05 var(--f-hand);color:#111;margin-top:2px}
+.glabel .p{font:700 20px var(--f-hand);color:var(--orange)}
+.gbook p{font:400 15px/1.45 var(--f-body);color:#1d1d1d;background:rgba(255,255,255,.9);border-radius:10px;padding:10px 12px}
+.gbook a{position:absolute;inset:0;border-radius:inherit}
+
+/* ---- yolculuk çizgi romanı ---- */
+.story{padding-block:40px 110px}
+.story-head{text-align:center;margin-bottom:48px}
+.story-head h2{font-size:clamp(32px,3.6vw,41px);line-height:1.15}
+.story-head h2 .real{position:relative;display:inline-block}
+.story-head h2 .real .hand{position:absolute;left:50%;top:-.9em;transform:translateX(-50%) rotate(-6deg);font-size:26px;white-space:nowrap}
+.story-head p{font:400 17px var(--f-body);color:var(--muted);margin-top:12px}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;list-style:none;margin:0;padding:0}
+.frame{display:grid;gap:12px}
+.frame svg{display:block;width:100%;height:auto;border:2px solid var(--charcoal);border-radius:4px;background:#fff}
+.frame .cap{display:flex;gap:12px;align-items:baseline}
+.frame .cap i{font:400 18px var(--f-display);font-style:normal;color:var(--orange);flex:none;min-width:2.2em}
+.frame .cap b{font:500 17px var(--f-body);display:block}
+.frame .cap span{font:400 15px var(--f-body);color:var(--muted)}
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:56px}
+.quote{border-top:1.5px dashed #d9b9a3;padding-top:18px;display:grid;gap:10px;margin:0}
+.quote blockquote{margin:0;font-size:19px;line-height:1.45}
+.quote figcaption{font:400 14px var(--f-body);color:var(--muted)}
+.quote figcaption b{font:700 22px var(--f-hand);color:var(--ink);margin-right:6px}
+
+/* ---- SSS ---- */
+.faq{padding-block:20px 120px}
+.faq .wrap{max-width:760px}
+.faq h2{font-size:clamp(30px,3.4vw,40px);text-align:center;margin-bottom:36px}
+details{border-bottom:1.5px dashed #d9b9a3}
+summary{list-style:none;cursor:pointer;padding:18px 0;font:500 18px var(--f-body);display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:400 26px/1 var(--f-display);color:var(--orange)}
+details[open] summary::after{content:"–"}
+details p{font:400 17px/1.6 var(--f-body);color:#5a4a3a;padding-bottom:20px;max-width:62ch}
+
+/* ---- dev turuncu footer ---- */
+.foot{background:var(--orange);color:var(--paper);border-radius:56px 56px 0 0;padding-block:64px 32px;overflow:hidden;margin-inline:max(8px,env(safe-area-inset-left,0px))}
+.foot-top{display:grid;grid-template-columns:1fr auto auto;gap:32px 64px;align-items:start}
+.foot-top h2{font-size:clamp(28px,3vw,36px);line-height:1.3;max-width:16ch}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;font:500 17px var(--f-body)}
+.foot ul a{text-decoration:none}
+.foot ul a:hover{text-decoration:underline}
+.news{display:flex;gap:8px;margin-top:26px;max-width:440px;flex-wrap:wrap}
+.news input{flex:1;min-width:0;border:0;border-radius:16px;padding:14px 16px;font:400 16px var(--f-body);background:var(--paper);color:var(--ink)}
+.news .dibs{font-size:17px}
+.news .dibs span{padding:10px 16px}
+.news-ok{font:500 16px var(--f-body);margin-top:20px}
+.giant{font:900 clamp(110px,27vw,360px)/.8 var(--f-display);font-variation-settings:"SOFT" 100,"WONK" 1,"opsz" 144;color:var(--orange-deep);letter-spacing:-.04em;margin:60px 0 30px;text-align:center;user-select:none}
+.foot-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font:500 15px var(--f-body);color:#ffd9c2}
+
+@media (max-width:980px){
+  .hero-grid{grid-template-columns:1fr}
+  .book-stage{height:440px}
+  .book{right:auto;left:50%;margin-left:-170px;width:320px;height:420px}
+  .book-stage .label{left:60px;top:80px;width:210px}
+  .scene-inner,.scene.right .scene-inner{grid-template-columns:1fr}
+  .scene.right .panel{order:0}
+  .scene{min-height:0}
+  .scene .decor.hide-sm{display:none}
+  .dgrid{grid-template-columns:repeat(2,1fr)}
+  .dcenter{grid-column:1/-1;order:-1}
+  .sticker-lbl{display:none}
+  .shelf,.quotes{grid-template-columns:1fr;max-width:420px;margin-inline:auto}
+  .strip{grid-template-columns:1fr 1fr}
+  .foot-top{grid-template-columns:1fr 1fr}
+  .foot-top>div:first-child{grid-column:1/-1}
+}
+@media (max-width:600px){
+  .corner-cta .login,.corner-cta .dibs{display:none}
+  .hero{padding-top:100px}
+  .anno .hand{position:static;display:inline-block;margin:0 0 0 4px}
+  .book{margin-left:-140px;width:270px;height:360px}
+  .book-stage .label{left:36px;top:64px;width:200px}
+  .pencil{height:300px}
+  .opener{height:200vh}
+  .ob-book{aspect-ratio:1.15}
+  .panel h2{font-size:30px;padding:22px 20px}
+  .feat{padding:12px 20px;font-size:17px}
+  .sticky{width:150px;font-size:24px}
+  .strip{grid-template-columns:1fr}
+  .foot{border-radius:36px 36px 0 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;scroll-behavior:auto!important}
+  .opener{height:auto;--p:1}
+  .ob-stage{position:relative;height:auto;padding-block:60px}
+  .ob-hint{display:none}
+}
+</style>
+
+</head>
+<body>
+<!-- tekrar kullanılan çizgi karakterler -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="elif" viewBox="0 0 60 120">
+      <g stroke="#2b1a07" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M13 32C8 6 52 4 47 32L49 56C40 60 20 60 11 56Z" fill="#4a2c17"/>
+        <rect x="26" y="40" width="8" height="9" fill="#f2c39e"/>
+        <path d="M13 74C13 54 47 54 47 74V90H13Z" fill="#ff6f1e"/>
+        <path d="M13 62L6 84M47 62L54 84" fill="none"/>
+        <circle cx="6" cy="86" r="3" fill="#f2c39e"/><circle cx="54" cy="86" r="3" fill="#f2c39e"/>
+        <rect x="18" y="90" width="11" height="22" fill="#3d5a9e"/><rect x="31" y="90" width="11" height="22" fill="#3d5a9e"/>
+        <ellipse cx="22" cy="114" rx="7" ry="3.5" fill="#2b1a07"/><ellipse cx="38" cy="114" rx="7" ry="3.5" fill="#2b1a07"/>
+        <ellipse cx="30" cy="27" rx="13" ry="15" fill="#f2c39e"/>
+        <path d="M17 24C18 11 42 9 43 24C36 17 25 17 17 24Z" fill="#4a2c17"/>
+      </g>
+      <circle cx="25" cy="29" r="1.7" fill="#2b1a07"/><circle cx="35" cy="29" r="1.7" fill="#2b1a07"/>
+      <path d="M26 35Q30 38.5 34 35" fill="none" stroke="#2b1a07" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="21" cy="33" r="2.4" fill="#ff8fa3" opacity=".5"/><circle cx="39" cy="33" r="2.4" fill="#ff8fa3" opacity=".5"/>
+    </symbol>
+    <symbol id="mentor" viewBox="0 0 60 120">
+      <g stroke="#2b1a07" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round">
+        <rect x="26" y="40" width="8" height="9" fill="#c98e62"/>
+        <path d="M12 74C12 54 48 54 48 74V90H12Z" fill="#22c55e"/>
+        <path d="M12 62L5 84M48 62L55 84" fill="none"/>
+        <circle cx="5" cy="86" r="3" fill="#c98e62"/><circle cx="55" cy="86" r="3" fill="#c98e62"/>
+        <rect x="17" y="90" width="12" height="22" fill="#3a3a3a"/><rect x="31" y="90" width="12" height="22" fill="#3a3a3a"/>
+        <ellipse cx="22" cy="114" rx="7" ry="3.5" fill="#2b1a07"/><ellipse cx="38" cy="114" rx="7" ry="3.5" fill="#2b1a07"/>
+        <ellipse cx="30" cy="27" rx="13" ry="15" fill="#c98e62"/>
+        <path d="M17 22C16 8 44 8 43 22C38 16 23 15 17 22Z" fill="#1d1d1d"/>
+        <circle cx="25" cy="29" r="4" fill="none"/><circle cx="35" cy="29" r="4" fill="none"/><path d="M29 29H31" fill="none"/>
+      </g>
+      <circle cx="25" cy="29" r="1.5" fill="#2b1a07"/><circle cx="35" cy="29" r="1.5" fill="#2b1a07"/>
+      <path d="M26 36Q30 39 34 36" fill="none" stroke="#2b1a07" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="corner-logo" href="#" aria-label="Dreemli ana sayfa">D<span>.</span></a>
+<div class="corner-cta">
+  <div class="lang" role="group" aria-label="Dil seçimi">
+    <button id="lang-tr" aria-pressed="true">TR</button>
+    <button id="lang-en" aria-pressed="false">EN</button>
+    <button id="lang-de" aria-pressed="false">DE</button>
+  </div>
+  <a class="login" href="#">Giriş yap</a>
+  <a class="dibs" href="#"><span>Ücretsiz başla</span></a>
+</div>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="hand greet">Sevgili öğrenciler ve aileler,</p>
+        <h1>almanya'ya<br>giden yol</h1>
+        <p class="sub">Program seçiminden yerleşmeye kadar her adım, <span class="anno">tek yerde.<span class="hand">gerçekten!</span></span></p>
+        <a class="dibs" href="#"><span>Yolculuğumu başlat</span></a>
+        <p class="note">Ücretsiz plan: 1 aktif yolculuk, kart bilgisi gerekmez</p>
+      </div>
+      <div class="book-stage" aria-hidden="true">
+        <!-- Defter buradan başlar; kaydırınca aşağıdaki büyük deftere taşınır. JS yoksa bu statik kopya görünür. -->
+        <div class="book book-slot">
+          <div class="label">
+            <div class="row"><span>Ad</span><b>Elif</b></div>
+            <div class="row"><span>Hedef</span><b>TU München</b></div>
+            <div class="split"><div><span>Dönem</span><b>WS 27</b></div><div><span>Aşama</span><b>1/4</b></div></div>
+          </div>
+        </div>
+        <span class="hand tag">kaydırın, defter açılsın ↓</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- KAYDIRINCA AÇILAN DEFTER -->
+  <section class="opener" id="opener" aria-label="Dreemli yolculuk defteri">
+    <div class="ob-stage">
+      <div class="ob-book">
+        <div class="ob-page">
+          <div class="ob-screen">
+            <svg class="stk a" viewBox="0 0 60 60" aria-hidden="true"><path d="M30 4l7 17 18 1-14 11 5 18-16-10-16 10 5-18L5 22l18-1z" fill="#ffb43c" stroke="#fff" stroke-width="4" stroke-linejoin="round"/><circle cx="25" cy="30" r="3" fill="#111"/><circle cx="35" cy="30" r="3" fill="#111"/></svg>
+            <svg class="stk b" viewBox="0 0 60 60" aria-hidden="true"><rect x="6" y="10" width="48" height="40" rx="12" fill="#5b4bd6" stroke="#fff" stroke-width="4"/><circle cx="24" cy="30" r="4" fill="#fff"/><circle cx="38" cy="30" r="4" fill="#fff"/><circle cx="25" cy="31" r="2" fill="#111"/><circle cx="39" cy="31" r="2" fill="#111"/></svg>
+            <svg class="stk c" viewBox="0 0 60 60" aria-hidden="true"><g fill="#8fd14f" stroke="#fff" stroke-width="4"><circle cx="30" cy="16" r="11"/><circle cx="16" cy="32" r="11"/><circle cx="44" cy="32" r="11"/><circle cx="30" cy="44" r="11"/></g><circle cx="30" cy="30" r="10" fill="#8fd14f"/><circle cx="26" cy="29" r="2.5" fill="#111"/><circle cx="34" cy="29" r="2.5" fill="#111"/></svg>
+            <svg class="stk d" viewBox="0 0 60 60" aria-hidden="true"><path d="M30 52C8 38 4 22 14 14c7-5 13-1 16 5 3-6 9-10 16-5 10 8 6 24-16 38z" fill="#e5484d" stroke="#fff" stroke-width="4" stroke-linejoin="round"/><circle cx="24" cy="26" r="4" fill="#fff"/><circle cx="36" cy="26" r="4" fill="#fff"/><circle cx="25" cy="27" r="2" fill="#111"/><circle cx="37" cy="27" r="2" fill="#111"/></svg>
+            <p class="hi">Merhaba, Elif!</p>
+            <h2>Almanya<br>yolculuğuna<br>hoş geldin</h2>
+            <a class="go" href="#platform">BAŞLAMAK İÇİN DOKUN!</a>
+          </div>
+        </div>
+        <div class="ob-cover" aria-hidden="true">
+          <div class="face front">
+            <div class="label">
+              <div class="row"><span>Ad</span><b>Elif</b></div>
+              <div class="row"><span>Hedef</span><b>TU München</b></div>
+              <div class="split"><div><span>Dönem</span><b>WS 27</b></div><div><span>Aşama</span><b>1/4</b></div></div>
+            </div>
+          </div>
+          <div class="face back ob-left" style="inset:0;opacity:1;border-radius:3cqw 0 0 3cqw">
+            <div class="pocket">pasaport · transkript ·<br>dil belgesi buraya</div>
+            <span class="emb">Dreemli.</span>
+          </div>
+        </div>
+      </div>
+      <p class="hand ob-hint" aria-hidden="true">kaydırmaya devam ↓</p>
+    </div>
+  </section>
+
+  <!-- STICKY NOTES -->
+  <section class="stickies">
+    <div class="wrap">
+      <h2>Her şeyiiiiiii tek yerde.<br>Hiçbir son tarihi kaçırmadan.</h2>
+      <div class="notes">
+        <div class="sticky"><span>3.000+ program<small>200+ üniversite</small></span></div>
+        <div class="sticky"><span>kişiye özel yol haritası</span></div>
+        <div class="sticky"><span>belge &amp; tarih takibi ✓</span></div>
+        <div class="sticky"><span>Türkçe · Deutsch · English</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 1: çalışma masası -->
+  <section class="scene desk" id="platform">
+    <!-- masa üstü eşyaları -->
+    <svg class="decor hide-sm" style="right:3%;top:6%;width:150px" viewBox="0 0 150 150" aria-hidden="true">
+      <g stroke="#2b1a07" stroke-width="2.5" stroke-linejoin="round"><circle cx="70" cy="75" r="52" fill="#fdfbf9"/><circle cx="70" cy="75" r="38" fill="#6b3f1f"/><path d="M118 62c22 0 22 28 0 28" fill="none" stroke-width="9" stroke="#fdfbf9"/><path d="M118 62c22 0 22 28 0 28" fill="none"/></g>
+      <path d="M58 64c6-8 18-8 24 0" stroke="#a87650" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </svg>
+    <svg class="decor hide-sm" style="right:6%;bottom:6%;width:170px;transform:rotate(12deg)" viewBox="0 0 170 120" aria-hidden="true">
+      <rect x="4" y="4" width="120" height="110" rx="8" fill="#8b1f2b" stroke="#2b1a07" stroke-width="2.5"/>
+      <circle cx="64" cy="50" r="18" fill="none" stroke="#e8c36a" stroke-width="2.5"/><path d="M64 32v36M46 50h36" stroke="#e8c36a" stroke-width="2"/>
+      <text x="64" y="94" text-anchor="middle" font-size="18" fill="#e8c36a" font-weight="700">PASAPORT</text>
+      <rect x="110" y="20" width="56" height="56" fill="#fadb4b" transform="rotate(8 138 48)"/><text x="138" y="54" text-anchor="middle" font-size="16" fill="#2a2116" transform="rotate(8 138 48)">15 Tem!</text>
+    </svg>
+    <svg class="decor hide-sm" style="left:40%;bottom:-10px;width:260px" viewBox="0 0 260 60" aria-hidden="true">
+      <g stroke="#2b1a07" stroke-width="2" stroke-linejoin="round"><path d="M10 20h190l30 10-30 10H10z" fill="#ffcf2e"/><path d="M200 20l30 10-30 10z" fill="#f1d2a8"/><rect x="2" y="20" width="14" height="20" fill="#ef8a8a"/><path d="M20 46h200l20 6-20 6H20z" fill="#3b82f6"/></g>
+    </svg>
+    <div class="wrap scene-inner">
+      <div class="panel">
+        <h2>Yolculuğunuz<br><em>kendi masanızda</em></h2>
+        <ul class="feats" data-target="m1">
+          <li><button class="feat" id="p1-1" aria-current="true" data-t="Program seçimi tamam. Sırada gereksinimler var."><span>Kişisel kontrol listesi</span><i>I</i></button></li>
+          <li><button class="feat" id="p1-2" data-t="Transkript, diploma ve dil belgesi tek klasörde."><span>Belge takibi</span><i>II</i></button></li>
+          <li><button class="feat" id="p1-3" data-t="Kış dönemi için son başvuru: 15 Temmuz."><span>Son tarihler</span><i>III</i></button></li>
+          <li><button class="feat" id="p1-4" data-t="AI asistanına sorun: uni-assist mi, doğrudan başvuru mu?"><span>AI asistanı</span><i>IV</i></button></li>
+          <li><button class="feat" id="p1-5" data-t="1 aktif yolculuk ücretsiz. Daha fazlası Premium ile."><span>Ücretsiz ve Premium</span><i>V</i></button></li>
+        </ul>
+      </div>
+      <div class="device" aria-hidden="true">
+        <div class="screen">
+          <div class="top"><span>Yolculuğun</span><span>1 / 3</span></div>
+          <h3>Merhaba Elif!</h3>
+          <div class="check"><span class="tick">✓</span><s>Program seçimi</s></div>
+          <div class="check"><span class="tick"></span>Gereksinimler · YKS, NC</div>
+          <div class="check"><span class="tick"></span>Başvuru · uni-assist</div>
+          <div class="box" id="m1">Program seçimi tamam. Sırada gereksinimler var.</div>
+          <span class="hand">sıradaki: transkript yükle →</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 2: gökyüzü, İstanbul'dan Almanya'ya -->
+  <section class="scene sky right" id="adimlar">
+    <svg class="decor" style="left:0;right:0;bottom:0;width:100%;height:150px" viewBox="0 0 1200 150" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <g fill="#3a4f7a" opacity=".55">
+        <rect x="40" y="90" width="60" height="60"/><rect x="110" y="70" width="40" height="80"/>
+        <path d="M200 150V80h120v70h-14v-48h-14v48h-16v-48h-14v48h-16v-48h-14v48h-16v-48h-14v48z"/><rect x="196" y="66" width="128" height="16"/><path d="M240 66l20-18 20 18z"/>
+        <rect x="380" y="100" width="70" height="50"/><rect x="460" y="80" width="50" height="70"/>
+        <rect x="600" y="40" width="8" height="110"/><circle cx="604" cy="46" r="14"/><rect x="602" y="6" width="4" height="30"/>
+        <path d="M720 150V60l14-40 14 40v90zM770 150V60l14-40 14 40v90z"/><rect x="730" y="90" width="60" height="60"/>
+        <rect x="860" y="96" width="80" height="54"/><rect x="950" y="76" width="44" height="74"/><rect x="1010" y="104" width="70" height="46"/><rect x="1090" y="84" width="60" height="66"/>
+      </g>
+    </svg>
+    <svg class="decor" style="left:4%;top:12%;width:min(520px,60%)" viewBox="0 0 520 160" aria-hidden="true">
+      <path d="M10 140C120 120 220 70 330 70" fill="none" stroke="#fff" stroke-width="4" stroke-dasharray="10 12" stroke-linecap="round"/>
+      <g transform="translate(330 40) rotate(-8)" stroke="#2b1a07" stroke-width="2.5" stroke-linejoin="round">
+        <path d="M0 30h130c20 0 28 10 28 14s-8 10-28 10H20L0 30z" fill="#fdfbf9"/>
+        <path d="M60 30L90 0h16L92 30zM62 54l26 26h16L92 54z" fill="#ff6f1e"/>
+        <path d="M6 30L-4 6h14l16 24z" fill="#ff6f1e"/>
+        <circle cx="110" cy="40" r="3" fill="#2b1a07"/><circle cx="96" cy="40" r="3" fill="#2b1a07"/><circle cx="82" cy="40" r="3" fill="#2b1a07"/>
+      </g>
+      <text x="40" y="150" font-size="24" fill="#fff">İstanbul</text>
+    </svg>
+    <div class="wrap scene-inner">
+      <div class="panel">
+        <h2>Tek plan. <em>Dört aşama,</em> on dört adım</h2>
+        <ul class="feats" data-target="m2">
+          <li><button class="feat" id="p2-1" aria-current="true" data-sub="Hedefini belirle" data-t="Uygunluk kontrolü|Üniversiteleri keşfet|Bütçeni planla"><span>Planla</span><i>I</i></button></li>
+          <li><button class="feat" id="p2-2" data-sub="Başvuruya hazırlan" data-t="Gerekli belgeler|Dil yeterliliği"><span>Hazırlan</span><i>II</i></button></li>
+          <li><button class="feat" id="p2-3" data-sub="Planı harekete geçir" data-t="Başvuruları gönder|Kabul mektupları|Finansal kanıt|Sağlık sigortası|Öğrenci vizesi"><span>Başvur</span><i>III</i></button></li>
+          <li><button class="feat" id="p2-4" data-sub="Almanya'yı yuvan yap" data-t="Konaklama|Yolculuğu organize et|Adres kaydı|Üniversiteye kayıt"><span>Var</span><i>IV</i></button></li>
+        </ul>
+        <p class="more">İlk sorudan ilk derse, doğru sırayla ve son tarihleriyle.</p>
+      </div>
+      <div class="device" aria-hidden="true">
+        <div class="screen">
+          <div class="top"><span>Yol haritası</span><span id="m2n">Aşama I / IV</span></div>
+          <h3 id="m2h">Planla</h3>
+          <p class="hand" id="m2s" style="color:var(--orange)">Hedefini belirle</p>
+          <ul class="steps-list" id="m2"></ul>
+          <div class="stage-bar"><i style="width:25%" id="m2bar"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCENE 3: kampüs -->
+  <section class="scene campus" id="danisman">
+    <svg class="decor hide-sm" style="right:2%;top:40px;width:min(560px,50%)" viewBox="0 0 560 330" aria-hidden="true">
+      <g stroke="#2b1a07" stroke-width="2.5" stroke-linejoin="round">
+        <path d="M60 110L280 20l220 90z" fill="#e9d2b4"/>
+        <rect x="60" y="110" width="440" height="20" fill="#f3e4cf"/>
+        <rect x="70" y="130" width="420" height="170" fill="#fbf1e2"/>
+        <g fill="#f3e4cf"><rect x="95" y="140" width="22" height="160"/><rect x="165" y="140" width="22" height="160"/><rect x="235" y="140" width="22" height="160"/><rect x="303" y="140" width="22" height="160"/><rect x="373" y="140" width="22" height="160"/><rect x="443" y="140" width="22" height="160"/></g>
+        <path d="M262 300v-80a18 18 0 0 1 36 0v80z" fill="#a86e40"/>
+        <rect x="40" y="300" width="480" height="18" fill="#e9d2b4"/>
+        <circle cx="280" cy="76" r="18" fill="#fdfbf9"/><path d="M280 64v12l8 6" fill="none"/>
+      </g>
+      <text x="280" y="125" text-anchor="middle" font-size="16" fill="#2b1a07" font-weight="700" letter-spacing="3">UNIVERSITÄT</text>
+      <g stroke="#2b1a07" stroke-width="2.5"><circle cx="20" cy="250" r="34" fill="#6fae3f"/><rect x="16" y="280" width="8" height="40" fill="#8b5a2b"/><circle cx="540" cy="240" r="30" fill="#6fae3f"/><rect x="536" y="266" width="8" height="52" fill="#8b5a2b"/></g>
+    </svg>
+    <div class="wrap scene-inner">
+      <div class="panel">
+        <h2>Yanınızda bir <em>danışman</em>, <em>arkanızda</em> bir ekip</h2>
+        <ul class="feats" data-target="m3">
+          <li><button class="feat" id="p3-1" aria-current="true" data-t="Çalışma hedefleri, uygunluk ve gerçekçi bir kısa liste."><span>Program ve profil</span><i>I</i></button></li>
+          <li><button class="feat" id="p3-2" data-t="Belge kontrolü, çeviriler ve başvurular."><span>Başvuru ve dosyalar</span><i>II</i></button></li>
+          <li><button class="feat" id="p3-3" data-t="Gereklilikler, dosyalar ve mülakat hazırlığı."><span>Vize hazırlığı</span><i>III</i></button></li>
+          <li><button class="feat" id="p3-4" data-t="Dil, konaklama ve yerleşme desteği."><span>Almanca ve varış</span><i>IV</i></button></li>
+        </ul>
+        <p class="more">Tek bir hizmet ya da baştan sona destek. Abonelik yok. <a href="#">Danışmanlık randevusu alın</a></p>
+      </div>
+      <div class="device" aria-hidden="true" style="max-width:360px">
+        <div class="screen">
+          <div class="blob"></div>
+          <div class="bubble">Merhaba! Bugün nereden başlayalım?</div>
+          <div class="bubble me">Belgelerim eksiksiz mi, emin değilim.</div>
+          <div class="bubble" id="m3">Formu doldurun, hemen dönüş yapalım.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOODLES: pazar yeri -->
+  <section class="doodles" id="pazar">
+    <div class="wrap dgrid">
+      <a class="doodle" href="#"><svg viewBox="0 0 64 64" fill="none" stroke="#2b1a07" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8h24l10 10v38H16z"/><path d="M40 8v10h10M23 30h20M23 38h20M23 46h12"/></svg><span class="hand">yeminli diploma tercümesi</span><span class="offer">cazip teklif ✦</span></a>
+      <a class="doodle" href="#"><svg viewBox="0 0 64 64" fill="none" stroke="#2b1a07" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14h28v22H22l-8 7v-7h-4z"/><path d="M30 40h8l8 7v-7h8V20H44"/><path d="M17 22h14M17 28h9"/></svg><span class="hand">Almanca A1–B2 yoğun kurs</span><span class="offer">öğrenciye özel ✦</span></a>
+      <a class="doodle" href="#"><svg viewBox="0 0 64 64" fill="none" stroke="#2b1a07" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 38l48-18-6 8-30 14-6 10-2-9z"/><path d="M20 42l6-14"/></svg><span class="hand">havalimanı karşılama</span><span class="offer">cazip teklif ✦</span></a>
+      <a class="doodle" href="#"><svg viewBox="0 0 64 64" fill="none" stroke="#2b1a07" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="10" width="40" height="46" rx="4"/><circle cx="32" cy="28" r="8"/><path d="M22 46h20M26 52h12"/></svg><span class="hand">öğrenci vizesi desteği</span><span class="offer">teklif al →</span></a>
+      <div class="dcenter">
+        <span class="hand">partnerlerimizden ↓</span>
+        <h2>Yolculuğa özel<br>cazip teklifler!</h2>
+        <p>Çeviriden konaklamaya, ihtiyacınız olan hizmet için size uygun teklifi birlikte bulalım.</p>
+        <a href="#">Tüm teklifleri gör</a>
+      </div>
+      <a class="doodle" href="#"><svg viewBox="0 0 64 64" fill="none" stroke="#2b1a07" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30L32 12l22 18"/><path d="M16 26v28h32V26"/><path d="M28 54V40h8v14"/></svg><span class="hand">öğrenci konutu arama</span><span class="offer">teklif al →</span></a>
+      <a class="doodle" href="#"><svg viewBox="0 0 64 64" fill="none" stroke="#2b1a07" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 52V22l18-10 18 10v30"/><path d="M8 52h48M22 30v16M32 30v16M42 30v16"/></svg><span class="hand">tam başvuru paketi, 5 üniversite</span><span class="offer">paket avantajı ✦</span></a>
+      <a class="doodle" href="#"><svg viewBox="0 0 64 64" fill="none" stroke="#2b1a07" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 46l8-30h8l-8 30zM30 46l4-30h8l-4 30z"/><path d="M44 46l6-26 6 2-6 24"/><path d="M8 50h50"/></svg><span class="hand">üniversite ön listesi</span><span class="offer">cazip teklif ✦</span></a>
+      <a class="doodle" href="#"><svg viewBox="0 0 64 64" fill="none" stroke="#2b1a07" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8l6 14 15 1-12 9 4 15-13-8-13 8 4-15-12-9 15-1z"/></svg><span class="hand">TestDaF hazırlık</span><span class="offer">öğrenciye özel ✦</span></a>
+    </div>
+  </section>
+
+  <!-- VİZE: çizgili kâğıt -->
+  <section class="secure" id="vize">
+    <div class="wrap">
+      <h2>Vize, adım adım</h2>
+      <p class="lead">Öğrenci vizesi dosyanızda olması gerekenler.</p>
+      <div class="lined">
+        <ul>
+          <li>kabul mektubu</li>
+          <li>bloke hesap <small>11.904 €</small></li>
+          <li>sağlık sigortası</li>
+          <li>apostilli çeviriler</li>
+          <li>mali belgeler</li>
+          <li>iDATA randevusu</li>
+        </ul>
+      </div>
+      <p class="src">Tutarlar ve gereklilikler son kontrol: Ekim 2026 · Resmî kaynak: Federal Dışişleri Bakanlığı (auswaertiges-amt.de)</p>
+    </div>
+    <div class="sticker-lbl sl1" aria-hidden="true"><span class="st" style="background:#3d4fd6"></span><span class="hand">öğrenci vizesi</span></div>
+    <div class="sticker-lbl sl2" aria-hidden="true"><span class="st" style="background:#fadb4b;border-radius:50%"></span><span class="hand">iş arama vizesi</span></div>
+    <div class="sticker-lbl sl3" aria-hidden="true"><span class="st" style="background:#ffb43c;clip-path:polygon(50% 0,62% 35%,100% 38%,70% 60%,80% 100%,50% 76%,20% 100%,30% 60%,0 38%,38% 35%)"></span><span class="hand">dil kursu vizesi</span></div>
+    <div class="sticker-lbl sl4" aria-hidden="true"><span class="st" style="background:#e5484d;border-radius:50% 50% 12px 12px"></span><span class="hand">mülakat provası</span></div>
+  </section>
+
+  <!-- REHBERLER: defterler -->
+  <section class="guides" id="rehber">
+    <div class="wrap">
+      <p class="hand">aylar kazandıran</p>
+      <h2>Rehberlerimiz.<br>Danışmanlarımızın kaleminden.</h2>
+      <div class="shelf">
+        <article class="gbook">
+          <div class="glabel"><div>Rehber<b>APS Sertifikası</b></div><div><span>PDF · 31.08.2026</span><span class="p">cazip fiyat ✦</span></div></div>
+          <p>Akademische Prüfstelle'nin neye baktığı ve mülakat ya da TestAS randevusu.</p>
+          <a href="#" aria-label="APS Sertifikası rehberi"></a>
+        </article>
+        <article class="gbook">
+          <div class="glabel"><div>Rehber<b>Bloke Hesap</b></div><div><span>PDF · 31.08.2026</span><span class="p">cazip fiyat ✦</span></div></div>
+          <p>Fintiba ile Expatrio karşılaştırması ve başvuruların en sık gecikme nedenleri.</p>
+          <a href="#" aria-label="Bloke Hesap rehberi"></a>
+        </article>
+        <article class="gbook">
+          <div class="glabel"><div>Rehber<b>Uni-Assist</b></div><div><span>PDF · 31.08.2026</span><span class="p">cazip fiyat ✦</span></div></div>
+          <p>VPD nasıl işliyor, belge biçiminden kaynaklanan retlerden nasıl kaçınılır.</p>
+          <a href="#" aria-label="Uni-Assist rehberi"></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- YOLCULUK ÇİZGİ ROMANI -->
+  <section class="story" id="hikaye">
+    <div class="wrap">
+      <div class="story-head">
+        <h2>Bir Dreemli <span class="real"><span class="hand">kare kare</span>yolculuğu</span></h2>
+        <p>İstanbul'daki masadan Almanya'daki ilk derse. Elif'in hikâyesi örnek bir yolculuktur.</p>
+      </div>
+      <ol class="strip">
+        <!-- 1 keşif -->
+        <li class="frame">
+          <svg viewBox="0 0 300 210" role="img" aria-label="Elif gece masasında dizüstü bilgisayarda program arıyor">
+            <rect width="300" height="210" fill="#fbefe2"/>
+            <g stroke="#2b1a07" stroke-width="2" stroke-linejoin="round">
+              <rect x="18" y="22" width="70" height="62" fill="#2b3a67"/><path d="M53 22v62M18 53h70" fill="none" stroke="#fbefe2" stroke-width="3"/>
+              <rect x="210" y="40" width="70" height="8" fill="#a86e40"/><rect x="214" y="22" width="10" height="18" fill="#3b82f6"/><rect x="226" y="18" width="10" height="22" fill="#ff6f1e"/><rect x="238" y="24" width="10" height="16" fill="#22c55e"/>
+            </g>
+            <circle cx="70" cy="40" r="9" fill="#fadb4b"/>
+            <use href="#elif" x="84" y="74" width="62" height="124"/>
+            <g stroke="#2b1a07" stroke-width="2" stroke-linejoin="round">
+              <path d="M150 112h98l-6 38h-86z" fill="#d9dde8"/><rect x="158" y="118" width="82" height="26" fill="#fdfbf9"/>
+              <rect x="40" y="150" width="250" height="12" fill="#a86e40"/><rect x="52" y="162" width="10" height="48" fill="#8b5a2b"/><rect x="268" y="162" width="10" height="48" fill="#8b5a2b"/>
+              <path d="M146 150h112" fill="none"/>
+            </g>
+            <text x="199" y="136" text-anchor="middle" font-size="13" fill="#2b1a07">3.000+ program</text>
+            <g class="sb" data-cx="205" data-y="14" data-tx="128"><text font-size="19" fill="#2b1a07">TU München mü, RWTH mi?</text></g>
+          </svg>
+          <div class="cap"><i>I.</i><div><b>Planla</b><span>Uygunluk kontrol edilir, üniversiteler keşfedilir, bütçe planlanır.</span></div></div>
+        </li>
+        <!-- 2 belgeler -->
+        <li class="frame">
+          <svg viewBox="0 0 300 210" role="img" aria-label="Danışman ve Elif belge yığınını kontrol ediyor">
+            <rect width="300" height="210" fill="#eef6ea"/>
+            <use href="#elif" x="22" y="70" width="64" height="128"/>
+            <use href="#mentor" x="214" y="70" width="64" height="128"/>
+            <g stroke="#2b1a07" stroke-width="2" stroke-linejoin="round">
+              <rect x="70" y="150" width="160" height="12" fill="#a86e40"/><rect x="80" y="162" width="10" height="48" fill="#8b5a2b"/><rect x="210" y="162" width="10" height="48" fill="#8b5a2b"/>
+              <rect x="104" y="126" width="56" height="24" fill="#fff"/><rect x="108" y="118" width="56" height="10" fill="#fff"/><rect x="100" y="110" width="56" height="10" fill="#fff"/>
+              <rect x="226" y="122" width="28" height="36" fill="#fff" transform="rotate(-8 240 140)"/>
+            </g>
+            <g transform="rotate(-12 196 132)"><rect x="166" y="118" width="62" height="22" rx="4" fill="none" stroke="#e5484d" stroke-width="2.5"/><text x="197" y="135" text-anchor="middle" font-size="15" fill="#e5484d" font-weight="700" textLength="52" lengthAdjust="spacingAndGlyphs">APOSTİL</text></g>
+            <path d="M232 132l5 5 9-11" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"/>
+            <g class="sb" data-cx="170" data-y="14" data-tx="246"><text font-size="19" fill="#2b1a07">Transkript tamam, sırada çeviri!</text></g>
+          </svg>
+          <div class="cap"><i>II.</i><div><b>Hazırlan</b><span>Gerekli belgeler ve dil yeterliliği hazırlanır.</span></div></div>
+        </li>
+        <!-- 3 vize -->
+        <li class="frame">
+          <svg viewBox="0 0 300 210" role="img" aria-label="Elif elinde dosyayla konsolosluk binasının önünde">
+            <rect width="300" height="210" fill="#e8f0fb"/>
+            <g stroke="#2b1a07" stroke-width="2" stroke-linejoin="round">
+              <rect x="120" y="60" width="170" height="130" fill="#f3e4cf"/>
+              <path d="M112 60l93-34 93 34z" fill="#e9d2b4"/>
+              <rect x="140" y="80" width="22" height="30" fill="#bcd3ee"/><rect x="194" y="80" width="22" height="30" fill="#bcd3ee"/><rect x="248" y="80" width="22" height="30" fill="#bcd3ee"/>
+              <path d="M188 190v-46a17 17 0 0 1 34 0v46z" fill="#a86e40"/>
+              <rect x="0" y="190" width="300" height="20" fill="#cfc6bb"/>
+              <path d="M104 190V20" fill="none"/>
+              <rect x="104" y="20" width="40" height="8" fill="#1d1d1d"/><rect x="104" y="28" width="40" height="8" fill="#dd2b2b"/><rect x="104" y="36" width="40" height="8" fill="#ffce00"/>
+            </g>
+            <text x="205" y="128" text-anchor="middle" font-size="15" fill="#2b1a07" font-weight="700">Generalkonsulat</text>
+            <use href="#elif" x="36" y="76" width="62" height="124"/>
+            <rect x="80" y="140" width="24" height="30" rx="2" fill="#3b82f6" stroke="#2b1a07" stroke-width="2"/>
+            <g class="sb" data-cx="90" data-y="10" data-tx="66" data-max="200"><text font-size="18" fill="#2b1a07">Bloke hesap ✓ sigorta ✓</text></g>
+          </svg>
+          <div class="cap"><i>III.</i><div><b>Başvur</b><span>Başvurular, kabul, finansal kanıt, sigorta ve öğrenci vizesi.</span></div></div>
+        </li>
+        <!-- 4 var: kampüs -->
+        <li class="frame">
+          <svg viewBox="0 0 300 210" role="img" aria-label="Elif öğrenci kartıyla üniversite binasının önünde sevinçle el sallıyor">
+            <rect width="300" height="210" fill="#f3e9ff"/>
+            <g stroke="#2b1a07" stroke-width="2" stroke-linejoin="round">
+              <path d="M130 70l80-36 80 36z" fill="#e9d2b4"/><rect x="134" y="70" width="152" height="120" fill="#fbf1e2"/>
+              <g fill="#f3e4cf"><rect x="146" y="80" width="14" height="110"/><rect x="178" y="80" width="14" height="110"/><rect x="228" y="80" width="14" height="110"/><rect x="260" y="80" width="14" height="110"/></g>
+              <path d="M198 190v-40a12 12 0 0 1 24 0v40z" fill="#a86e40"/>
+              <rect x="0" y="190" width="300" height="20" fill="#9ccc6a"/>
+              <circle cx="22" cy="150" r="22" fill="#6fae3f"/><rect x="18" y="168" width="8" height="22" fill="#8b5a2b"/>
+            </g>
+            <use href="#elif" x="50" y="70" width="62" height="124"/>
+            <g stroke="#2b1a07" stroke-width="2" stroke-linejoin="round"><rect x="98" y="104" width="34" height="22" rx="3" fill="#fff" transform="rotate(-14 115 115)"/></g>
+            <text x="115" y="119" text-anchor="middle" font-size="11" fill="#3b82f6" font-weight="700" transform="rotate(-14 115 115)">STUDENT</text>
+            <g fill="#ff6f1e"><rect x="40" y="40" width="6" height="10" transform="rotate(20 43 45)"/><rect x="120" y="30" width="6" height="10" fill="#3b82f6" transform="rotate(-30 123 35)"/><circle cx="96" cy="58" r="3.5" fill="#ff66cf"/><circle cx="30" cy="70" r="3" fill="#22c55e"/><rect x="104" y="80" width="6" height="10" fill="#fadb4b" transform="rotate(40 107 85)"/></g>
+            <g class="sb" data-cx="70" data-y="8" data-tx="80" data-max="125"><text font-size="20" fill="#2b1a07">Ich bin da!</text></g>
+          </svg>
+          <div class="cap"><i>IV.</i><div><b>Var</b><span>Konaklama, yolculuk, adres kaydı ve üniversiteye kayıt.</span></div></div>
+        </li>
+      </ol>
+
+      <div class="quotes">
+        <figure class="quote"><blockquote>“Dreemli sayesinde Almanya'nın en iyi üniversitelerinden bazılarından kabul aldım. Tek başıma olsaydım kaybolurdum.”</blockquote><figcaption><b>Mert A.</b>Danışmanlık paketi · Üniversite seçimi ve başvuru</figcaption></figure>
+        <figure class="quote"><blockquote>“Başvuru süreci bir dağ gibi hissettirdi. Danışmanımla her belgeyi hazırladım ve hayalimdeki üniversiteye girdim.”</blockquote><figcaption><b>Lale F.</b>Danışmanlık paketi · Belge hazırlığı ve başvuru</figcaption></figure>
+        <figure class="quote"><blockquote>“Kabul şartları konusunda kafam karışıktı. Adım adım yönlendirildim ve kabul mektubumu aldım.”</blockquote><figcaption><b>Hasan U.</b>Danışmanlık paketi · Kabul koşulları ve belgeler</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- SSS -->
+  <section class="faq">
+    <div class="wrap">
+      <h2>Aklınıza takılanlar</h2>
+      <details><summary>Ücretsiz plan neleri kapsıyor?</summary><p>1 aktif yolculuk, kişisel kontrol listesi, belge ve son tarih takibi ve AI asistanı. Kart bilgisi gerekmez. Birden fazla yolculuk ve program karşılaştırma Premium ile açılır.</p></details>
+      <details><summary>Başvuru son tarihleri ne zaman?</summary><p>Çoğu üniversitede kış dönemi için 15 Temmuz, yaz dönemi için 15 Ocak. İstisnalar ve uni-assist, VPD süreleri blogda ayrıntılı anlatılıyor.</p></details>
+      <details><summary>Bloke hesapta ne kadar para olmalı?</summary><p>Öğrenci vizesi için 11.904 €. Tutar son olarak Ekim 2026'da Federal Dışişleri Bakanlığı kaynağından kontrol edildi.</p></details>
+      <details><summary>Danışmanlık almak zorunda mıyım?</summary><p>Hayır. Platformla kendi başınıza ilerleyebilirsiniz. Belge kontrolü, çeviri ya da tam başvuru paketi gibi destekleri ihtiyaç duyduğunuz noktada tek tek alabilirsiniz.</p></details>
+      <details><summary>Hangi dillerde destek veriyorsunuz?</summary><p>Türkçe, Almanca ve İngilizce.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <h2>Almanya'ya giden yolu birlikte yazalım</h2>
+        <form class="news" id="news-form">
+          <input id="news-email" type="email" required placeholder="E-posta adresiniz" aria-label="E-posta adresi">
+          <button class="dibs" type="submit"><span>Bültene kaydol</span></button>
+        </form>
+        <p class="news-ok" id="news-ok" hidden>Kaydınız alındı. Ayda bir, spam yok.</p>
+      </div>
+      <ul><li><a href="#">Hakkımızda</a></li><li><a href="#">Blog</a></li><li><a href="#">Kariyer</a></li><li><a href="#">İletişim</a></li></ul>
+      <ul><li><a href="#">Instagram</a></li><li><span>contact@dreemli.com</span></li><li><span>+49 163 9145317</span></li></ul>
+    </div>
+    <div class="giant" aria-hidden="true">dreemli</div>
+    <div class="foot-bottom"><span>© 2026 Dreemli · Gizlilik · Künye · Çerezler</span><span>Taslak · Superr stil yönü</span></div>
+  </div>
+</footer>
+
+<script>
+  // ---------- Çeviriler: Türkçe metin → [English, Deutsch] ----------
+  const I18N={
+    "Giriş yap":["Log in","Anmelden"],
+    "Ücretsiz başla":["Start free","Kostenlos starten"],
+    "Sevgili öğrenciler ve aileler,":["Dear students and parents,","Liebe Studierende und Eltern,"],
+    "almanya'ya":["your road","dein weg"],
+    "giden yol":["to germany","nach deutschland"],
+    "Program seçiminden yerleşmeye kadar her adım,":["Every step, from choosing a program to settling in,","Jeder Schritt, von der Programmwahl bis zum Ankommen,"],
+    "tek yerde.":["in one place.","an einem Ort."],
+    "gerçekten!":["really!","wirklich!"],
+    "Yolculuğumu başlat":["Start my journey","Meine Reise starten"],
+    "Ücretsiz plan: 1 aktif yolculuk, kart bilgisi gerekmez":["Free plan: 1 active journey, no card needed","Kostenloser Plan: 1 aktive Reise, keine Karte nötig"],
+    "Ad":["Name","Name"],
+    "Hedef":["Goal","Ziel"],
+    "Dönem":["Term","Semester"],
+    "Aşama":["Stage","Phase"],
+    "kaydırın, defter açılsın ↓":["scroll to open the notebook ↓","scrollen, das Heft öffnet sich ↓"],
+    "Merhaba, Elif!":["Hello, Elif!","Hallo, Elif!"],
+    "Almanya":["Welcome","Willkommen"],
+    "yolculuğuna":["to your Germany","zu deiner"],
+    "hoş geldin":["journey","Deutschland-Reise"],
+    "BAŞLAMAK İÇİN DOKUN!":["TAP TO START!","ZUM STARTEN TIPPEN!"],
+    "pasaport · transkript ·":["passport · transcript ·","Pass · Zeugnisse ·"],
+    "dil belgesi buraya":["language certificate here","Sprachnachweis hierhin"],
+    "kaydırmaya devam ↓":["keep scrolling ↓","weiter scrollen ↓"],
+    "Her şeyiiiiiii tek yerde.":["Everyyyyything in one place.","Alleeeees an einem Ort."],
+    "Hiçbir son tarihi kaçırmadan.":["Without missing a single deadline.","Ohne eine einzige Frist zu verpassen."],
+    "3.000+ program":["3,000+ programs","3.000+ Studiengänge"],
+    "200+ üniversite":["200+ universities","200+ Hochschulen"],
+    "kişiye özel yol haritası":["your personal roadmap","dein persönlicher Fahrplan"],
+    "belge & tarih takibi ✓":["document & deadline tracking ✓","Dokumente & Fristen im Blick ✓"],
+    "PASAPORT":["PASSPORT","REISEPASS"],
+    "15 Tem!":["Jul 15!","15. Juli!"],
+    "Yolculuğunuz":["Your journey","Ihre Reise"],
+    "kendi masanızda":["at your own desk","am eigenen Schreibtisch"],
+    "Kişisel kontrol listesi":["Personal checklist","Persönliche Checkliste"],
+    "Belge takibi":["Document tracking","Dokumenten-Tracking"],
+    "Son tarihler":["Deadlines","Fristen"],
+    "AI asistanı":["AI assistant","KI-Assistent"],
+    "Ücretsiz ve Premium":["Free and Premium","Kostenlos und Premium"],
+    "Yolculuğun":["Your journey","Deine Reise"],
+    "Merhaba Elif!":["Hi Elif!","Hallo Elif!"],
+    "Program seçimi":["Program choice","Studiengangswahl"],
+    "Gereksinimler · YKS, NC":["Requirements · YKS, NC","Voraussetzungen · YKS, NC"],
+    "Başvuru · uni-assist":["Application · uni-assist","Bewerbung · uni-assist"],
+    "sıradaki: transkript yükle →":["next: upload transcript →","als Nächstes: Zeugnis hochladen →"],
+    "Tek plan.":["One plan.","Ein Plan."],
+    "Dört aşama,":["Four stages,","Vier Phasen,"],
+    "on dört adım":["fourteen steps","vierzehn Schritte"],
+    "Planla":["Plan","Planen"],
+    "Hazırlan":["Prepare","Vorbereiten"],
+    "Başvur":["Apply","Bewerben"],
+    "Var":["Arrive","Ankommen"],
+    "İlk sorudan ilk derse, doğru sırayla ve son tarihleriyle.":["From the first question to the first lecture, in the right order and with deadlines.","Von der ersten Frage bis zur ersten Vorlesung, in der richtigen Reihenfolge und mit Fristen."],
+    "Yol haritası":["Roadmap","Fahrplan"],
+    "Yanınızda bir":["An","Ein"],
+    "danışman":["advisor","Berater"],
+    ",":[" by your side,"," an Ihrer Seite,"],
+    "arkanızda":["a team","ein Team"],
+    "bir ekip":["behind you","hinter Ihnen"],
+    "Program ve profil":["Programme & profile","Studiengang & Profil"],
+    "Başvuru ve dosyalar":["Applications & files","Bewerbungen & Unterlagen"],
+    "Vize hazırlığı":["Visa preparation","Visumvorbereitung"],
+    "Almanca ve varış":["German & arrival","Deutsch & Ankunft"],
+    "Tek bir hizmet ya da baştan sona destek. Abonelik yok.":["One service or end-to-end support. No subscriptions.","Ein einzelner Service oder Begleitung von A bis Z. Kein Abo."],
+    "Danışmanlık randevusu alın":["Book a consultation","Beratungstermin buchen"],
+    "Merhaba! Bugün nereden başlayalım?":["Hi! Where shall we start today?","Hallo! Womit fangen wir heute an?"],
+    "Belgelerim eksiksiz mi, emin değilim.":["I'm not sure my documents are complete.","Ich bin nicht sicher, ob meine Unterlagen vollständig sind."],
+    "yeminli diploma tercümesi":["certified diploma translation","beglaubigte Zeugnisübersetzung"],
+    "cazip teklif ✦":["great offer ✦","attraktives Angebot ✦"],
+    "Almanca A1–B2 yoğun kurs":["German A1–B2 intensive course","Deutsch A1–B2 Intensivkurs"],
+    "öğrenciye özel ✦":["student special ✦","für Studierende ✦"],
+    "havalimanı karşılama":["airport pick-up","Abholung am Flughafen"],
+    "öğrenci vizesi desteği":["student visa support","Hilfe beim Studentenvisum"],
+    "teklif al →":["get an offer →","Angebot holen →"],
+    "partnerlerimizden ↓":["from our partners ↓","von unseren Partnern ↓"],
+    "Yolculuğa özel":["Great offers","Attraktive Angebote"],
+    "cazip teklifler!":["for your journey!","für deine Reise!"],
+    "Çeviriden konaklamaya, ihtiyacınız olan hizmet için size uygun teklifi birlikte bulalım.":["From translations to housing, let's find the right offer for the service you need.","Von Übersetzung bis Wohnung: Wir finden gemeinsam das passende Angebot für Sie."],
+    "Tüm teklifleri gör":["See all offers","Alle Angebote ansehen"],
+    "öğrenci konutu arama":["student housing search","Suche nach Studentenwohnung"],
+    "tam başvuru paketi, 5 üniversite":["full application package, 5 universities","Komplettpaket Bewerbung, 5 Hochschulen"],
+    "paket avantajı ✦":["package benefit ✦","Paketvorteil ✦"],
+    "üniversite ön listesi":["university shortlist","Hochschul-Shortlist"],
+    "TestDaF hazırlık":["TestDaF prep","TestDaF-Vorbereitung"],
+    "Vize, adım adım":["Visa, step by step","Visum, Schritt für Schritt"],
+    "Öğrenci vizesi dosyanızda olması gerekenler.":["What your student visa file needs.","Was in Ihre Visumsunterlagen gehört."],
+    "kabul mektubu":["admission letter","Zulassungsbescheid"],
+    "bloke hesap":["blocked account","Sperrkonto"],
+    "sağlık sigortası":["health insurance","Krankenversicherung"],
+    "apostilli çeviriler":["apostilled translations","Übersetzungen mit Apostille"],
+    "mali belgeler":["financial documents","Finanznachweise"],
+    "iDATA randevusu":["iDATA appointment","iDATA-Termin"],
+    "Tutarlar ve gereklilikler son kontrol: Ekim 2026 · Resmî kaynak: Federal Dışişleri Bakanlığı (auswaertiges-amt.de)":["Amounts and requirements last checked: October 2026 · Official source: German Federal Foreign Office (auswaertiges-amt.de)","Beträge und Anforderungen zuletzt geprüft: Oktober 2026 · Offizielle Quelle: Auswärtiges Amt (auswaertiges-amt.de)"],
+    "öğrenci vizesi":["student visa","Studentenvisum"],
+    "iş arama vizesi":["job-seeker visa","Visum zur Arbeitssuche"],
+    "dil kursu vizesi":["language course visa","Sprachkursvisum"],
+    "mülakat provası":["interview practice","Interview-Training"],
+    "aylar kazandıran":["saves you months","spart Monate"],
+    "Rehberlerimiz.":["Our guides.","Unsere Leitfäden."],
+    "Danışmanlarımızın kaleminden.":["Written by our advisors.","Aus der Feder unserer Berater."],
+    "Rehber":["Guide","Leitfaden"],
+    "APS Sertifikası":["APS certificate","APS-Zertifikat"],
+    "cazip fiyat ✦":["great price ✦","attraktiver Preis ✦"],
+    "Akademische Prüfstelle'nin neye baktığı ve mülakat ya da TestAS randevusu.":["What the Akademische Prüfstelle checks, and booking the interview or TestAS.","Worauf die Akademische Prüfstelle achtet und wie Sie Interview oder TestAS buchen."],
+    "Bloke Hesap":["Blocked account","Sperrkonto"],
+    "Fintiba ile Expatrio karşılaştırması ve başvuruların en sık gecikme nedenleri.":["Fintiba vs. Expatrio, and the most common reasons applications get delayed.","Fintiba und Expatrio im Vergleich und die häufigsten Gründe für Verzögerungen."],
+    "VPD nasıl işliyor, belge biçiminden kaynaklanan retlerden nasıl kaçınılır.":["How the VPD works and how to avoid rejections caused by document format.","Wie die VPD funktioniert und wie Sie Absagen wegen Formfehlern vermeiden."],
+    "Bir Dreemli":["A Dreemli","Eine"],
+    "kare kare":["frame by frame","Bild für Bild"],
+    "yolculuğu":["journey","Dreemli-Reise"],
+    "İstanbul'daki masadan Almanya'daki ilk derse. Elif'in hikâyesi örnek bir yolculuktur.":["From a desk in Istanbul to the first lecture in Germany. Elif's story is an example journey.","Vom Schreibtisch in Istanbul bis zur ersten Vorlesung in Deutschland. Elifs Geschichte ist eine Beispielreise."],
+    "TU München mü, RWTH mi?":["TU Munich or RWTH?","TU München oder RWTH?"],
+    "Uygunluk kontrol edilir, üniversiteler keşfedilir, bütçe planlanır.":["Check eligibility, explore universities, plan the budget.","Zugangsvoraussetzungen prüfen, Hochschulen entdecken, Budget planen."],
+    "APOSTİL":["APOSTILLE","APOSTILLE"],
+    "Transkript tamam, sırada çeviri!":["Transcript done, translation next!","Zeugnis fertig, jetzt die Übersetzung!"],
+    "Gerekli belgeler ve dil yeterliliği hazırlanır.":["Required documents and language proficiency.","Erforderliche Unterlagen und Sprachnachweis."],
+    "Bloke hesap ✓ sigorta ✓":["Blocked account ✓ insurance ✓","Sperrkonto ✓ Versicherung ✓"],
+    "Başvurular, kabul, finansal kanıt, sigorta ve öğrenci vizesi.":["Applications, admission, financial proof, insurance and student visa.","Bewerbungen, Zulassung, Finanznachweis, Versicherung und Studentenvisum."],
+    "Konaklama, yolculuk, adres kaydı ve üniversiteye kayıt.":["Housing, the trip, local registration and enrolment.","Wohnung, Anreise, Anmeldung und Immatrikulation."],
+    "“Dreemli sayesinde Almanya'nın en iyi üniversitelerinden bazılarından kabul aldım. Tek başıma olsaydım kaybolurdum.”":["“Thanks to Dreemli I got offers from some of Germany's best universities. On my own I would have been lost.”","„Dank Dreemli habe ich Zusagen von einigen der besten Hochschulen Deutschlands bekommen. Allein wäre ich verloren gewesen.“"],
+    "Danışmanlık paketi · Üniversite seçimi ve başvuru":["Consulting package · University choice and application","Beratungspaket · Hochschulwahl und Bewerbung"],
+    "“Başvuru süreci bir dağ gibi hissettirdi. Danışmanımla her belgeyi hazırladım ve hayalimdeki üniversiteye girdim.”":["“The application felt like a mountain. With my advisor I prepared every document and got into my dream university.”","„Die Bewerbung fühlte sich wie ein Berg an. Mit meinem Berater habe ich jedes Dokument vorbereitet und bin an meiner Traumuni angenommen worden.“"],
+    "Danışmanlık paketi · Belge hazırlığı ve başvuru":["Consulting package · Document preparation and application","Beratungspaket · Unterlagen und Bewerbung"],
+    "“Kabul şartları konusunda kafam karışıktı. Adım adım yönlendirildim ve kabul mektubumu aldım.”":["“I was confused about admission requirements. I was guided step by step and got my admission letter.”","„Die Zulassungsvoraussetzungen haben mich verwirrt. Ich wurde Schritt für Schritt begleitet und habe meine Zulassung bekommen.“"],
+    "Danışmanlık paketi · Kabul koşulları ve belgeler":["Consulting package · Admission requirements and documents","Beratungspaket · Zulassung und Unterlagen"],
+    "Aklınıza takılanlar":["Questions you might have","Häufige Fragen"],
+    "Ücretsiz plan neleri kapsıyor?":["What does the free plan include?","Was ist im kostenlosen Plan enthalten?"],
+    "1 aktif yolculuk, kişisel kontrol listesi, belge ve son tarih takibi ve AI asistanı. Kart bilgisi gerekmez. Birden fazla yolculuk ve program karşılaştırma Premium ile açılır.":["1 active journey, a personal checklist, document and deadline tracking, and the AI assistant. No card needed. Multiple journeys and program comparison come with Premium.","1 aktive Reise, persönliche Checkliste, Dokumenten- und Fristen-Tracking sowie der KI-Assistent. Keine Karte nötig. Mehrere Reisen und Studiengangsvergleich gibt es mit Premium."],
+    "Başvuru son tarihleri ne zaman?":["When are the application deadlines?","Wann sind die Bewerbungsfristen?"],
+    "Çoğu üniversitede kış dönemi için 15 Temmuz, yaz dönemi için 15 Ocak. İstisnalar ve uni-assist, VPD süreleri blogda ayrıntılı anlatılıyor.":["At most universities, 15 July for the winter semester and 15 January for the summer semester. Exceptions and uni-assist/VPD timing are covered on the blog.","An den meisten Hochschulen der 15. Juli fürs Wintersemester und der 15. Januar fürs Sommersemester. Ausnahmen sowie uni-assist- und VPD-Zeiten stehen im Blog."],
+    "Bloke hesapta ne kadar para olmalı?":["How much must be in the blocked account?","Wie viel muss auf dem Sperrkonto sein?"],
+    "Öğrenci vizesi için 11.904 €. Tutar son olarak Ekim 2026'da Federal Dışişleri Bakanlığı kaynağından kontrol edildi.":["€11,904 for the student visa. Last checked in October 2026 against the German Federal Foreign Office.","11.904 € für das Studentenvisum. Zuletzt im Oktober 2026 beim Auswärtigen Amt geprüft."],
+    "Danışmanlık almak zorunda mıyım?":["Do I have to book consulting?","Muss ich eine Beratung buchen?"],
+    "Hayır. Platformla kendi başınıza ilerleyebilirsiniz. Belge kontrolü, çeviri ya da tam başvuru paketi gibi destekleri ihtiyaç duyduğunuz noktada tek tek alabilirsiniz.":["No. You can move forward on your own with the platform, and add help such as a document check, translation or a full application package only where you need it.","Nein. Sie können mit der Plattform selbst vorankommen und Hilfe wie Dokumentenprüfung, Übersetzung oder ein Komplettpaket nur dort dazubuchen, wo Sie sie brauchen."],
+    "Hangi dillerde destek veriyorsunuz?":["Which languages do you support?","In welchen Sprachen beraten Sie?"],
+    "Türkçe, Almanca ve İngilizce.":["Turkish, German and English.","Türkisch, Deutsch und Englisch."],
+    "Almanya'ya giden yolu birlikte yazalım":["Let's write your road to Germany together","Lass uns deinen Weg nach Deutschland gemeinsam schreiben"],
+    "Bültene kaydol":["Join the newsletter","Newsletter abonnieren"],
+    "Kaydınız alındı. Ayda bir, spam yok.":["You're signed up. Once a month, no spam.","Angemeldet. Einmal im Monat, kein Spam."],
+    "Hakkımızda":["About us","Über uns"],
+    "Kariyer":["Careers","Karriere"],
+    "İletişim":["Contact","Kontakt"],
+    "© 2026 Dreemli · Gizlilik · Künye · Çerezler":["© 2026 Dreemli · Privacy · Imprint · Cookies","© 2026 Dreemli · Datenschutz · Impressum · Cookies"],
+    "Taslak · Superr stil yönü":["Draft · Superr style direction","Entwurf · Superr-Stilrichtung"],
+    // panel/cihaz metinleri (data-t, data-sub, placeholder)
+    "Program seçimi tamam. Sırada gereksinimler var.":["Program choice done. Requirements are next.","Studiengang gewählt. Als Nächstes die Voraussetzungen."],
+    "Transkript, diploma ve dil belgesi tek klasörde.":["Transcript, diploma and language certificate in one folder.","Zeugnis, Diplom und Sprachnachweis in einem Ordner."],
+    "Kış dönemi için son başvuru: 15 Temmuz.":["Winter semester deadline: 15 July.","Frist fürs Wintersemester: 15. Juli."],
+    "AI asistanına sorun: uni-assist mi, doğrudan başvuru mu?":["Ask the AI assistant: uni-assist or direct application?","Frag den KI-Assistenten: uni-assist oder Direktbewerbung?"],
+    "1 aktif yolculuk ücretsiz. Daha fazlası Premium ile.":["1 active journey free. More with Premium.","1 aktive Reise kostenlos. Mehr mit Premium."],
+    "Uygunluk kontrolü|Üniversiteleri keşfet|Bütçeni planla":["Check eligibility|Explore universities|Plan your budget","Zugang prüfen|Hochschulen entdecken|Budget planen"],
+    "Hedefini belirle":["Define your destination","Ziel festlegen"],
+    "Gerekli belgeler|Dil yeterliliği":["Required documents|Language proficiency","Erforderliche Unterlagen|Sprachnachweis"],
+    "Başvuruya hazırlan":["Get ready to apply","Bereit für die Bewerbung"],
+    "Başvuruları gönder|Kabul mektupları|Finansal kanıt|Sağlık sigortası|Öğrenci vizesi":["Send applications|Admission offers|Financial proof|Health insurance|Student visa","Bewerbungen senden|Zulassungen|Finanznachweis|Krankenversicherung|Studentenvisum"],
+    "Planı harekete geçir":["Turn plans into action","Pläne umsetzen"],
+    "Konaklama|Yolculuğu organize et|Adres kaydı|Üniversiteye kayıt":["Accommodation|Organise the trip|Local registration|Enrol at university","Unterkunft|Anreise organisieren|Anmeldung|Immatrikulation"],
+    "Almanya'yı yuvan yap":["Make Germany your home","Deutschland wird dein Zuhause"],
+    "Çalışma hedefleri, uygunluk ve gerçekçi bir kısa liste.":["Study goals, eligibility and a realistic shortlist.","Studienziele, Zugangsvoraussetzungen und eine realistische Shortlist."],
+    "Belge kontrolü, çeviriler ve başvurular.":["Document checks, translations and applications.","Dokumentenprüfung, Übersetzungen und Bewerbungen."],
+    "Gereklilikler, dosyalar ve mülakat hazırlığı.":["Requirements, files and interview prep.","Anforderungen, Unterlagen und Interview-Vorbereitung."],
+    "Dil, konaklama ve yerleşme desteği.":["Language, housing and settling-in support.","Sprache, Wohnung und Hilfe beim Ankommen."],
+    "E-posta adresiniz":["Your email address","Ihre E-Mail-Adresse"]
+  };
+  const LANGS=['tr','en','de'];
+  const STAGE={tr:'Aşama',en:'Stage',de:'Phase'};
+  let lang='tr';
+  const tr=s=>{if(lang==='tr')return s;const v=I18N[s];return v?v[LANGS.indexOf(lang)-1]:s;};
+
+  // Metin düğümlerini ve çevrilecek nitelikleri bir kez topla (cihaz ekranları render ile yönetilir)
+  const managed='#m1,#m2,#m2h,#m2n,#m2s,#m3,script,style';
+  const textNodes=[];
+  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  for(let n;(n=walker.nextNode());){
+    if(n.parentElement.closest(managed))continue;
+    const raw=n.nodeValue, key=raw.replace(/\s+/g,' ').trim();
+    if(!key||!(key in I18N))continue;
+    textNodes.push({n,key,lead:raw.match(/^\s*/)[0],trail:raw.match(/\s*$/)[0]});
+  }
+  const attrNodes=[];
+  document.querySelectorAll('[placeholder],[data-t],[data-sub]').forEach(el=>{
+    ['placeholder','data-t','data-sub'].forEach(a=>{const v=el.getAttribute(a);if(v)attrNodes.push({el,a,key:v});});
+  });
+
+  // Panel maddeleri: tıklanınca cihaz ekranı değişir
+  function render(list,b){
+    const out=document.getElementById(list.dataset.target);
+    if(list.dataset.target==='m2'){
+      const btns=[...list.querySelectorAll('.feat')];
+      const idx=btns.indexOf(b);
+      out.innerHTML='';
+      b.dataset.t.split('|').forEach(s=>{const li=document.createElement('li');li.textContent=s;out.appendChild(li);});
+      document.getElementById('m2h').textContent=b.querySelector('span').textContent;
+      document.getElementById('m2s').textContent=b.dataset.sub;
+      document.getElementById('m2n').textContent=`${STAGE[lang]} ${b.querySelector('i').textContent} / IV`;
+      document.getElementById('m2bar').style.width=((idx+1)/btns.length*100)+'%';
+    }else{
+      out.textContent=b.dataset.t;
+    }
+  }
+  const lists=[...document.querySelectorAll('.feats')];
+  lists.forEach(list=>{
+    const btns=[...list.querySelectorAll('.feat')];
+    btns.forEach(b=>b.addEventListener('click',()=>{
+      btns.forEach(x=>x.setAttribute('aria-current',String(x===b)));
+      render(list,b);
+    }));
+  });
+  const renderAll=()=>lists.forEach(l=>render(l,l.querySelector('.feat[aria-current="true"]')));
+
+  function setLang(l){
+    lang=l;
+    document.documentElement.lang=l;
+    textNodes.forEach(t=>{t.n.nodeValue=t.lead+tr(t.key)+t.trail;});
+    attrNodes.forEach(t=>t.el.setAttribute(t.a,tr(t.key)));
+    langBtns.forEach(x=>x.setAttribute('aria-pressed',String(x.id==='lang-'+l)));
+    renderAll();
+    layoutBubbles();
+    try{localStorage.setItem('dreemli-lang',l)}catch(e){}
+  }
+  const langBtns=[...document.querySelectorAll('.lang button')];
+  langBtns.forEach(b=>b.addEventListener('click',()=>setLang(b.id.replace('lang-',''))));
+  let savedLang=null;
+  try{savedLang=localStorage.getItem('dreemli-lang')}catch(e){}
+  setLang(LANGS.includes(savedLang)?savedLang:'tr');
+
+  // Defter: hero'daki yerinden kalkar, sahnenin ortasına gelir, sonra kapağı açılır
+  const opener=document.getElementById('opener');
+  const stage=opener.querySelector('.ob-stage');
+  const obBook=opener.querySelector('.ob-book');
+  const slot=document.querySelector('.book-slot');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  let ticking=false;
+  function updateBook(){
+    ticking=false;
+    const r=opener.getBoundingClientRect();
+    const openerTop=r.top+scrollY;
+    // 1. taşınma: sayfa başından, sahne yapışana kadar
+    const t=ease(clamp(scrollY/Math.max(1,openerTop),0,1));
+    const st=stage.getBoundingClientRect();
+    const sl=slot.getBoundingClientRect();
+    const coverW=obBook.offsetWidth/2;
+    const k=1-t;
+    opener.style.setProperty('--dx',((sl.left+sl.width/2)-(st.left+st.width/2))*k);
+    opener.style.setProperty('--dy',((sl.top+sl.height/2)-(st.top+st.height/2))*k);
+    opener.style.setProperty('--rot',-14*k);
+    opener.style.setProperty('--s',1+(slot.offsetWidth/coverW-1)*k);
+    // 2. açılma: sahne yapıştıktan sonra
+    const span=opener.offsetHeight-innerHeight;
+    const p=span>0?clamp((-r.top)/(span*.7),0,1):1;
+    opener.style.setProperty('--p',p.toFixed(3));
+  }
+  const requestBook=()=>{if(!ticking){ticking=true;requestAnimationFrame(updateBook)}};
+  if(reduce){opener.style.setProperty('--p',1)}
+  else{
+    document.documentElement.classList.add('travel');
+    addEventListener('scroll',requestBook,{passive:true});
+    addEventListener('resize',requestBook);
+    updateBook();
+  }
+
+  // Konuşma balonları: metni ölçüp balonu ve kuyruğu ona göre çizer, kareden taşarsa yazıyı küçültür
+  function layoutBubbles(){
+    document.querySelectorAll('g.sb').forEach(g=>{
+      const text=g.querySelector('text');
+      let shape=g.querySelector('path.sb-shape');
+      if(!shape){shape=document.createElementNS('http://www.w3.org/2000/svg','path');shape.setAttribute('class','sb-shape');g.insertBefore(shape,text);}
+      const cx=+g.dataset.cx, y=+g.dataset.y, max=+(g.dataset.max||280), padX=10, padY=7;
+      let fs=+(text.dataset.fs||(text.dataset.fs=text.getAttribute('font-size')));
+      text.setAttribute('text-anchor','middle');
+      text.setAttribute('font-size',fs);
+      text.setAttribute('x',cx);
+      text.setAttribute('y',y+padY+fs*.8);
+      let bb=text.getBBox();
+      while(bb.width+padX*2>max&&fs>11){fs-=1;text.setAttribute('font-size',fs);text.setAttribute('y',y+padY+fs*.8);bb=text.getBBox();}
+      const w=bb.width+padX*2, h=bb.height+padY*2;
+      let x=Math.min(Math.max(cx-w/2,4),296-w);
+      text.setAttribute('x',x+w/2);
+      const r=8, b=y+h;
+      if(g.dataset.sign){
+        shape.setAttribute('d',`M${x} ${y}H${x+w}V${b}H${x}Z`);   // tabela: düz dikdörtgen
+      }else{
+        const tx=Math.min(Math.max(+g.dataset.tx,x+16),x+w-16);
+        shape.setAttribute('d',`M${x+r} ${y}H${x+w-r}a${r} ${r} 0 0 1 ${r} ${r}V${b-r}a${r} ${r} 0 0 1 -${r} ${r}H${tx+7}L${tx-4} ${b+14}L${tx-5} ${b}H${x+r}a${r} ${r} 0 0 1 -${r} -${r}V${y+r}a${r} ${r} 0 0 1 ${r} -${r}Z`);
+      }
+      shape.setAttribute('fill','#fff');shape.setAttribute('stroke','#2b1a07');shape.setAttribute('stroke-width','2');shape.setAttribute('stroke-linejoin','round');
+    });
+  }
+  (document.fonts?document.fonts.ready:Promise.resolve()).then(layoutBubbles);
+  layoutBubbles();
+
+  document.getElementById('news-form').addEventListener('submit',e=>{
+    e.preventDefault();e.target.hidden=true;document.getElementById('news-ok').hidden=false;
+  });
+</script>
+
+</body>
+</html>
