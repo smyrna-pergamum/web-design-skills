@@ -83,6 +83,10 @@ Chunky headline: `font-weight:900; font-variation-settings:"SOFT" 100,"WONK" 1,"
 
 ## 3. Hero with name-label notebook
 
+> Variant used in the example: a **passport cover** built from the client's print booklet (`.pp`, `.pp-frame`,
+> `.pp-globe`, `.pp-title`, `.pp-cta` in `../example/index.html`). Give the cover element `container-type:inline-size`
+> and size everything in `cqw`, so the same markup works on the small hero cover and the large opening cover.
+
 ```html
 <section class="hero"><div class="wrap hero-grid">
   <div class="hero-copy">

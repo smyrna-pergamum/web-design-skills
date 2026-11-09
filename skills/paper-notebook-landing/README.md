@@ -32,6 +32,7 @@ paper-notebook-landing/
 ## Features of the example page
 
 - **Scroll-driven notebook** – the notebook in the hero travels down, straightens and grows as you scroll, then its cover opens.
+  The cover recreates Dreemli's printed "Passport to your future" booklet, so web and print match.
 - **Three languages** – TR / EN / DE switch in the top-right corner; the choice is remembered.
 - **Auto-sizing comic speech bubbles** – bubbles are drawn around the measured text, so they fit in every language.
 - **Interactive panels** – roman-numeral feature lists update a device mock (e.g. the 4 stages Plan → Prepare → Apply → Arrive).

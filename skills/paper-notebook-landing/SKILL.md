@@ -45,9 +45,12 @@ Use the client's own brand name, content and facts.
 
 Use these in roughly this order. Each has a ready snippet in `references/components.md`.
 
-1. **Hero + name-label notebook** – greeting, lowercase headline, one-line subtitle with a handwritten aside
-   ("in one place. *really!*"), dibs CTA, small muted note. Right: a leather notebook with a white name label
-   (Name / Goal / Term / Stage 1/4). The label personalises the product with a sample user.
+1. **Hero + notebook cover** – greeting, lowercase headline, one-line subtitle with a handwritten aside
+   ("in one place. *really!*"), dibs CTA, small muted note. Right: a tilted notebook. Two cover options:
+   * a leather notebook with a white name label (Name / Goal / Term / Stage 1/4) that personalises it with a sample user;
+   * a cover adapted from the client's own print material. If they have a brochure, booklet or flyer cover, rebuild it
+     in HTML/SVG at cover size (container-query units) so the web and print match. The example does this with Dreemli's
+     "Passport to your future" booklet: navy, double gold frame, gold globe and plane, orange "Study in Germany" band.
 2. **Scroll-driven notebook** – the hero notebook *travels* down as the user scrolls (straightens, grows, centres), then its
    cover opens to reveal a welcome page with eyed stickers and "TAP TO START!". One notebook, one continuous motion.
 3. **Sticky notes** – centred serif line with a stretched word ("Everyyyyything in one place.") and 4 rotated yellow notes
