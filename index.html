@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Skills Library</title>
+<meta name="description" content="A library of AI design skills for Claude, each with a live reference site.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap">
+<style>
+/* Layout: a quiet index. Each card is a skill: thumbnail, name, one-line style description, demo + source links. */
+:root{
+  --bg:#f7f6f3; --card:#ffffff; --ink:#1c1b19; --muted:#6d6a63; --line:#e3e0d8; --accent:#c2410c;
+  --f-display:"Instrument Serif",Georgia,serif; --f-body:"Geist",system-ui,sans-serif; --f-mono:"Geist Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root{--bg:#151412;--card:#1e1d1a;--ink:#f1efe9;--muted:#a19d94;--line:#34322d;--accent:#fb923c;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:64px max(20px,env(safe-area-inset-left)) 80px}
+header{display:grid;gap:14px;max-width:62ch;margin-bottom:48px}
+.eyebrow{font:400 13px var(--f-mono);color:var(--muted);letter-spacing:.04em}
+h1{font:400 clamp(44px,7vw,72px)/1 var(--f-display);margin:0;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted);font-size:18px}
+.install{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+code{font:400 14px var(--f-mono);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 10px;overflow-wrap:anywhere}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+.card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top;border-bottom:1px solid var(--line)}
+.body{padding:20px 22px 22px;display:grid;gap:10px;align-content:start}
+.body h2{margin:0;font:600 18px var(--f-mono);letter-spacing:-.01em}
+.body p{margin:0;color:var(--muted);font-size:15px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font:400 12px var(--f-mono);border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted)}
+.links{display:flex;gap:16px;margin-top:4px}
+.links a{color:var(--accent);font-weight:500;text-decoration:none}
+.links a:hover{text-decoration:underline}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.soon{border-style:dashed;display:grid;place-items:center;min-height:240px;color:var(--muted);text-align:center;padding:24px}
+footer{margin-top:56px;color:var(--muted);font-size:14px}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">smyrna-pergamum / design-skills</span>
+    <h1>Design Skills</h1>
+    <p>AI skills that teach Claude a complete visual style: rules, section patterns, interactions and a checklist, each with a live reference site.</p>
+    <div class="install"><code>/plugin marketplace add smyrna-pergamum/design-skills</code></div>
+  </header>
+
+  <main class="grid">
+    <article class="card">
+      <img src="skills/paper-notebook-landing/screenshots/01-hero.png" alt="Paper notebook landing page: lowercase serif headline and a leather notebook with a name label">
+      <div class="body">
+        <h2>paper-notebook-landing</h2>
+        <p>Warm paper-notebook landing pages: cream paper, chunky soft serif, handwritten notes, sticky notes, a notebook that opens as you scroll, comic strips.</p>
+        <div class="tags"><span>landing page</span><span>scroll animation</span><span>TR · EN · DE</span></div>
+        <div class="links">
+          <a href="skills/paper-notebook-landing/example/">Live demo</a>
+          <a href="https://github.com/smyrna-pergamum/design-skills/tree/main/skills/paper-notebook-landing">Skill</a>
+        </div>
+      </div>
+    </article>
+    <div class="card soon">More styles coming soon.</div>
+  </main>
+
+  <footer>MIT licensed · <a href="https://github.com/smyrna-pergamum/design-skills">Source on GitHub</a></footer>
+</div>
+</body>
+</html>

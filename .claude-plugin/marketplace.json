@@ -1,0 +1,21 @@
+{
+  "name": "design-skills",
+  "owner": {
+    "name": "smyrna-pergamum"
+  },
+  "metadata": {
+    "description": "A library of AI design skills: each one teaches Claude a complete visual style, with a reference site, screenshots and copy-ready components.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "paper-notebook-landing",
+      "description": "Landing pages in a warm paper-notebook style: cream paper, chunky soft serif, handwritten notes, sticky notes, a scroll-opening notebook, comic strips and a giant footer.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/paper-notebook-landing"
+      ]
+    }
+  ]
+}

@@ -1,90 +1,72 @@
-# paper-notebook-landing
+# design-skills
 
-An AI skill (for Claude Code / Claude Agent Skills) that designs landing pages in a warm **paper-notebook style**:
-cream paper, chunky soft serif headlines, handwritten marker notes, yellow sticky notes,
-name-label notebooks, illustrated scenes with roman-numeral panels, doodles, lined paper, a comic strip and a giant orange footer.
+A library of AI design skills for Claude (Claude Code, Agent Skills). Each skill teaches the model one complete visual
+style: the rules, the section patterns, the interactions and a finish checklist, plus a working reference site,
+screenshots and copy-ready components.
 
-It ships with a complete reference build: the homepage of **Dreemli**, a study-in-Germany platform, in Turkish, English and German.
+**Gallery:** https://smyrna-pergamum.github.io/design-skills/
 
-![Hero](screenshots/01-hero.png)
+## Skills
 
-| Notebook travels down… | …and opens | Four-stage journey |
-|---|---|---|
-| ![](screenshots/02-notebook-travel.png) | ![](screenshots/04-notebook-open.png) | ![](screenshots/07-scene-sky-four-stages.png) |
-| **Sticky notes** | **Comic strip** | **Giant footer** |
-| ![](screenshots/05-sticky-notes.png) | ![](screenshots/12-journey-comic.png) | ![](screenshots/13-faq-footer.png) |
+| | Skill | Style | Demo |
+|---|---|---|---|
+| <img src="skills/paper-notebook-landing/screenshots/01-hero.png" width="260" alt="Paper notebook landing page"> | [**paper-notebook-landing**](skills/paper-notebook-landing) | Warm paper-notebook landing pages: cream paper, chunky soft serif, handwritten notes, sticky notes, a notebook that opens as you scroll, comic strips, giant footer. TR/EN/DE example. | [Live](https://smyrna-pergamum.github.io/design-skills/skills/paper-notebook-landing/example/) |
 
-More in [`screenshots/`](screenshots) (desktop 1440×900, mobile 390×844, TR/EN/DE).
+## Install
 
-## What's inside
-
-```
-paper-notebook-landing/
-├── SKILL.md                    # the skill: style rules, section patterns, interactions, checklist
-├── references/components.md    # copy-ready HTML/CSS/JS for every component
-├── example/index.html          # full reference page (single file, no build step)
-├── screenshots/*.png           # every section, desktop + mobile + languages
-└── scripts/screenshots.mjs     # re-create the screenshots with headless Chrome (no npm install)
-```
-
-## Features of the example page
-
-- **Scroll-driven notebook** – the notebook in the hero travels down, straightens and grows as you scroll, then its cover opens.
-- **Three languages** – TR / EN / DE switch in the top-right corner; the choice is remembered.
-- **Auto-sizing comic speech bubbles** – bubbles are drawn around the measured text, so they fit in every language.
-- **Interactive panels** – roman-numeral feature lists update a device mock (e.g. the 4 stages Plan → Prepare → Apply → Arrive).
-- Pure inline SVG/CSS illustrations, no image files; Google Fonts only (Fraunces, Geist, Caveat).
-- Respects `prefers-reduced-motion`; responsive down to 390px.
-
-## Install the skill
-
-Copy this folder into your skills directory:
+### As a Claude Code plugin marketplace
 
 ```bash
-git clone https://github.com/smyrna-pergamum/paper-notebook-landing.git ~/.claude/skills/paper-notebook-landing
+/plugin marketplace add smyrna-pergamum/design-skills
+/plugin install paper-notebook-landing@design-skills
 ```
 
-or, for one project only, into `.claude/skills/paper-notebook-landing/` inside that project.
+Each skill is its own plugin, so you install only the styles you want.
 
-Then ask, for example:
+### By copying a folder
 
-> Redesign https://example.com in the paper-notebook style. Keep all real content, add TR/EN switching.
+Copy any folder from `skills/` into `~/.claude/skills/` (all projects) or `.claude/skills/` inside one project.
 
-> Make a paper-notebook landing page for our language school using this brochure (PDF attached).
+## Use
 
-## View the example
+Ask for the style by what it looks like, or name the skill:
 
-Live: **https://smyrna-pergamum.github.io/paper-notebook-landing/example/**
+> Redesign https://example.com with the paper-notebook-landing skill. Keep all real content.
 
-Or open `example/index.html` locally in any browser.
+## Repository layout
 
-## Regenerate the screenshots
-
-Requires Node 22+ and Chrome/Chromium.
-
-```bash
-node scripts/screenshots.mjs example/index.html screenshots
+```
+design-skills/
+├── .claude-plugin/marketplace.json   # one plugin entry per skill
+├── index.html                        # gallery page (GitHub Pages)
+├── skills/
+│   └── <skill-name>/
+│       ├── SKILL.md                  # the skill itself (required)
+│       ├── README.md                 # human-facing overview
+│       ├── references/               # detailed component code
+│       ├── example/index.html        # reference site
+│       ├── screenshots/              # PNGs of every section
+│       └── scripts/                  # helpers (e.g. screenshot capture)
+├── templates/skill-template/         # starting point for a new skill
+└── CONTRIBUTING.md                   # how to add a new design
 ```
 
-Set `CHROME=/path/to/browser` if Chrome is not in the default location.
+## Add a new design
 
-## Credits and disclaimer
-
-- All illustrations are original inline SVG/CSS; no third-party logos, illustrations or photos are included.
-- The example content (texts, services, contact details) belongs to **Dreemli** ([dreemli.com](https://www.dreemli.com)) and is
-  used as a demonstration of the style.
-- Fonts: [Fraunces](https://fonts.google.com/specimen/Fraunces), [Geist](https://fonts.google.com/specimen/Geist) and
-  [Caveat](https://fonts.google.com/specimen/Caveat) are licensed under the SIL Open Font License and loaded from Google Fonts.
+See [CONTRIBUTING.md](CONTRIBUTING.md). In short: copy `templates/skill-template` to `skills/<new-name>`, fill in
+`SKILL.md`, add an example and screenshots, then add one entry to `.claude-plugin/marketplace.json`, this README's table and
+the gallery in `index.html`.
 
 ## License
 
-Code and documentation: [MIT](LICENSE).
+[MIT](LICENSE) for code and documentation. Example content belongs to its owners (see each skill's README).
+Fonts are loaded from Google Fonts under their own licenses.
 
 ---
 
 ### Türkçe özet
 
-Bu klasör, sıcak "kâğıt defter" tarzında açılış sayfaları tasarlayan bir yapay zekâ skill'idir.
-`SKILL.md` stil kurallarını, bölüm kalıplarını ve kontrol listesini; `references/components.md` hazır kod parçalarını;
-`example/index.html` üç dilli (TR/EN/DE) Dreemli örnek sitesini; `screenshots/` ise tüm bölümlerin görüntülerini içerir.
-Kurulum için klasörü `~/.claude/skills/paper-notebook-landing` altına kopyalamanız yeterli.
+Claude için tasarım skill'lerinden oluşan bir kütüphane. Her skill bir görsel tarzı baştan sona öğretir: kurallar, bölüm
+kalıpları, etkileşimler, kontrol listesi, örnek site ve ekran görüntüleri. Kurulum:
+`/plugin marketplace add smyrna-pergamum/design-skills`, ardından istediğiniz skill için `/plugin install <ad>@design-skills`.
+Yeni tasarım eklemek için [CONTRIBUTING.md](CONTRIBUTING.md) dosyasına bakın.
