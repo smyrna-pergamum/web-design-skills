@@ -7,7 +7,7 @@ description: Redesign or build a landing page in a warm "paper notebook" style â
 
 This skill turns any product's real content into a single-file landing page in a warm, handmade
 "school notebook" visual language that still reads as calm and trustworthy.
-The reference build is `example/index.html` (Dreemli, a study-in-Germany platform, in TR/EN/DE). Open it before you start;
+The reference build is `example/index.html` (Atlasio, a fictional study-in-Germany platform, in TR/EN/DE). Open it before you start;
 `references/components.md` holds every pattern as copy-ready code. `screenshots/` shows what each section should look like.
 
 If the user points at a reference site, take the *style*, never its logo, illustrations, product photos, wording or wordmark.
@@ -49,7 +49,7 @@ Use these in roughly this order. Each has a ready snippet in `references/compone
    ("in one place. *really!*"), dibs CTA, small muted note. Right: a tilted notebook. Two cover options:
    * a leather notebook with a white name label (Name / Goal / Term / Stage 1/4) that personalises it with a sample user;
    * a cover adapted from the client's own print material. If they have a brochure, booklet or flyer cover, rebuild it
-     in HTML/SVG at cover size (container-query units) so the web and print match. The example does this with Dreemli's
+     in HTML/SVG at cover size (container-query units) so the web and print match. The example does this with a
      "Passport to your future" booklet: navy, double gold frame, gold globe and plane, orange "Study in Germany" band.
 2. **Scroll-driven notebook** â€“ the hero notebook *travels* down as the user scrolls (straightens, grows, centres), then its
    cover opens to reveal a welcome page with eyed stickers and "TAP TO START!". One notebook, one continuous motion.

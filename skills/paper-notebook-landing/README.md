@@ -6,7 +6,7 @@ An AI skill (for Claude Code / Claude Agent Skills) that designs landing pages i
 cream paper, chunky soft serif headlines, handwritten marker notes, yellow sticky notes,
 name-label notebooks, illustrated scenes with roman-numeral panels, doodles, lined paper, a comic strip and a giant orange footer.
 
-It ships with a complete reference build: the homepage of **Dreemli**, a study-in-Germany platform, in Turkish, English and German.
+It ships with a complete reference build: the homepage of **Atlasio**, a fictional study-in-Germany platform, in Turkish, English and German.
 
 ![Hero](screenshots/01-hero.png)
 
@@ -32,7 +32,7 @@ paper-notebook-landing/
 ## Features of the example page
 
 - **Scroll-driven notebook** – the notebook in the hero travels down, straightens and grows as you scroll, then its cover opens.
-  The cover recreates Dreemli's printed "Passport to your future" booklet, so web and print match.
+  The cover recreates a printed "Passport to your future" booklet cover, so web and print match.
 - **Three languages** – TR / EN / DE switch in the top-right corner; the choice is remembered.
 - **Auto-sizing comic speech bubbles** – bubbles are drawn around the measured text, so they fit in every language.
 - **Interactive panels** – roman-numeral feature lists update a device mock (e.g. the 4 stages Plan → Prepare → Apply → Arrive).
@@ -76,8 +76,7 @@ Set `CHROME=/path/to/browser` if Chrome is not in the default location.
 ## Credits and disclaimer
 
 - All illustrations are original inline SVG/CSS; no third-party logos, illustrations or photos are included.
-- The example content (texts, services, contact details) belongs to **Dreemli** ([dreemli.com](https://www.dreemli.com)) and is
-  used as a demonstration of the style.
+- **Atlasio** is a fictional brand. Names, contact details (`atlasio.example`) and reviews in the example are placeholders.
 - Fonts: [Fraunces](https://fonts.google.com/specimen/Fraunces), [Geist](https://fonts.google.com/specimen/Geist) and
   [Caveat](https://fonts.google.com/specimen/Caveat) are licensed under the SIL Open Font License and loaded from Google Fonts.
 
@@ -91,6 +90,6 @@ Code and documentation: [MIT](../../LICENSE).
 
 Bu klasör, sıcak "kâğıt defter" tarzında açılış sayfaları tasarlayan bir yapay zekâ skill'idir.
 `SKILL.md` stil kurallarını, bölüm kalıplarını ve kontrol listesini; `references/components.md` hazır kod parçalarını;
-`example/index.html` üç dilli (TR/EN/DE) Dreemli örnek sitesini; `screenshots/` ise tüm bölümlerin görüntülerini içerir.
+`example/index.html` üç dilli (TR/EN/DE) kurgusal Atlasio örnek sitesini; `screenshots/` ise tüm bölümlerin görüntülerini içerir.
 Kurulum: `/plugin marketplace add smyrna-pergamum/design-skills` ve `/plugin install paper-notebook-landing@design-skills`,
 ya da bu klasörü `~/.claude/skills/paper-notebook-landing` altına kopyalayın.

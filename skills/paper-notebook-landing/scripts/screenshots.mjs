@@ -77,5 +77,5 @@ await load('tr');
 await shot('17-mobile-hero', '0');
 await shot('18-mobile-notebook-open', op(0.85));
 await shot('19-mobile-comic', top('#hikaye') + '+20');
-await evalJs(`(()=>{try{localStorage.removeItem('dreemli-lang')}catch(e){}return 1})()`);
+await evalJs(`(()=>{try{localStorage.removeItem('atlasio-lang')}catch(e){}return 1})()`);
 ws.close(); chrome.kill();
