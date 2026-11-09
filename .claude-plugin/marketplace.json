@@ -25,6 +25,15 @@
       "skills": [
         "./skills/noir-gradient-law"
       ]
+    },
+    {
+      "name": "portal-webgl-studio",
+      "description": "Immersive studio and agency sites: a full-screen three.js portal behind monospace UI, slash-scramble preloader, film grain, a 3D glass project gallery, an ask-me-anything terminal and ambient sound.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/portal-webgl-studio"
+      ]
     }
   ]
 }

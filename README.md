@@ -12,6 +12,7 @@ screenshots and copy-ready components.
 |---|---|---|---|
 | <img src="skills/paper-notebook-landing/screenshots/01-hero.png" width="260" alt="Paper notebook landing page"> | [**paper-notebook-landing**](skills/paper-notebook-landing) | Warm paper-notebook landing pages: cream paper, chunky soft serif, handwritten notes, sticky notes, a notebook that opens as you scroll, comic strips, giant footer. TR/EN/DE example. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/paper-notebook-landing/example/) |
 | <img src="skills/noir-gradient-law/screenshots/01-hero.png" width="260" alt="Noir gradient law firm website"> | [**noir-gradient-law**](skills/noir-gradient-law) | Law-firm and advisory sites: pure black, bronze statue photography, fire gradient (yellow → orange → red), giant uppercase headlines, duotone-halftone photos, 3D review carousel. EN/TR example. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/noir-gradient-law/example/) |
+| <img src="skills/portal-webgl-studio/screenshots/01-hero-portal.png" width="260" alt="WebGL portal studio website"> | [**portal-webgl-studio**](skills/portal-webgl-studio) | Immersive studio and agency sites: full-screen three.js portal, monospace interface, slash-scramble preloader, film grain, 3D glass project gallery, ask-me-anything terminal, ambient sound. EN/TR example. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/portal-webgl-studio/example/) |
 
 ## Install
 

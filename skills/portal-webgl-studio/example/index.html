@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atlasio · Portal WebGL Example</title>
+<meta name="description" content="Template site for a fictional immersive digital studio: WebGL portal, floating glass project gallery, monospace interface.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap">
+<style>
+/* Layout: an interface, not a brochure. A full-screen WebGL portal sits behind everything; small monospace UI hugs
+   the corners; content arrives in large, thin uppercase mono lines. One glow colour (teal) and one accent (violet)
+   on a near-black blue. Film grain and a teal light leak make the screen feel like a lens. Dark only, on purpose. */
+:root{
+  color-scheme:dark;
+  --bg:#05070b; --bg-2:#0a0e15; --glass:rgba(255,255,255,.045); --line:rgba(232,241,242,.12);
+  --ink:#e8f1f2; --muted:#8a97a0; --teal:#3fd0c9; --teal-2:#1f7f80; --violet:#b49cff; --magenta:#ff5fae;
+  --mono:"Geist Mono","JetBrains Mono",ui-monospace,Menlo,monospace;
+  --pad:max(24px,env(safe-area-inset-left,0px));
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.6 var(--mono);-webkit-font-smoothing:antialiased;overflow-x:clip}
+h1,h2,h3,p{margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:1px solid var(--teal);outline-offset:4px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- atmosphere ---------- */
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block}
+.fallback{position:fixed;inset:0;z-index:0;background:radial-gradient(circle at 70% 50%,rgba(63,208,201,.25),transparent 22%),radial-gradient(circle at 70% 50%,transparent 24%,rgba(63,208,201,.5) 24.4%,transparent 25.2%)}
+.leak{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(60% 50% at 0% 0%,rgba(63,208,201,.18),transparent 70%),radial-gradient(50% 40% at 100% 100%,rgba(180,156,255,.08),transparent 70%)}
+.grain{position:fixed;inset:-50%;z-index:90;pointer-events:none;opacity:.07;animation:grain 1s steps(6) infinite}
+@keyframes grain{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
+.cursor{position:fixed;left:0;top:0;z-index:95;width:34px;height:34px;margin:-17px 0 0 -17px;border:1px solid var(--teal);border-radius:50%;pointer-events:none;
+  transition:width .25s,height .25s,margin .25s,background .25s;mix-blend-mode:screen;display:none}
+.cursor.big{width:72px;height:72px;margin:-36px 0 0 -36px;background:rgba(63,208,201,.12)}
+@media (pointer:fine){.cursor{display:block;opacity:0}.cursor.on{opacity:1}}
+
+/* ---------- preloader ---------- */
+.loader{position:fixed;inset:0;z-index:100;background:#000;display:grid;place-items:center;align-content:center;gap:28px;transition:opacity .6s}
+.loader.done{opacity:0;pointer-events:none}
+.loader .slashes{color:var(--teal-2);font-size:12px;letter-spacing:.1em;max-width:min(560px,80vw);overflow:hidden;text-align:center;word-break:break-all;line-height:1.4}
+.loader .count{color:var(--teal);font-size:13px;letter-spacing:.1em}
+
+/* ---------- corner UI ---------- */
+header.ui{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:22px var(--pad);pointer-events:none}
+header.ui > *{pointer-events:auto}
+.brand{font-weight:500;font-size:13px;letter-spacing:.32em;text-decoration:none}
+.brand i{color:var(--teal);font-style:normal}
+.ui nav{display:flex;align-items:center;gap:26px;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.ui nav a{text-decoration:none;color:var(--muted);transition:color .2s}
+.ui nav a:hover{color:var(--ink)}
+.chip{background:none;border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer;color:var(--muted);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.chip[aria-pressed="true"]{color:var(--bg);background:var(--teal);border-color:var(--teal)}
+.bars{display:inline-flex;gap:2px;align-items:flex-end;height:10px;margin-right:8px;vertical-align:-1px}
+.bars i{width:2px;background:currentColor;height:3px}
+.chip[aria-pressed="true"] .bars i{animation:eq .9s ease-in-out infinite}
+.chip[aria-pressed="true"] .bars i:nth-child(2){animation-delay:.2s}.chip[aria-pressed="true"] .bars i:nth-child(3){animation-delay:.4s}
+@keyframes eq{50%{height:10px}}
+.lang{display:flex;gap:2px}
+.lang button{background:none;border:0;color:var(--muted);cursor:pointer;font-size:11px;letter-spacing:.14em;padding:6px}
+.lang button[aria-pressed="true"]{color:var(--teal)}
+
+/* ---------- hero ---------- */
+main{position:relative;z-index:2;overflow-x:clip}
+html{overflow-x:clip}
+.hero{min-height:100vh;display:grid;align-content:end;padding:0 var(--pad) 56px}
+.hero-copy{display:grid;gap:22px;max-width:640px}
+.kicker{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--teal)}
+.hero h1{font-weight:300;font-size:clamp(46px,8vw,128px);line-height:.92;letter-spacing:.02em;text-transform:uppercase}
+.hero p{color:var(--muted);max-width:44ch}
+.enter{display:inline-flex;align-items:center;gap:14px;width:max-content;padding:14px 22px;border:1px solid var(--teal);border-radius:999px;color:var(--teal);text-decoration:none;font-size:12px;letter-spacing:.22em;text-transform:uppercase;transition:background .25s,color .25s}
+.enter:hover{background:var(--teal);color:var(--bg)}
+.coords{position:absolute;right:var(--pad);bottom:56px;text-align:right;font-size:11px;letter-spacing:.14em;color:var(--muted);line-height:1.9}
+.coords b{color:var(--teal);font-weight:400}
+
+/* ---------- section scaffolding ---------- */
+section.block{position:relative;padding:140px var(--pad)}
+.label{display:flex;gap:14px;align-items:center;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:40px}
+.label b{color:var(--teal);font-weight:400}
+.label::after{content:"";flex:1;height:1px;background:var(--line)}
+.big{font-weight:300;font-size:clamp(34px,5.4vw,84px);line-height:1;letter-spacing:.02em;text-transform:uppercase}
+.big em{font-style:normal;color:var(--teal)}
+
+/* ---------- work: floating glass gallery ---------- */
+.work{min-height:100vh;display:grid;grid-template-columns:260px 1fr;gap:20px;align-items:center;padding-block:120px 90px}
+.filters{display:grid;gap:12px;font-size:13px;align-self:end;margin-bottom:40px}
+.filters p{color:var(--ink);margin-bottom:6px;letter-spacing:.04em}
+.filters button{background:none;border:0;padding:0;text-align:left;cursor:pointer;color:var(--violet);opacity:.75;letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+.filters button[aria-pressed="true"]{opacity:1;color:var(--teal)}
+.filters button:hover{opacity:1}
+.stage{position:relative;height:min(64vh,560px);perspective:1600px;touch-action:pan-y}
+.panel{position:absolute;left:50%;top:50%;width:min(560px,70vw);aspect-ratio:16/10;margin:calc(min(560px,70vw) * -.3125) 0 0 calc(min(560px,70vw) / -2);
+  border-radius:18px;overflow:hidden;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(6px);
+  transition:transform .8s cubic-bezier(.2,.7,.1,1),opacity .6s,filter .6s;cursor:pointer;transform-style:preserve-3d}
+.panel canvas{position:absolute;inset:0;width:100%;height:100%;opacity:.85}
+.panel .t{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:10px;text-align:center;padding:24px;background:linear-gradient(180deg,transparent 40%,rgba(5,7,11,.55))}
+.panel h3{font-weight:300;font-size:clamp(22px,3.2vw,46px);line-height:1.05;letter-spacing:.04em;text-transform:uppercase;text-shadow:0 0 18px rgba(63,208,201,.35)}
+.panel .cat{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--teal)}
+.panel[data-o="0"]{transform:translateZ(0);z-index:5}
+.panel[data-o="1"]{transform:translateX(62%) translateZ(-320px) rotateY(-28deg);opacity:.55;z-index:4;filter:saturate(.6)}
+.panel[data-o="-1"]{transform:translateX(-62%) translateZ(-320px) rotateY(28deg);opacity:.55;z-index:4;filter:saturate(.6)}
+.panel[data-o="2"]{transform:translateX(110%) translateZ(-700px) rotateY(-36deg);opacity:.2;z-index:3}
+.panel[data-o="-2"]{transform:translateX(-110%) translateZ(-700px) rotateY(36deg);opacity:.2;z-index:3}
+.panel[data-o="far"]{transform:translateZ(-1200px);opacity:0;pointer-events:none}
+.panel[data-dim="1"]{filter:grayscale(1) brightness(.4)}
+.panel .t{transition:opacity .6s}
+.panel[data-o="1"] .t,.panel[data-o="-1"] .t{opacity:.35}
+.panel[data-o="2"] .t,.panel[data-o="-2"] .t,.panel[data-o="far"] .t{opacity:0}
+.pager{grid-column:2;display:flex;justify-content:center;align-items:center;gap:22px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pager button{background:none;border:0;cursor:pointer;color:var(--teal);font-size:13px;letter-spacing:.1em;padding:8px}
+.pager .now{min-width:22ch;text-align:center;color:var(--ink)}
+
+/* ---------- capabilities ---------- */
+.caps{list-style:none;margin:60px 0 0;padding:0;border-top:1px solid var(--line)}
+.caps li{display:grid;grid-template-columns:80px 1fr 1.2fr;gap:24px;align-items:baseline;padding:30px 0;border-bottom:1px solid var(--line);transition:background .3s}
+.caps li:hover{background:linear-gradient(90deg,rgba(63,208,201,.06),transparent)}
+.caps .n{color:var(--teal);font-size:12px;letter-spacing:.14em}
+.caps h3{font-weight:300;font-size:clamp(22px,2.6vw,38px);letter-spacing:.04em;text-transform:uppercase}
+.caps p{color:var(--muted);font-size:14px;max-width:52ch}
+
+/* ---------- process ---------- */
+.process{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:60px;background:var(--line);border:1px solid var(--line)}
+.step{background:var(--bg);padding:30px 24px 34px;display:grid;gap:14px;align-content:start;min-height:240px}
+.step .n{font-size:12px;color:var(--violet);letter-spacing:.14em}
+.step h3{font-weight:400;font-size:20px;letter-spacing:.08em;text-transform:uppercase}
+.step p{color:var(--muted);font-size:14px}
+.step .ascii{color:var(--teal-2);font-size:11px;letter-spacing:.1em;margin-top:auto;overflow:hidden;white-space:nowrap}
+
+/* ---------- ask me anything ---------- */
+.ask{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,90px);align-items:start}
+.terminal{border:1px solid var(--line);border-radius:18px;background:rgba(10,14,21,.75);backdrop-filter:blur(8px);padding:22px;display:grid;gap:14px}
+.log{display:grid;gap:12px;min-height:180px;max-height:320px;overflow:auto;font-size:14px}
+.log .q{color:var(--violet)}
+.log .a{color:var(--ink)}
+.log .q::before{content:"> "}.log .a::before{content:"// ";color:var(--teal)}
+.prompt{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 18px}
+.prompt input{flex:1;min-width:0;background:none;border:0;color:var(--ink);font:inherit;font-size:14px;padding:8px 0}
+.prompt input:focus{outline:none}
+.prompt button{border:0;border-radius:999px;background:var(--teal);color:var(--bg);padding:10px 16px;cursor:pointer;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.suggest{display:flex;flex-wrap:wrap;gap:8px}
+.suggest button{background:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--muted);font-size:12px}
+.suggest button:hover{color:var(--ink);border-color:var(--teal)}
+.note{font-size:12px;color:var(--muted)}
+
+/* ---------- contact ---------- */
+.contact{min-height:90vh;display:grid;align-content:center;gap:40px}
+.mail{display:inline-block;font-weight:300;font-size:clamp(26px,4vw,60px);letter-spacing:.02em;text-decoration:none;border-bottom:1px solid var(--teal);padding-bottom:6px;width:max-content;max-width:100%;overflow-wrap:anywhere}
+.mail:hover{color:var(--teal)}
+.offices{display:flex;flex-wrap:wrap;gap:16px 60px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.offices b{display:block;color:var(--ink);font-weight:400;margin-bottom:4px}
+footer.ui{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:30px var(--pad) 36px;border-top:1px solid var(--line);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.track-name{display:flex;gap:14px;align-items:center}
+.track-name span{color:var(--teal)}
+
+@media (max-width:900px){
+  .ui nav .hide-sm{display:none}
+  .work{grid-template-columns:1fr;min-height:0}
+  .filters{grid-template-columns:repeat(3,auto);justify-content:start;align-self:start;margin:0;gap:10px 18px}
+  .filters p{grid-column:1/-1}
+  .pager{grid-column:1}
+  .stage{height:calc(min(560px,70vw) * .625 + 120px)}
+  .caps li{grid-template-columns:50px 1fr}.caps p{grid-column:2}
+  .process{grid-template-columns:1fr 1fr}
+  .ask{grid-template-columns:1fr}
+  .coords{display:none}
+}
+@media (max-width:560px){
+  .ui nav{gap:12px}
+  .ui nav a[href="#work"]{display:none}
+  .brand{letter-spacing:.24em}
+  .chip .lbl{display:none}
+  .process{grid-template-columns:1fr}
+  .panel[data-o="1"],.panel[data-o="-1"]{opacity:.25}
+  .filters{grid-template-columns:repeat(2,auto)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="leak" aria-hidden="true"></div>
+<div class="grain" id="grain" aria-hidden="true"></div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="slashes" id="slashes"></div>
+  <div class="count" id="count">/0</div>
+</div>
+
+<header class="ui">
+  <a class="brand" href="#top" aria-label="Atlasio home">ATLASIO<i>.</i></a>
+  <nav aria-label="Main">
+    <button class="chip" id="sound" aria-pressed="false"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span><span class="lbl">Sound</span></button>
+    <a href="#work">Work</a>
+    <a class="hide-sm" href="#ask">Ask</a>
+    <a href="#contact">Contact</a>
+    <div class="lang" role="group" aria-label="Language"><button id="lang-en" aria-pressed="true">EN</button><button id="lang-tr" aria-pressed="false">TR</button></div>
+  </nav>
+</header>
+
+<main id="top">
+  <!-- HERO: the WebGL portal is the background -->
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="kicker">Immersive digital studio</p>
+      <h1>Step<br>through<br>the screen</h1>
+      <p>We build websites, installations and real-time worlds that people walk into, not just scroll past.</p>
+      <a class="enter" href="#work">&gt;&gt;&gt; Enter</a>
+    </div>
+    <div class="coords" aria-hidden="true">LAT <b id="lat">41.0082</b><br>LON <b id="lon">28.9784</b><br>FPS <b id="fps">60</b></div>
+  </section>
+
+  <!-- WORK -->
+  <section class="block work" id="work">
+    <div class="filters" role="group" aria-labelledby="filters-q">
+      <p id="filters-q">What are you looking for?</p>
+      <button data-f="all" aria-pressed="true">-&gt; Everything</button>
+      <button data-f="web" aria-pressed="false">-&gt; Websites</button>
+      <button data-f="install" aria-pressed="false">-&gt; Installations</button>
+      <button data-f="xr" aria-pressed="false">-&gt; XR / VR / AI</button>
+      <button data-f="multi" aria-pressed="false">-&gt; Multiplayer</button>
+      <button data-f="games" aria-pressed="false">-&gt; Games</button>
+    </div>
+    <div class="stage" id="stage" role="region" aria-roledescription="carousel" aria-label="Sample projects">
+      <article class="panel" data-cat="web" data-seed="3" data-hue="teal"><canvas aria-hidden="true"></canvas><div class="t"><span class="cat">Website</span><h3>Tidal Atlas</h3></div></article>
+      <article class="panel" data-cat="install" data-seed="11" data-hue="violet"><canvas aria-hidden="true"></canvas><div class="t"><span class="cat">Installation</span><h3>Northern Choir</h3></div></article>
+      <article class="panel" data-cat="xr" data-seed="23" data-hue="magenta"><canvas aria-hidden="true"></canvas><div class="t"><span class="cat">XR / AI</span><h3>Glass Garden</h3></div></article>
+      <article class="panel" data-cat="multi" data-seed="5" data-hue="teal"><canvas aria-hidden="true"></canvas><div class="t"><span class="cat">Multiplayer</span><h3>Paper Orbit</h3></div></article>
+      <article class="panel" data-cat="games" data-seed="17" data-hue="violet"><canvas aria-hidden="true"></canvas><div class="t"><span class="cat">Game</span><h3>Signal Bloom</h3></div></article>
+      <article class="panel" data-cat="web" data-seed="31" data-hue="magenta"><canvas aria-hidden="true"></canvas><div class="t"><span class="cat">Website</span><h3>Night Market</h3></div></article>
+      <article class="panel" data-cat="install" data-seed="41" data-hue="teal"><canvas aria-hidden="true"></canvas><div class="t"><span class="cat">Installation</span><h3>Salt &amp; Light</h3></div></article>
+    </div>
+    <div class="pager">
+      <button id="prev" aria-label="Previous project">&lt;&lt;</button>
+      <span class="now" id="now" aria-live="polite">1. Tidal Atlas</span>
+      <button id="next" aria-label="Next project">&gt;&gt;</button>
+    </div>
+  </section>
+
+  <!-- CAPABILITIES -->
+  <section class="block" id="capabilities">
+    <div class="label"><b>01</b><span>Capabilities</span></div>
+    <h2 class="big">Code that<br>feels <em>alive</em></h2>
+    <ul class="caps">
+      <li><span class="n">/01</span><h3>Websites</h3><p>Real-time 3D, shaders and motion that load fast and still work on a mid-range phone.</p></li>
+      <li><span class="n">/02</span><h3>Installations</h3><p>Large screens, projection and sensors for spaces where people gather.</p></li>
+      <li><span class="n">/03</span><h3>XR / VR / AI</h3><p>Headsets, the browser and AI characters that answer back.</p></li>
+      <li><span class="n">/04</span><h3>Multiplayer</h3><p>Shared worlds where thousands of visitors see each other in real time.</p></li>
+      <li><span class="n">/05</span><h3>Games</h3><p>Small, polished games for campaigns, launches and events.</p></li>
+    </ul>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="block" id="process">
+    <div class="label"><b>02</b><span>Process</span></div>
+    <h2 class="big">Four steps,<br><em>one</em> world</h2>
+    <div class="process">
+      <div class="step"><span class="n">/01</span><h3>Discover</h3><p>Goals, audience and the one feeling the project has to leave.</p><span class="ascii" aria-hidden="true">//////0//1//////</span></div>
+      <div class="step"><span class="n">/02</span><h3>Prototype</h3><p>A rough, playable version in days, so decisions are made on screen.</p><span class="ascii" aria-hidden="true">//1//////0//////</span></div>
+      <div class="step"><span class="n">/03</span><h3>Build</h3><p>Production art, code and sound, tested on real devices every week.</p><span class="ascii" aria-hidden="true">////0////1//////</span></div>
+      <div class="step"><span class="n">/04</span><h3>Launch</h3><p>Release, monitoring and the small fixes that come after real visitors arrive.</p><span class="ascii" aria-hidden="true">//////1////0////</span></div>
+    </div>
+  </section>
+
+  <!-- ASK -->
+  <section class="block" id="ask">
+    <div class="label"><b>03</b><span>Ask me anything</span></div>
+    <div class="ask">
+      <h2 class="big">Ask the<br><em>studio</em></h2>
+      <div class="terminal">
+        <div class="log" id="log" aria-live="polite"><p class="a" id="greet">Hi. Ask about projects, timelines, budgets or how we work.</p></div>
+        <form class="prompt" id="ask-form">
+          <label class="sr" for="ask-input">Your question</label>
+          <input id="ask-input" autocomplete="off" placeholder="Ask me anything">
+          <button type="submit">Send</button>
+        </form>
+        <div class="suggest">
+          <button type="button" data-q="How long does a project take?">How long does a project take?</button>
+          <button type="button" data-q="Does it work on phones?">Does it work on phones?</button>
+          <button type="button" data-q="How do we start?">How do we start?</button>
+        </div>
+        <p class="note">Demo: answers come from a short local list, not a live AI.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="block contact" id="contact">
+    <div class="label"><b>04</b><span>Contact</span></div>
+    <h2 class="big">Let's build<br>something that<br><em>feels alive</em></h2>
+    <a class="mail" href="#contact">hello@atlasio.example</a>
+    <div class="offices">
+      <span><b>Istanbul</b>41.0082° N · 28.9784° E</span>
+      <span><b>Berlin</b>52.5200° N · 13.4050° E</span>
+    </div>
+  </section>
+</main>
+
+<footer class="ui">
+  <span>© 2026 Atlasio · fictional studio, template</span>
+  <span class="track-name"><span aria-hidden="true">♪</span><span id="track">Ambient drone — Atlasio</span></span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- translations: English source → Turkish ---------- */
+const I18N={
+  "Sound":"Ses","Work":"İşler","Ask":"Sor","Contact":"İletişim",
+  "Immersive digital studio":"Sürükleyici dijital stüdyo",
+  "Step":"Ekranın",
+  "through":"içine",
+  "the screen":"adım at",
+  "We build websites, installations and real-time worlds that people walk into, not just scroll past.":"İnsanların sadece kaydırıp geçmediği, içine girdiği web siteleri, enstalasyonlar ve gerçek zamanlı dünyalar kuruyoruz.",
+  ">>> Enter":">>> Gir",
+  "What are you looking for?":"Ne arıyorsunuz?",
+  "-> Everything":"-> Hepsi","-> Websites":"-> Web siteleri","-> Installations":"-> Enstalasyonlar","-> XR / VR / AI":"-> XR / VR / AI","-> Multiplayer":"-> Çok oyunculu","-> Games":"-> Oyunlar",
+  "Website":"Web sitesi","Installation":"Enstalasyon","Game":"Oyun","Multiplayer":"Çok oyunculu",
+  "Capabilities":"Yetenekler",
+  "Code that":"İçinde",
+  "feels":"hayat olan",
+  "alive":"kod",
+  "Websites":"Web siteleri",
+  "Real-time 3D, shaders and motion that load fast and still work on a mid-range phone.":"Hızlı yüklenen ve orta seviye bir telefonda bile çalışan gerçek zamanlı 3B, shader ve hareket.",
+  "Installations":"Enstalasyonlar",
+  "Large screens, projection and sensors for spaces where people gather.":"İnsanların bir araya geldiği mekânlar için dev ekranlar, projeksiyon ve sensörler.",
+  "Headsets, the browser and AI characters that answer back.":"Gözlükler, tarayıcı ve cevap veren yapay zekâ karakterleri.",
+  "Shared worlds where thousands of visitors see each other in real time.":"Binlerce ziyaretçinin birbirini gerçek zamanlı gördüğü ortak dünyalar.",
+  "Games":"Oyunlar",
+  "Small, polished games for campaigns, launches and events.":"Kampanyalar, lansmanlar ve etkinlikler için küçük, özenli oyunlar.",
+  "Process":"Süreç",
+  "Four steps,":"Dört adım,",
+  "one":"tek",
+  "world":"dünya",
+  "Discover":"Keşfet","Prototype":"Prototip","Build":"İnşa et","Launch":"Yayınla",
+  "Goals, audience and the one feeling the project has to leave.":"Hedefler, kitle ve projenin bırakması gereken o tek his.",
+  "A rough, playable version in days, so decisions are made on screen.":"Kararlar ekranda verilsin diye günler içinde kaba ama oynanabilir bir sürüm.",
+  "Production art, code and sound, tested on real devices every week.":"Her hafta gerçek cihazlarda test edilen yapım görselleri, kod ve ses.",
+  "Release, monitoring and the small fixes that come after real visitors arrive.":"Yayın, izleme ve gerçek ziyaretçiler geldikten sonraki küçük düzeltmeler.",
+  "Ask me anything":"Bana bir şey sor",
+  "Ask the":"Stüdyoya",
+  "studio":"sorun",
+  "Hi. Ask about projects, timelines, budgets or how we work.":"Merhaba. Projeleri, süreleri, bütçeleri ya da nasıl çalıştığımızı sorabilirsiniz.",
+  "Your question":"Sorunuz",
+  "Send":"Gönder",
+  "How long does a project take?":"Bir proje ne kadar sürer?",
+  "Does it work on phones?":"Telefonda çalışıyor mu?",
+  "How do we start?":"Nasıl başlarız?",
+  "Demo: answers come from a short local list, not a live AI.":"Demo: cevaplar canlı bir yapay zekâdan değil, kısa bir yerel listeden geliyor.",
+  "Let's build":"Yaşadığını",
+  "something that":"hissettiren bir şey",
+  "feels alive":"inşa edelim",
+  "© 2026 Atlasio · fictional studio, template":"© 2026 Atlasio · kurgusal stüdyo, şablon",
+  "Ambient drone — Atlasio":"Ambiyans sesi — Atlasio"
+};
+const ATTR={"Ask me anything":"Bana bir şey sor","Atlasio home":"Atlasio ana sayfa","Main":"Ana menü","Language":"Dil",
+  "Sample projects":"Örnek projeler","Previous project":"Önceki proje","Next project":"Sonraki proje"};
+const ANSWERS={
+  en:[
+    [/long|time|week|month|when/i,"Most websites take 8 to 14 weeks; installations and multiplayer worlds 3 to 6 months. A first prototype is usually ready in about two weeks."],
+    [/phone|mobile|device|ipad|android/i,"Yes. Every project has a mobile budget: lighter shaders, fewer particles and a plain fallback when WebGL is not available."],
+    [/start|begin|brief|contact|hire/i,"Send a short note to hello@atlasio.example with your goal, date and audience. We reply with questions and a call slot."],
+    [/cost|price|budget|money/i,"It depends on scope. After a first call we send a fixed price for the prototype and a range for the full build."],
+    [/webgl|three|3d|shader|tech/i,"Mostly WebGL with three.js and custom shaders, Web Audio for sound, and plain HTML for everything that has to be read or found by search engines."]
+  ],
+  tr:[
+    [/süre|zaman|hafta|ay|ne zaman|uzun/i,"Çoğu web sitesi 8–14 hafta, enstalasyonlar ve çok oyunculu dünyalar 3–6 ay sürer. İlk prototip genelde iki hafta içinde hazır olur."],
+    [/telefon|mobil|cihaz|android|ipad/i,"Evet. Her projenin bir mobil bütçesi var: daha hafif shader'lar, daha az parçacık ve WebGL yoksa sade bir yedek görünüm."],
+    [/başla|nasıl|brief|iletişim|ulaş/i,"Hedefinizi, tarihi ve kitlenizi yazan kısa bir notu hello@atlasio.example adresine gönderin. Sorularımız ve bir görüşme saatiyle döneriz."],
+    [/fiyat|ücret|bütçe|maliyet|para/i,"Kapsama göre değişir. İlk görüşmeden sonra prototip için sabit bir fiyat, tam yapım için bir aralık göndeririz."],
+    [/webgl|three|3b|3d|shader|teknoloji/i,"Çoğunlukla three.js ve özel shader'larla WebGL, ses için Web Audio, okunması ve aranması gereken her şey için düz HTML."]
+  ],
+  fallback:{en:"Good question. That one is for a real conversation: hello@atlasio.example.",tr:"Güzel soru. Bunu gerçek bir sohbette konuşalım: hello@atlasio.example."}
+};
+let lang='en';
+const t=(map,s)=>lang==='en'?s:(s in map?map[s]:s);
+const textNodes=[];
+const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+for(let n;(n=walker.nextNode());){
+  if(n.parentElement.closest('script,style,#slashes,#count,#now,#log,#lat,#lon,#fps'))continue;
+  const raw=n.nodeValue,key=raw.replace(/\s+/g,' ').trim();
+  if(key&&key in I18N)textNodes.push({n,key,lead:raw.match(/^\s*/)[0],trail:raw.match(/\s*$/)[0]});
+}
+const attrNodes=[];
+document.querySelectorAll('[aria-label],[placeholder]').forEach(el=>['aria-label','placeholder'].forEach(a=>{const v=el.getAttribute(a);if(v&&v in ATTR)attrNodes.push({el,a,key:v});}));
+document.querySelectorAll('.suggest button').forEach(b=>attrNodes.push({el:b,a:'data-q',key:b.dataset.q}));
+const langBtns=[...document.querySelectorAll('.lang button')];
+function setLang(l){
+  lang=l;document.documentElement.lang=l;
+  textNodes.forEach(x=>x.n.nodeValue=x.lead+t(I18N,x.key)+x.trail);
+  attrNodes.forEach(x=>x.el.setAttribute(x.a,x.a==='data-q'?t(I18N,x.key):t(ATTR,x.key)));
+  langBtns.forEach(b=>b.setAttribute('aria-pressed',String(b.id==='lang-'+l)));
+  document.getElementById('greet').textContent=t(I18N,'Hi. Ask about projects, timelines, budgets or how we work.');
+  updatePager();
+  try{localStorage.setItem('atlasio-studio-lang',l)}catch(e){}
+}
+
+/* ---------- preloader: slash scramble + counter ---------- */
+(function(){
+  const loader=document.getElementById('loader'),sl=document.getElementById('slashes'),ct=document.getElementById('count');
+  if(reduce){loader.classList.add('done');return}
+  const chars='//////////01/9';let p=0;const start=performance.now();
+  function tick(now){
+    p=Math.min(100,Math.round((now-start)/12));
+    let s='';for(let i=0;i<150;i++)s+=chars[Math.random()*chars.length|0];
+    sl.textContent=s;ct.textContent='/'+p;
+    if(p<100)requestAnimationFrame(tick);else setTimeout(()=>loader.classList.add('done'),150);
+  }
+  requestAnimationFrame(tick);
+})();
+
+/* ---------- film grain tile ---------- */
+(function(){
+  const c=document.createElement('canvas');c.width=c.height=160;const g=c.getContext('2d');const d=g.createImageData(160,160);
+  for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}
+  g.putImageData(d,0,0);document.getElementById('grain').style.backgroundImage=`url(${c.toDataURL()})`;
+})();
+
+/* ---------- custom cursor ---------- */
+(function(){
+  const cur=document.getElementById('cursor');if(!matchMedia('(pointer:fine)').matches)return;
+  addEventListener('pointermove',e=>{cur.classList.add('on');cur.style.transform=`translate(${e.clientX}px,${e.clientY}px)`;});
+  document.addEventListener('pointerleave',()=>cur.classList.remove('on'));
+  document.addEventListener('pointerover',e=>cur.classList.toggle('big',!!e.target.closest('a,button,.panel,input')));
+})();
+
+/* ---------- WebGL portal ---------- */
+const pointer={x:0,y:0};
+addEventListener('pointermove',e=>{pointer.x=e.clientX/innerWidth*2-1;pointer.y=-(e.clientY/innerHeight*2-1);});
+(function(){
+  const canvas=document.getElementById('gl');
+  let renderer;
+  try{ if(!window.THREE)throw 0; renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'}); }
+  catch(e){ canvas.remove(); const f=document.createElement('div');f.className='fallback';f.setAttribute('aria-hidden','true');document.body.prepend(f); return; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));
+  renderer.setClearColor(0x05070b,1);
+  const scene=new THREE.Scene();
+  scene.fog=new THREE.FogExp2(0x05070b,.06);
+  const camera=new THREE.PerspectiveCamera(45,1,.1,100);camera.position.set(0,0,9);
+  const portal=new THREE.Group();scene.add(portal);
+  const TEAL=new THREE.Color('#3fd0c9'),VIOLET=new THREE.Color('#b49cff');
+
+  // ring + soft glow
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(1.6,.022,24,240),new THREE.MeshBasicMaterial({color:TEAL,transparent:true,opacity:.95,blending:THREE.AdditiveBlending}));
+  portal.add(ring);
+  const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');const r=g.createRadialGradient(128,128,40,128,128,128);
+    r.addColorStop(0,'rgba(63,208,201,0)');r.addColorStop(.58,'rgba(63,208,201,.0)');r.addColorStop(.66,'rgba(63,208,201,.55)');r.addColorStop(.74,'rgba(63,208,201,.08)');r.addColorStop(1,'rgba(63,208,201,0)');
+    g.fillStyle=r;g.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);})();
+  const glow=new THREE.Mesh(new THREE.PlaneGeometry(5,5),new THREE.MeshBasicMaterial({map:glowTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
+  portal.add(glow);
+
+  // ASCII disc inside the ring
+  const asc=document.createElement('canvas');asc.width=asc.height=512;const ag=asc.getContext('2d');
+  const ascTex=new THREE.CanvasTexture(asc);
+  function drawAscii(){
+    ag.fillStyle='#04070a';ag.fillRect(0,0,512,512);ag.font='22px monospace';
+    for(let y=0;y<22;y++)for(let x=0;x<34;x++){
+      const ch=Math.random()<.08?(Math.random()<.5?'0':'1'):'/';
+      ag.fillStyle=ch==='/'?'rgba(63,208,201,.32)':'rgba(180,156,255,.9)';ag.fillText(ch,6+x*15,26+y*23);
+    }
+    ag.fillStyle='#e8f1f2';ag.font='bold 34px monospace';ag.fillText('>>>',226,268);
+    ascTex.needsUpdate=true;
+  }
+  drawAscii();
+  const disc=new THREE.Mesh(new THREE.CircleGeometry(1.57,96),new THREE.MeshBasicMaterial({map:ascTex,transparent:true,opacity:.9}));
+  disc.position.z=-.01;portal.add(disc);
+
+  // light arms around the ring (tubes with alpha fading along their length)
+  const armMat=new THREE.ShaderMaterial({transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,
+    uniforms:{uTime:{value:0},uColor:{value:TEAL}},
+    vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+    fragmentShader:'varying vec2 vUv;uniform vec3 uColor;uniform float uTime;void main(){float a=sin(vUv.x*3.1416)*.85;a*=.55+.45*sin(uTime*1.3+vUv.x*6.);gl_FragColor=vec4(uColor,a*.8);}'});
+  const arms=new THREE.Group();portal.add(arms);
+  const N=16;
+  for(let i=0;i<N;i++){
+    const ang=i/N*Math.PI*2,r1=2.05,r2=3.1+Math.random()*.6,bend=.45+Math.random()*.3;
+    const p0=new THREE.Vector3(Math.cos(ang)*r1,Math.sin(ang)*r1,0);
+    const p1=new THREE.Vector3(Math.cos(ang+bend)*((r1+r2)/2+.4),Math.sin(ang+bend)*((r1+r2)/2+.4),-.4);
+    const p2=new THREE.Vector3(Math.cos(ang+bend*.4)*r2,Math.sin(ang+bend*.4)*r2,-.8);
+    const tube=new THREE.Mesh(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(p0,p1,p2),40,.035,6,false),armMat);
+    arms.add(tube);
+  }
+
+  // particles streaming into the portal
+  const COUNT=innerWidth<700?700:1600;
+  const pos=new Float32Array(COUNT*3),seed=new Float32Array(COUNT),col=new Float32Array(COUNT*3);
+  for(let i=0;i<COUNT;i++){seed[i]=Math.random();const c=TEAL.clone().lerp(VIOLET,Math.random());col.set([c.r,c.g,c.b],i*3);}
+  const pg=new THREE.BufferGeometry();pg.setAttribute('position',new THREE.BufferAttribute(pos,3));pg.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const pts=new THREE.Points(pg,new THREE.PointsMaterial({size:.035,vertexColors:true,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false}));
+  scene.add(pts);
+
+  function resize(){
+    const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+    portal.position.x=w>900?2.3:0;portal.position.y=w>900?.2:.9;portal.scale.setScalar(w>900?1:.72);
+  }
+  addEventListener('resize',resize);resize();
+
+  let last=performance.now(),frames=0,fpsT=last,t0=last,asciiT=0;
+  const fpsEl=document.getElementById('fps');
+  function frame(now){
+    const t=(now-t0)/1000,dt=Math.min(.05,(now-last)/1000);last=now;
+    armMat.uniforms.uTime.value=t;
+    arms.rotation.z=t*.05;ring.scale.setScalar(1+Math.sin(t*1.6)*.01);
+    if(now-asciiT>160){drawAscii();asciiT=now;}
+    for(let i=0;i<COUNT;i++){
+      const s=seed[i],k=((s*7.3+t*.08*(.5+s))%1);         // 0 → 1: from far edge into the ring
+      const a=s*Math.PI*2*13+t*.2,r=(1-k)*6+1.65;
+      pos[i*3]=Math.cos(a)*r+portal.position.x;pos[i*3+1]=Math.sin(a)*r*.6+portal.position.y;pos[i*3+2]=-k*2+(1-k)*2;
+    }
+    pg.attributes.position.needsUpdate=true;
+    // scroll: the portal recedes as content arrives
+    const sp=Math.min(1,scrollY/innerHeight);
+    portal.position.z=-sp*3;renderer.domElement.style.opacity=String(1-sp*.55);
+    camera.position.x+=(pointer.x*.6-camera.position.x)*.04;camera.position.y+=(pointer.y*.4-camera.position.y)*.04;camera.lookAt(0,0,0);
+    renderer.render(scene,camera);
+    frames++;if(now-fpsT>500){fpsEl.textContent=Math.round(frames*1000/(now-fpsT));frames=0;fpsT=now;}
+    if(!reduce)requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!reduce){last=performance.now();}});
+})();
+
+/* ---------- work gallery ---------- */
+const panels=[...document.querySelectorAll('.panel')];let cur=0,filter='all';
+// generative art per panel: seeded flow lines
+panels.forEach(p=>{
+  const c=p.querySelector('canvas');const w=c.width=720,h=c.height=450;const g=c.getContext('2d');
+  let s=+p.dataset.seed;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
+  const hues={teal:['#3fd0c9','#1f7f80','#b49cff'],violet:['#b49cff','#6b4fd1','#3fd0c9'],magenta:['#ff5fae','#b49cff','#3fd0c9']}[p.dataset.hue];
+  const bg=g.createLinearGradient(0,0,w,h);bg.addColorStop(0,'#070b12');bg.addColorStop(1,'#0d1220');g.fillStyle=bg;g.fillRect(0,0,w,h);
+  const f1=1+rnd()*3,f2=1+rnd()*3,ph=rnd()*6;
+  for(let i=0;i<260;i++){
+    let x=rnd()*w,y=rnd()*h;g.strokeStyle=hues[i%3];g.globalAlpha=.08+rnd()*.25;g.lineWidth=.6+rnd()*1.4;g.beginPath();g.moveTo(x,y);
+    for(let k=0;k<60;k++){const a=Math.sin(x/w*f1*6+ph)*2+Math.cos(y/h*f2*6)*2;x+=Math.cos(a)*4;y+=Math.sin(a)*4;g.lineTo(x,y);}
+    g.stroke();
+  }
+  g.globalAlpha=1;
+});
+const visible=()=>panels.filter(p=>filter==='all'||p.dataset.cat===filter);
+function layoutPanels(){
+  const vis=visible();if(!vis.includes(panels[cur]))cur=panels.indexOf(vis[0]);
+  const vi=vis.indexOf(panels[cur]),n=vis.length;
+  panels.forEach(p=>{
+    const i=vis.indexOf(p);
+    if(i<0){p.dataset.o='far';p.dataset.dim='1';p.setAttribute('aria-hidden','true');return}
+    let d=i-vi;if(d>n/2)d-=n;if(d<-n/2)d+=n;
+    p.dataset.o=Math.abs(d)<=2?String(d):'far';p.dataset.dim='0';p.setAttribute('aria-hidden',String(d!==0));
+  });
+  updatePager();
+}
+function updatePager(){
+  const vis=visible(),p=panels[cur];if(!p)return;
+  document.getElementById('now').textContent=(vis.indexOf(p)+1)+'. '+p.querySelector('h3').textContent;
+}
+function step(k){const vis=visible();const i=(vis.indexOf(panels[cur])+k+vis.length)%vis.length;cur=panels.indexOf(vis[i]);layoutPanels();}
+document.getElementById('prev').onclick=()=>step(-1);
+document.getElementById('next').onclick=()=>step(1);
+panels.forEach((p,i)=>p.addEventListener('click',()=>{if(p.dataset.o!=='0'&&p.dataset.o!=='far'){cur=i;layoutPanels();}}));
+const stage=document.getElementById('stage');
+stage.tabIndex=0;stage.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')step(-1);if(e.key==='ArrowRight')step(1);});
+let sx=null;stage.addEventListener('pointerdown',e=>sx=e.clientX);stage.addEventListener('pointerup',e=>{if(sx!==null&&Math.abs(e.clientX-sx)>40)step(e.clientX<sx?1:-1);sx=null;});
+document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{
+  filter=b.dataset.f;document.querySelectorAll('.filters button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));layoutPanels();
+}));
+layoutPanels();
+
+/* ---------- ask me anything (local FAQ) ---------- */
+const log=document.getElementById('log'),askForm=document.getElementById('ask-form'),askInput=document.getElementById('ask-input');
+function ask(q){
+  q=q.trim();if(!q)return;
+  const qe=document.createElement('p');qe.className='q';qe.textContent=q;log.append(qe);
+  const hit=ANSWERS[lang].find(([re])=>re.test(q));
+  const ae=document.createElement('p');ae.className='a';log.append(ae);
+  const txt=hit?hit[1]:ANSWERS.fallback[lang];let i=0;
+  if(reduce){ae.textContent=txt}else{const iv=setInterval(()=>{ae.textContent=txt.slice(0,i+=3);log.scrollTop=log.scrollHeight;if(i>=txt.length)clearInterval(iv);},16);}
+  log.scrollTop=log.scrollHeight;
+}
+askForm.addEventListener('submit',e=>{e.preventDefault();ask(askInput.value);askInput.value='';});
+document.querySelectorAll('.suggest button').forEach(b=>b.addEventListener('click',()=>ask(b.dataset.q)));
+
+/* ---------- ambient sound (Web Audio, off by default) ---------- */
+(function(){
+  const btn=document.getElementById('sound');let ctx,gain;
+  btn.addEventListener('click',()=>{
+    const on=btn.getAttribute('aria-pressed')!=='true';btn.setAttribute('aria-pressed',String(on));
+    try{
+      if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();gain=ctx.createGain();gain.gain.value=0;gain.connect(ctx.destination);
+        [55,82.4,110.2,164.8].forEach((f,i)=>{const o=ctx.createOscillator();o.type=i%2?'sine':'triangle';o.frequency.value=f;
+          const lfo=ctx.createOscillator(),lg=ctx.createGain();lfo.frequency.value=.05+i*.03;lg.gain.value=f*.006;lfo.connect(lg).connect(o.frequency);
+          const g=ctx.createGain();g.gain.value=.06/(i+1);o.connect(g).connect(gain);o.start();lfo.start();});}
+      ctx.resume();gain.gain.setTargetAtTime(on?.35:0,ctx.currentTime,.6);
+    }catch(e){btn.setAttribute('aria-pressed','false');}
+  });
+})();
+
+/* ---------- live coordinates jitter (decorative) ---------- */
+setInterval(()=>{if(reduce)return;const j=()=>(Math.random()-.5)*.0004;
+  document.getElementById('lat').textContent=(41.0082+j()).toFixed(4);document.getElementById('lon').textContent=(28.9784+j()).toFixed(4);},400);
+
+langBtns.forEach(b=>b.addEventListener('click',()=>setLang(b.id.slice(5))));
+let saved=null;try{saved=localStorage.getItem('atlasio-studio-lang')}catch(e){}
+setLang(saved==='tr'?'tr':'en');
+</script>
+</body>
+</html>
