@@ -34,6 +34,15 @@
       "skills": [
         "./skills/portal-webgl-studio"
       ]
+    },
+    {
+      "name": "pointcloud-matrix-tech",
+      "description": "Technology, data and AI product sites as a dark engineering document: matrix rain background, magnetic cursor, three.js point-cloud hero attracted to the mouse, voxel and wireframe twin visuals.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/pointcloud-matrix-tech"
+      ]
     }
   ]
 }

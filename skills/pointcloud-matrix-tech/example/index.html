@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atlasio · Point Cloud Matrix Example</title>
+<meta name="description" content="Template site for a fictional spatial-data platform: point-cloud hero, matrix rain background, magnetic cursor, grid-framed sections.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: an engineering document on a dark graphite sheet. The page is framed by hairline rules: a bordered
+   column with a header row, every section split into cells by 1px lines. Large geometric grotesk headlines,
+   Space Mono for every label, one lime accent for numbers, buttons and live data. Behind it all, a faint matrix rain;
+   in the hero, a point-cloud city that leans toward the cursor. Deliberately dark-only. */
+:root{
+  color-scheme:dark;
+  --bg:#11161a; --panel:#141a1f; --panel-2:#182027; --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.16);
+  --text:#ffffff; --soft:#c9d6dd; --muted:#8fa9b8; --dim:#5d7180;
+  --lime:#c6f432; --lime-2:#9fd11c; --cyan:#5fe1e7;
+  --f-sans:"Space Grotesk","Struve","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"Space Mono",ui-monospace,Menlo,monospace;
+  --frame:min(1360px,calc(100% - 2*max(16px,env(safe-area-inset-left,0px))));
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.6 var(--f-sans);-webkit-font-smoothing:antialiased;overflow-x:clip}
+h1,h2,h3,p{margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:1px solid var(--lime);outline-offset:3px}
+.mono{font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.04em}
+
+/* ---------- background: matrix rain ---------- */
+#rain{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.55}
+.vignette{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 30%,transparent 30%,rgba(17,22,26,.85) 80%)}
+
+/* ---------- frame ---------- */
+.frame{position:relative;z-index:1;width:var(--frame);margin:0 auto;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+header.top{position:sticky;top:0;z-index:40;width:var(--frame);margin:0 auto;display:flex;align-items:center;gap:28px;height:64px;padding:0 20px;
+  background:rgba(17,22,26,.82);backdrop-filter:blur(10px);border:1px solid var(--line);border-top:0}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font:500 26px/1 var(--f-sans);letter-spacing:-.02em;color:#c3d0d6}
+.logo svg{width:24px;height:24px}
+header.top nav{margin-left:auto;display:flex;align-items:center;gap:26px}
+header.top nav a{font:400 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--soft);opacity:.8}
+header.top nav a:hover{opacity:1;color:var(--lime)}
+.lang{display:flex;border:1px solid var(--line-2)}
+.lang button{background:none;border:0;padding:7px 9px;font:400 11px var(--f-mono);color:var(--muted);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--lime);color:#11161a}
+.btn{display:inline-flex;align-items:center;gap:12px;padding:13px 18px;font:400 12px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0;transition:background .2s,color .2s}
+.btn.light{background:#fff;color:#11161a}
+.btn.light:hover{background:var(--lime)}
+.btn.dark{background:#1b2329;color:var(--lime);border:1px solid var(--line-2)}
+.btn.dark:hover{background:var(--lime);color:#11161a}
+.btn .arr{font-size:14px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;min-height:calc(100vh - 64px);display:grid;grid-template-rows:auto 1fr auto;padding:36px 28px 32px;border-bottom:1px solid var(--line);overflow:hidden}
+#cloud{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.hero > *:not(#cloud){position:relative;z-index:1}
+.hero h1{font-weight:700;font-size:clamp(46px,6.4vw,92px);line-height:1;letter-spacing:-.035em;max-width:13ch}
+.hero .sub{font-weight:300;font-size:clamp(18px,1.8vw,24px);line-height:1.35;color:var(--muted);max-width:30ch;margin-top:18px}
+.hero-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:20px}
+.readout{display:grid;gap:6px;text-align:right;font:400 11px/1.5 var(--f-mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.readout b{color:var(--lime);font-weight:400}
+.tag{position:absolute;z-index:1;font:400 10px/1.4 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--soft);
+  padding:6px 8px;border:1px solid var(--line-2);background:rgba(17,22,26,.7);pointer-events:none;white-space:nowrap}
+.tag::before{content:"";position:absolute;left:-22px;top:50%;width:22px;height:1px;background:var(--line-2)}
+.tag i{display:inline-block;width:6px;height:6px;background:var(--lime);margin-right:6px;vertical-align:1px}
+
+/* ---------- section scaffolding ---------- */
+.sec-label{display:flex;gap:10px;padding:22px 28px 0;font:400 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sec-label b{color:var(--lime);font-weight:400}
+.sec-title{font-weight:400;font-size:clamp(34px,4vw,58px);letter-spacing:-.025em;line-height:1.05;padding:18px 28px 40px;border-bottom:1px solid var(--line)}
+section{border-bottom:1px solid var(--line);background:rgba(17,22,26,.78)}
+section.hero{background:none}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(17,22,26,.92) 0,rgba(17,22,26,.6) 30%,transparent 55%)}
+.grid{display:grid}
+.cell{padding:28px;border-right:1px solid var(--line);min-width:0}
+.cell:last-child{border-right:0}
+.feat{list-style:none;margin:auto 0 0;padding:28px 0 0;display:grid;gap:6px;font:400 10.5px/1.4 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.cell h3{font-weight:500;font-size:20px;letter-spacing:-.01em;margin-bottom:14px}
+.cell p{color:var(--muted);font-size:14.5px;line-height:1.55}
+
+/* about */
+.about{grid-template-columns:1fr 1fr}
+.about .statement{font-weight:400;font-size:clamp(24px,2.6vw,36px);line-height:1.22;letter-spacing:-.02em;padding:40px 28px 70px;border-bottom:1px solid var(--line)}
+.about .mark{width:30px;height:30px;margin:46px 28px 60px}
+.about .body{padding:0 28px 40px;color:var(--muted);font-size:14.5px;max-width:44ch;display:grid;gap:18px}
+.about .vis{position:relative;border-left:1px solid var(--line);min-height:560px;overflow:hidden;background:#0d1216}
+#voxels{position:absolute;inset:0;width:100%;height:100%}
+.quote{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+.quote .ui{position:relative;min-height:340px;border-right:1px solid var(--line);background:linear-gradient(135deg,#0f1519,#141c22 60%,rgba(198,244,50,.18));overflow:hidden;display:grid;place-items:center}
+.quote p{padding:40px 28px;font-weight:300;font-size:clamp(20px,2.1vw,30px);line-height:1.3;color:var(--muted);align-self:center}
+
+/* phone mock with AI guide */
+.phone{width:260px;height:300px;border-radius:30px 30px 0 0;border:8px solid #0a0e11;border-bottom:0;background:#1c252c;position:relative;transform:translateY(24px) rotate(-6deg);
+  box-shadow:0 30px 60px rgba(0,0,0,.5);overflow:hidden}
+.phone .scene{position:absolute;inset:0 0 40%;background:repeating-linear-gradient(90deg,rgba(95,225,231,.15) 0 1px,transparent 1px 22px),repeating-linear-gradient(0deg,rgba(95,225,231,.12) 0 1px,transparent 1px 22px),linear-gradient(#22303a,#141b20)}
+.phone .pin{position:absolute;font:400 9px var(--f-mono);background:#fff;color:#11161a;padding:3px 6px;border-radius:999px}
+.phone .chat{position:absolute;left:10px;right:10px;bottom:10px;background:#f4f6f2;color:#11161a;border-radius:14px;padding:12px;font-size:12px;line-height:1.35}
+.phone .chat b{display:block;font-size:14px;margin-bottom:4px}
+.phone .chat span{color:#7b4cff}
+
+/* technologies */
+.tech{grid-template-columns:repeat(4,1fr)}
+.tech .cell{display:flex;flex-direction:column;min-height:300px}
+.tech .cell:hover{background:linear-gradient(180deg,rgba(198,244,50,.05),transparent)}
+.banner{height:220px;border-top:1px solid var(--line);position:relative;overflow:hidden}
+#cubes{position:absolute;inset:0;width:100%;height:100%}
+
+/* products */
+.products{grid-template-columns:1fr 1fr 1fr}
+.products .cell{display:flex;flex-direction:column;min-height:300px;border-bottom:1px solid var(--line)}
+.products .cell:nth-child(3n){border-right:0}
+.panel-ui{grid-row:span 2;background:linear-gradient(160deg,#173038,#0f1519);position:relative;overflow:hidden;padding:30px}
+.settings{position:absolute;right:28px;top:30px;width:min(280px,calc(100% - 40px));background:#0f1418;border:1px solid var(--line-2);border-radius:14px;padding:16px;transform:perspective(900px) rotateY(-16deg);
+  box-shadow:-30px 30px 60px rgba(0,0,0,.4),0 0 0 6px rgba(198,244,50,.18)}
+.settings h4{margin:0 0 12px;font:400 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.slider{display:grid;grid-template-columns:70px 1fr 34px;gap:8px;align-items:center;font:400 10px var(--f-mono);color:var(--muted);margin:10px 0}
+.slider input{width:100%;accent-color:var(--lime)}
+.slider output{text-align:right;color:var(--soft)}
+.settings .save{margin-top:12px;width:100%;padding:10px;border:0;border-radius:8px;background:#e9eee6;color:#11161a;font:400 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+
+/* industries */
+.industries{grid-template-columns:.9fr 1.1fr}
+.ind-list{list-style:none;margin:0;padding:0}
+.ind-list button{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:18px 28px;cursor:pointer;text-align:left;
+  font:400 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);transition:color .2s,background .2s}
+.ind-list button[aria-selected="true"]{color:var(--text);background:rgba(198,244,50,.06)}
+.ind-list button[aria-selected="true"]::after{content:"●";color:var(--lime)}
+.ind-view{border-left:1px solid var(--line);display:grid;grid-template-rows:1fr auto}
+.ind-vis{position:relative;min-height:320px;overflow:hidden;background:#0d1216}
+#twin{position:absolute;inset:0;width:100%;height:100%}
+.ind-text{padding:28px;display:grid;gap:10px;border-top:1px solid var(--line)}
+.ind-text h3{font-weight:500;font-size:24px;letter-spacing:-.01em}
+.ind-text p{color:var(--muted);max-width:56ch}
+
+/* why */
+.why{grid-template-columns:repeat(4,1fr)}
+.why .cell{min-height:260px;display:grid;align-content:start;gap:14px}
+.why .n{font:400 11px var(--f-mono);color:var(--lime)}
+.metric{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.metric div{padding:28px;border-right:1px solid var(--line)}
+.metric div:last-child{border-right:0}
+.metric b{display:block;font-weight:300;font-size:clamp(38px,4.4vw,64px);letter-spacing:-.03em;color:var(--lime);font-variant-numeric:tabular-nums;line-height:1}
+.metric span{font:400 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* contact */
+.contact{grid-template-columns:1fr 1fr}
+.contact h2{font-weight:400;font-size:clamp(34px,4vw,58px);letter-spacing:-.025em;line-height:1.05;margin-bottom:18px}
+form.grid{grid-template-columns:1fr 1fr;gap:0;border-left:1px solid var(--line)}
+.field{display:grid;gap:6px;padding:18px 28px;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.field:nth-child(2n){border-right:0}
+.field.full{grid-column:1/-1;border-right:0}
+.field label{font:400 10.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.field input,.field select,.field textarea{background:transparent;border:0;border-bottom:1px solid var(--line-2);color:#fff;font:400 16px var(--f-sans);padding:8px 0}
+.field textarea{min-height:90px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-bottom-color:var(--lime)}
+.form-foot{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:22px 28px}
+.form-foot label{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
+.form-foot input{accent-color:var(--lime)}
+.ok{grid-column:1/-1;margin:0 28px 22px;padding:12px 14px;border-left:2px solid var(--lime);background:rgba(198,244,50,.06);font:400 12px var(--f-mono)}
+
+footer.bottom{position:relative;z-index:1;width:var(--frame);margin:0 auto;border:1px solid var(--line);border-top:0;display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;padding:22px 28px;
+  font:400 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+
+/* ---------- magnetic cursor ---------- */
+.cur{position:fixed;left:0;top:0;z-index:100;pointer-events:none;display:none}
+.cur .dot{position:absolute;width:6px;height:6px;margin:-3px;background:var(--lime);border-radius:50%}
+.cur .ring{position:absolute;width:38px;height:38px;margin:-19px;border:1px solid rgba(198,244,50,.7);border-radius:50%;transition:width .25s,height .25s,margin .25s,border-radius .25s}
+.cur.snap .ring{border-radius:6px}
+@media (pointer:fine){.cur{display:block;opacity:0}.cur.on{opacity:1}}
+[data-magnet]{transition:transform .35s cubic-bezier(.2,.8,.2,1);will-change:transform}
+
+/* ---------- responsive ---------- */
+@media (max-width:1060px){
+  header.top nav a.hide-md{display:none}
+  .about,.quote,.industries,.contact{grid-template-columns:1fr}
+  .about .vis,.ind-view,form.grid{border-left:0;border-top:1px solid var(--line)}
+  .quote .ui{border-right:0;border-bottom:1px solid var(--line)}
+  .tech,.why{grid-template-columns:1fr 1fr}
+  .tech .cell:nth-child(2n),.why .cell:nth-child(2n){border-right:0}
+  .tech .cell,.why .cell{border-bottom:1px solid var(--line)}
+  .products{grid-template-columns:1fr 1fr}
+  .products .cell:nth-child(3n){border-right:1px solid var(--line)}
+  .products .cell:nth-child(2n){border-right:0}
+  .panel-ui{grid-row:auto;min-height:340px}
+}
+@media (max-width:640px){
+  header.top{gap:12px;padding:0 14px}
+  header.top nav{gap:14px}
+  header.top nav a{display:none}
+  .hero{padding:28px 18px}
+  .readout{display:none}
+  .tag{display:none}
+  .tech,.why,.products,form.grid,.metric{grid-template-columns:1fr}
+  .cell,.field{border-right:0}
+  .metric div{border-right:0;border-bottom:1px solid var(--line)}
+  .about .vis{min-height:380px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<canvas id="rain" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div class="cur" id="cur" aria-hidden="true"><span class="ring"></span><span class="dot"></span></div>
+
+<header class="top">
+  <a class="logo" href="#top" aria-label="Atlasio home">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21 12 3l9 18M7.5 13h9" fill="none" stroke="#c6f432" stroke-width="2.4"/></svg>atlasio
+  </a>
+  <nav aria-label="Main">
+    <a class="hide-md" href="#about">Who we are</a>
+    <a href="#tech">Technologies</a>
+    <a class="hide-md" href="#industries">Industries</a>
+    <a href="#why">Why Atlasio</a>
+    <div class="lang" role="group" aria-label="Language"><button id="lang-en" aria-pressed="true">EN</button><button id="lang-tr" aria-pressed="false">TR</button></div>
+    <a class="btn light" href="#contact" data-magnet>Request a demo</a>
+  </nav>
+</header>
+
+<div class="frame" id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <canvas id="cloud" aria-hidden="true"></canvas>
+    <div>
+      <h1>Turn places into living data</h1>
+      <p class="sub">Spatial intelligence and big data, rendered as interactive, AI-guided digital twins.</p>
+    </div>
+    <div aria-hidden="true">
+      <span class="tag" style="left:58%;top:30%"><i></i>Tower B · 212 m</span>
+      <span class="tag" style="left:72%;top:52%"><i></i>Bridge span · live load</span>
+      <span class="tag" style="left:46%;top:64%"><i></i>Plaza · 4.2k visitors</span>
+    </div>
+    <div class="hero-foot">
+      <a class="btn dark" href="#tech" data-magnet>Explore technologies <span class="arr">→</span></a>
+      <div class="readout" aria-hidden="true">
+        <span>Points <b id="pts">0</b></span>
+        <span>Cursor <b id="cxy">0.00 · 0.00</b></span>
+        <span>Stream <b>Live</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="sec-label"><b>01</b><span>Who we are</span></div>
+    <div class="grid about">
+      <div>
+        <p class="statement">Atlasio builds the infrastructure to capture, structure and deliver interactive 3D twins of physical and virtual spaces.</p>
+        <svg class="mark" viewBox="0 0 30 30" aria-hidden="true"><path d="M15 2v26M2 15h26" stroke="#c6f432" stroke-width="7"/><path d="M15 2v26M2 15h26" stroke="#11161a" stroke-width="2"/></svg>
+        <div class="body">
+          <p>We help cities and companies turn scans, sensors and records into one navigable space, where every building, room or asset carries its own data.</p>
+          <p>Context is what makes data useful. Atlasio pairs each scene with guided stories and an AI layer that explains what you are looking at.</p>
+        </div>
+      </div>
+      <div class="vis" aria-hidden="true"><canvas id="voxels"></canvas></div>
+      <div class="quote">
+        <div class="ui" aria-hidden="true">
+          <div class="phone">
+            <div class="scene"></div>
+            <span class="pin" style="left:30px;top:40px">Gate 3</span><span class="pin" style="left:150px;top:70px">Atrium</span>
+            <div class="chat"><b>Hello, explorer!</b>I'm your <span>AI guide</span>. Ask me about any building in this scene.</div>
+          </div>
+        </div>
+        <p>By pairing scene management with AI-guided storytelling, organisations can publish high-fidelity twins that run on the web, on phones and inside their own products.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECHNOLOGIES -->
+  <section id="tech">
+    <div class="sec-label"><b>02</b><span>What we do</span></div>
+    <h2 class="sec-title">Our technologies</h2>
+    <div class="grid tech">
+      <div class="cell"><h3>Photoreal point scenes</h3><p>Capture any space with high visual fidelity while keeping it light enough to stream to a browser.</p>
+        <ul class="feat"><li>Near-photoreal visuals</li><li>Web, mobile and headsets</li><li>Scales to whole districts</li></ul></div>
+      <div class="cell"><h3>Rendering engine</h3><p>A custom runtime built for smooth, interactive 3D, with streaming and levels of detail under your control.</p>
+        <ul class="feat"><li>LOD and streaming</li><li>Real-time rendering</li><li>Full input control</li></ul></div>
+      <div class="cell"><h3>SDK &amp; integration</h3><p>Use the SDK on its own or with Atlasio Studio; scenes, stories and AI behaviour arrive with a few lines of code.</p>
+        <ul class="feat"><li>Lightweight SDK</li><li>Runs on any platform</li><li>Scene logic and AI APIs</li></ul></div>
+      <div class="cell"><h3>AI guide layer</h3><p>Turns scenes into guided, explainable experiences by combining spatial context with conversation.</p>
+        <ul class="feat"><li>Scene-aware AI</li><li>Configurable tone</li><li>Natural navigation</li></ul></div>
+    </div>
+    <div class="banner" aria-hidden="true"><canvas id="cubes"></canvas></div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section id="products">
+    <div class="sec-label"><b>03</b><span>What we build</span></div>
+    <h2 class="sec-title">Products</h2>
+    <div class="grid products">
+      <div class="cell"><h3>Atlasio Studio</h3><p>Prepare 3D scenes with context, structure and stories, ready for real users.</p>
+        <ul class="feat"><li>Scene management</li><li>Annotations and stories</li><li>Knowledge base and AI setup</li></ul></div>
+      <div class="cell"><h3>Atlasio SDK</h3><p>Embed interactive twins inside your own product.</p>
+        <ul class="feat"><li>Web and mobile ready</li><li>Navigation and story APIs</li><li>AI-guided interaction</li></ul></div>
+      <div class="cell panel-ui" aria-label="Render settings preview">
+        <div class="settings">
+          <h4>Render settings</h4>
+          <div class="slider"><label for="s1">Point size</label><input id="s1" type="range" min="1" max="40" value="16"><output for="s1">16</output></div>
+          <div class="slider"><label for="s2">Density</label><input id="s2" type="range" min="1" max="100" value="62"><output for="s2">62</output></div>
+          <div class="slider"><label for="s3">Rain</label><input id="s3" type="range" min="0" max="100" value="55"><output for="s3">55</output></div>
+          <div class="slider"><label for="s4">Magnet</label><input id="s4" type="range" min="0" max="100" value="70"><output for="s4">70</output></div>
+          <button class="save" type="button">Save render settings</button>
+        </div>
+      </div>
+      <div class="cell"><h3>Capture &amp; digitising</h3><p>Our own crew scans locations and produces finished scenes.</p>
+        <ul class="feat"><li>Built for stories</li><li>Ready for real-world use</li><li>Made by a production team</li></ul></div>
+      <div class="cell"><h3>Atlasio Lab</h3><p>Our research desk: experiments with splats, live data and new story formats.</p>
+        <ul class="feat"><li>Prototypes</li><li>Data stories</li><li>Open notes</li></ul></div>
+    </div>
+  </section>
+
+  <!-- INDUSTRIES -->
+  <section id="industries">
+    <div class="sec-label"><b>04</b><span>Industries</span></div>
+    <h2 class="sec-title">One platform, any environment</h2>
+    <div class="grid industries">
+      <ul class="ind-list" role="tablist" aria-label="Industries">
+        <li><button role="tab" aria-selected="true" data-i="0">Education &amp; training</button></li>
+        <li><button role="tab" aria-selected="false" data-i="1">Municipalities</button></li>
+        <li><button role="tab" aria-selected="false" data-i="2">Real estate</button></li>
+        <li><button role="tab" aria-selected="false" data-i="3">Culture &amp; museums</button></li>
+        <li><button role="tab" aria-selected="false" data-i="4">Infrastructure &amp; construction</button></li>
+        <li><button role="tab" aria-selected="false" data-i="5">Tourism &amp; destinations</button></li>
+      </ul>
+      <div class="ind-view" role="tabpanel" aria-live="polite">
+        <div class="ind-vis" aria-hidden="true"><canvas id="twin"></canvas></div>
+        <div class="ind-text"><h3 id="ind-h">Learn complex processes through space.</h3><p id="ind-p">Students and professionals explore how systems work inside the real place, with guided explanations and interactive stories.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section id="why">
+    <div class="sec-label"><b>05</b><span>Our expertise</span></div>
+    <h2 class="sec-title">Why Atlasio</h2>
+    <div class="grid why">
+      <div class="cell"><span class="n">/01</span><h3>Open by design</h3><p>Fits existing workflows; interoperable by default, no forced pipeline or vendor lock-in.</p></div>
+      <div class="cell"><span class="n">/02</span><h3>AI that simplifies</h3><p>AI makes spaces easier to understand, not another layer to learn.</p></div>
+      <div class="cell"><span class="n">/03</span><h3>Engine people</h3><p>A team with deep experience in 3D engines, AI agents and computer vision.</p></div>
+      <div class="cell"><span class="n">/04</span><h3>Built, not assembled</h3><p>We own the core of our stack, so performance stays predictable.</p></div>
+    </div>
+    <div class="metric">
+      <div><b data-count="120">0</b><span>Million points per scene (sample)</span></div>
+      <div><b data-count="60">0</b><span>Frames per second target</span></div>
+      <div><b data-count="3">0</b><span>Platforms from one scene</span></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="sec-label"><b>06</b><span>Contact us</span></div>
+    <div class="grid contact">
+      <div class="cell" style="border-right:0">
+        <h2>Let's build the next dimension of your data</h2>
+        <p style="color:var(--muted)">Fill in the form to request a demo.</p>
+        <p class="mono" style="margin-top:30px;font-size:12px;color:var(--soft)">hello@atlasio.example</p>
+      </div>
+      <form class="grid" id="form" novalidate>
+        <div class="field"><label for="f1">Full name</label><input id="f1" required autocomplete="name"></div>
+        <div class="field"><label for="f2">Company</label><input id="f2" autocomplete="organization"></div>
+        <div class="field"><label for="f3">Job title</label><input id="f3" autocomplete="organization-title"></div>
+        <div class="field"><label for="f4">Email</label><input id="f4" type="email" required autocomplete="email"></div>
+        <div class="field full"><label for="f5">Topic</label><select id="f5"><option>Request a product demo</option><option>Scan a location</option><option>Partnership</option></select></div>
+        <div class="field full"><label for="f6">Message</label><textarea id="f6"></textarea></div>
+        <div class="form-foot">
+          <label for="f7"><input id="f7" type="checkbox" required> I agree to be contacted about this request.</label>
+          <button class="btn light" type="submit" data-magnet>Send request <span class="arr">→</span></button>
+        </div>
+        <p class="ok" id="ok" hidden>Thanks. This is a template, so nothing was sent.</p>
+      </form>
+    </div>
+  </section>
+</div>
+
+<footer class="bottom"><span>© 2026 Atlasio · fictional company, template</span><span>Point cloud · Matrix rain · Magnetic cursor</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer=matchMedia('(pointer:fine)').matches;
+const mouse={x:-9999,y:-9999,nx:0,ny:0,inside:false};
+addEventListener('pointermove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;mouse.nx=e.clientX/innerWidth*2-1;mouse.ny=-(e.clientY/innerHeight*2-1);mouse.inside=true;});
+document.addEventListener('pointerleave',()=>{mouse.inside=false;mouse.x=mouse.y=-9999;});
+
+/* ---------- translations ---------- */
+const I18N={
+  "Who we are":"Biz kimiz","Technologies":"Teknolojiler","Industries":"Sektörler","Why Atlasio":"Neden Atlasio","Request a demo":"Demo isteyin",
+  "Turn places into living data":"Mekânları yaşayan veriye dönüştürün",
+  "Spatial intelligence and big data, rendered as interactive, AI-guided digital twins.":"Mekânsal zekâ ve büyük veri; etkileşimli, yapay zekâ rehberli dijital ikizler olarak.",
+  "Tower B · 212 m":"B Kulesi · 212 m","Bridge span · live load":"Köprü açıklığı · canlı yük","Plaza · 4.2k visitors":"Meydan · 4,2 bin ziyaretçi",
+  "Explore technologies":"Teknolojileri keşfedin","Points":"Nokta","Cursor":"İmleç","Stream":"Akış","Live":"Canlı",
+  "Atlasio builds the infrastructure to capture, structure and deliver interactive 3D twins of physical and virtual spaces.":"Atlasio, fiziksel ve sanal mekânların etkileşimli 3B ikizlerini yakalayan, düzenleyen ve sunan altyapıyı kurar.",
+  "We help cities and companies turn scans, sensors and records into one navigable space, where every building, room or asset carries its own data.":"Şehirlerin ve şirketlerin taramaları, sensörleri ve kayıtları; her binanın, odanın ya da varlığın kendi verisini taşıdığı tek, gezilebilir bir mekâna dönüştürmesine yardım ediyoruz.",
+  "Context is what makes data useful. Atlasio pairs each scene with guided stories and an AI layer that explains what you are looking at.":"Veriyi işe yarar kılan bağlamdır. Atlasio her sahneyi rehberli hikâyelerle ve baktığınız şeyi açıklayan bir yapay zekâ katmanıyla eşleştirir.",
+  "Hello, explorer!":"Merhaba, kâşif!","I'm your":"Ben senin","AI guide":"yapay zekâ rehberinim",". Ask me about any building in this scene.":". Bu sahnedeki herhangi bir binayı sorabilirsin.",
+  "Gate 3":"Kapı 3","Atrium":"Atriyum",
+  "By pairing scene management with AI-guided storytelling, organisations can publish high-fidelity twins that run on the web, on phones and inside their own products.":"Sahne yönetimini yapay zekâ rehberli hikâye anlatımıyla birleştiren kurumlar; web'de, telefonda ve kendi ürünlerinde çalışan yüksek kaliteli ikizler yayınlayabilir.",
+  "What we do":"Ne yapıyoruz","Our technologies":"Teknolojilerimiz",
+  "Photoreal point scenes":"Fotogerçekçi nokta sahneleri",
+  "Capture any space with high visual fidelity while keeping it light enough to stream to a browser.":"Her mekânı yüksek görsel kalitede yakalayın; yine de tarayıcıya akacak kadar hafif kalsın.",
+  "Near-photoreal visuals":"Fotogerçeğe yakın görseller","Web, mobile and headsets":"Web, mobil ve gözlükler","Scales to whole districts":"Bütün bir semte ölçeklenir",
+  "Rendering engine":"Görüntü motoru",
+  "A custom runtime built for smooth, interactive 3D, with streaming and levels of detail under your control.":"Akıcı, etkileşimli 3B için yazılmış özel bir çalışma motoru; akış ve detay seviyeleri sizin kontrolünüzde.",
+  "LOD and streaming":"LOD ve akış","Real-time rendering":"Gerçek zamanlı görüntü","Full input control":"Tam girdi kontrolü",
+  "SDK & integration":"SDK ve entegrasyon",
+  "Use the SDK on its own or with Atlasio Studio; scenes, stories and AI behaviour arrive with a few lines of code.":"SDK'yı tek başına ya da Atlasio Studio ile kullanın; sahneler, hikâyeler ve yapay zekâ davranışı birkaç satır kodla gelir.",
+  "Lightweight SDK":"Hafif SDK","Runs on any platform":"Her platformda çalışır","Scene logic and AI APIs":"Sahne mantığı ve yapay zekâ API'leri",
+  "AI guide layer":"Yapay zekâ rehber katmanı",
+  "Turns scenes into guided, explainable experiences by combining spatial context with conversation.":"Mekânsal bağlamı sohbetle birleştirerek sahneleri rehberli, anlaşılır deneyimlere dönüştürür.",
+  "Scene-aware AI":"Sahneyi tanıyan yapay zekâ","Configurable tone":"Ayarlanabilir üslup","Natural navigation":"Doğal gezinme",
+  "What we build":"Ne üretiyoruz","Products":"Ürünler",
+  "Prepare 3D scenes with context, structure and stories, ready for real users.":"3B sahneleri bağlam, yapı ve hikâyelerle gerçek kullanıcılara hazırlayın.",
+  "Scene management":"Sahne yönetimi","Annotations and stories":"Notlar ve hikâyeler","Knowledge base and AI setup":"Bilgi tabanı ve yapay zekâ kurulumu",
+  "Embed interactive twins inside your own product.":"Etkileşimli ikizleri kendi ürününüzün içine yerleştirin.",
+  "Web and mobile ready":"Web ve mobile hazır","Navigation and story APIs":"Gezinme ve hikâye API'leri","AI-guided interaction":"Yapay zekâ rehberli etkileşim",
+  "Render settings":"Görüntü ayarları","Point size":"Nokta boyu","Density":"Yoğunluk","Rain":"Yağmur","Magnet":"Mıknatıs","Save render settings":"Ayarları kaydet",
+  "Capture & digitising":"Tarama ve dijitalleştirme",
+  "Our own crew scans locations and produces finished scenes.":"Kendi ekibimiz mekânları tarar ve bitmiş sahneler üretir.",
+  "Built for stories":"Hikâye için tasarlandı","Ready for real-world use":"Gerçek kullanıma hazır","Made by a production team":"Yapım ekibi tarafından",
+  "Atlasio Lab":"Atlasio Lab",
+  "Our research desk: experiments with splats, live data and new story formats.":"Araştırma masamız: splat'ler, canlı veri ve yeni hikâye biçimleriyle deneyler.",
+  "Prototypes":"Prototipler","Data stories":"Veri hikâyeleri","Open notes":"Açık notlar",
+  "One platform, any environment":"Tek platform, her ortam",
+  "Education & training":"Eğitim","Municipalities":"Belediyeler","Real estate":"Gayrimenkul","Culture & museums":"Kültür ve müzeler",
+  "Infrastructure & construction":"Altyapı ve inşaat","Tourism & destinations":"Turizm ve destinasyonlar",
+  "Our expertise":"Uzmanlığımız",
+  "Open by design":"Tasarımdan açık",
+  "Fits existing workflows; interoperable by default, no forced pipeline or vendor lock-in.":"Mevcut iş akışlarına uyar; varsayılan olarak birlikte çalışır, zorunlu bir süreç ya da tedarikçi bağımlılığı yok.",
+  "AI that simplifies":"Sadeleştiren yapay zekâ",
+  "AI makes spaces easier to understand, not another layer to learn.":"Yapay zekâ mekânları anlamayı kolaylaştırır, öğrenilecek yeni bir katman eklemez.",
+  "Engine people":"Motor ustaları",
+  "A team with deep experience in 3D engines, AI agents and computer vision.":"3B motorlar, yapay zekâ ajanları ve bilgisayarlı görüde derin deneyimi olan bir ekip.",
+  "Built, not assembled":"Monte değil, inşa",
+  "We own the core of our stack, so performance stays predictable.":"Teknolojimizin çekirdeği bize ait; bu yüzden performans öngörülebilir kalır.",
+  "Million points per scene (sample)":"Sahne başına milyon nokta (örnek)","Frames per second target":"Saniyede kare hedefi","Platforms from one scene":"Tek sahneden platform",
+  "Contact us":"İletişim",
+  "Let's build the next dimension of your data":"Verinizin bir sonraki boyutunu birlikte kuralım",
+  "Fill in the form to request a demo.":"Demo istemek için formu doldurun.",
+  "Full name":"Ad soyad","Company":"Şirket","Job title":"Unvan","Email":"E-posta","Topic":"Konu","Message":"Mesaj",
+  "Request a product demo":"Ürün demosu iste","Scan a location":"Bir mekânı tarat","Partnership":"İş birliği",
+  "I agree to be contacted about this request.":"Bu talep hakkında benimle iletişime geçilmesini kabul ediyorum.",
+  "Send request":"Talebi gönder",
+  "Thanks. This is a template, so nothing was sent.":"Teşekkürler. Bu bir şablon olduğu için hiçbir şey gönderilmedi.",
+  "© 2026 Atlasio · fictional company, template":"© 2026 Atlasio · kurgusal şirket, şablon",
+  "Point cloud · Matrix rain · Magnetic cursor":"Nokta bulutu · Matrix yağmuru · Mıknatıslı imleç"
+};
+const ATTR={"Atlasio home":"Atlasio ana sayfa","Main":"Ana menü","Language":"Dil","Industries":"Sektörler","Render settings preview":"Görüntü ayarları önizlemesi"};
+const IND={
+  en:[["Learn complex processes through space.","Students and professionals explore how systems work inside the real place, with guided explanations and interactive stories."],
+      ["See the whole city in one view.","Planning, permits and public services on one shared twin that residents can open too."],
+      ["Sell spaces before they exist.","Buyers walk through finished apartments, check the view from any floor and compare units side by side."],
+      ["Open the archive to everyone.","Collections and historic sites as scenes visitors explore from home, with curators' stories built in."],
+      ["Track the site, not the spreadsheet.","Weekly scans compared with the plan show progress, clashes and risk on the model itself."],
+      ["Let visitors arrive before they travel.","Destinations, routes and events as explorable scenes that answer questions in the visitor's language."]],
+  tr:[["Karmaşık süreçleri mekân üzerinden öğrenin.","Öğrenciler ve profesyoneller sistemlerin nasıl çalıştığını gerçek mekânın içinde, rehberli anlatımlar ve etkileşimli hikâyelerle keşfeder."],
+      ["Bütün şehri tek ekranda görün.","Planlama, izinler ve kamu hizmetleri; vatandaşların da açabildiği ortak tek bir ikizde."],
+      ["Mekânları var olmadan satın.","Alıcılar bitmiş daireleri gezer, her kattan manzarayı kontrol eder, daireleri yan yana karşılaştırır."],
+      ["Arşivi herkese açın.","Koleksiyonlar ve tarihi alanlar, ziyaretçilerin evden gezdiği, küratör hikâyeleri yerleşik sahnelere dönüşür."],
+      ["Tabloyu değil şantiyeyi izleyin.","Haftalık taramalar planla karşılaştırılır; ilerleme, çakışmalar ve riskler modelin üzerinde görünür."],
+      ["Ziyaretçiler yola çıkmadan varsın.","Destinasyonlar, rotalar ve etkinlikler, ziyaretçinin dilinde soru cevaplayan gezilebilir sahnelere dönüşür."]]
+};
+let lang='en';
+const tt=(m,s)=>lang==='en'?s:(s in m?m[s]:s);
+const nodes=[];
+const w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+for(let n;(n=w.nextNode());){
+  if(n.parentElement.closest('script,style,#ind-h,#ind-p,#pts,#cxy,output,[data-count]'))continue;
+  const raw=n.nodeValue,key=raw.replace(/\s+/g,' ').trim();
+  if(key&&key in I18N)nodes.push({n,key,lead:raw.match(/^\s*/)[0],trail:raw.match(/\s*$/)[0]});
+}
+const attrs=[];document.querySelectorAll('[aria-label]').forEach(el=>{const v=el.getAttribute('aria-label');if(v in ATTR)attrs.push({el,v});});
+const langBtns=[...document.querySelectorAll('.lang button')];
+let indIndex=0;
+function setInd(i){
+  indIndex=i;document.querySelectorAll('.ind-list button').forEach(b=>b.setAttribute('aria-selected',String(+b.dataset.i===i)));
+  document.getElementById('ind-h').textContent=IND[lang][i][0];document.getElementById('ind-p').textContent=IND[lang][i][1];
+  twinSeed=i+1;
+}
+function setLang(l){
+  lang=l;document.documentElement.lang=l;
+  nodes.forEach(x=>x.n.nodeValue=x.lead+tt(I18N,x.key)+x.trail);
+  attrs.forEach(x=>x.el.setAttribute('aria-label',tt(ATTR,x.v)));
+  langBtns.forEach(b=>b.setAttribute('aria-pressed',String(b.id==='lang-'+l)));
+  setInd(indIndex);
+  try{localStorage.setItem('atlasio-tech-lang',l)}catch(e){}
+}
+langBtns.forEach(b=>b.addEventListener('click',()=>setLang(b.id.slice(5))));
+
+/* ---------- 1. matrix rain (background canvas) ---------- */
+const rainCfg={opacity:.55};
+(function(){
+  const c=document.getElementById('rain'),g=c.getContext('2d');
+  const glyphs='01アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEF{}[]<>/\\=+*#$%LATLONXYZ';
+  let cols,drops,speed,fs,W,H,dpr;
+  function size(){dpr=Math.min(devicePixelRatio,1.5);W=innerWidth;H=innerHeight;c.width=W*dpr;c.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);
+    fs=W<640?13:15;cols=Math.ceil(W/fs);drops=Array.from({length:cols},()=>Math.random()*-H/fs);speed=Array.from({length:cols},()=>.35+Math.random()*.7);
+    g.fillStyle='#11161a';g.fillRect(0,0,W,H);}
+  size();addEventListener('resize',size);
+  function draw(){
+    g.fillStyle='rgba(17,22,26,.12)';g.fillRect(0,0,W,H);
+    g.font=`${fs}px "Space Mono",monospace`;
+    for(let i=0;i<cols;i++){
+      const x=i*fs,y=drops[i]*fs;
+      const dx=x-mouse.x,dy=y-mouse.y,near=Math.max(0,1-Math.hypot(dx,dy)/180);   // brighter around the cursor
+      g.fillStyle=near>0?`rgba(${198+57*near|0},${244+11*near|0},${50+205*near|0},${.55+.45*near})`:'rgba(198,244,50,.55)';
+      g.fillText(glyphs[Math.random()*glyphs.length|0],x,y);
+      if(Math.random()<.04){g.fillStyle='rgba(95,225,231,.35)';g.fillText(glyphs[Math.random()*glyphs.length|0],x,y-fs*3);}
+      drops[i]+=speed[i];
+      if(y>H&&Math.random()>.975)drops[i]=Math.random()*-20;
+    }
+  }
+  if(reduce){for(let k=0;k<160;k++)draw();return}
+  let last=0;(function loop(t){if(t-last>33){draw();last=t;}requestAnimationFrame(loop);})(0);
+})();
+
+/* ---------- 2. magnetic cursor + magnetic elements ---------- */
+(function(){
+  const cur=document.getElementById('cur'),ring=cur.querySelector('.ring'),dot=cur.querySelector('.dot');
+  let rx=0,ry=0,snapEl=null;
+  const mags=[...document.querySelectorAll('[data-magnet], .lang button, header.top nav a')];
+  let strength=.7;
+  function frame(){
+    let tx=mouse.x,ty=mouse.y;snapEl=null;
+    mags.forEach(el=>{
+      const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=mouse.x-cx,dy=mouse.y-cy;
+      const reach=Math.max(r.width,r.height)*.9+40,d=Math.hypot(dx,dy);
+      if(d<reach&&el.hasAttribute('data-magnet')){
+        const k=(1-d/reach)*strength;el.style.transform=`translate(${dx*k*.35}px,${dy*k*.45}px)`;
+        if(d<reach*.6){snapEl=el;tx=cx+dx*.2;ty=cy+dy*.2;}
+      }else if(el.hasAttribute('data-magnet'))el.style.transform='';
+      if(d<Math.max(r.width,r.height)*.6&&!el.hasAttribute('data-magnet')){snapEl=el;tx=cx;ty=cy;}
+    });
+    rx+=(tx-rx)*.22;ry+=(ty-ry)*.22;
+    if(snapEl){const r=snapEl.getBoundingClientRect();ring.style.width=r.width+14+'px';ring.style.height=r.height+12+'px';ring.style.margin=`${-(r.height+12)/2}px 0 0 ${-(r.width+14)/2}px`;cur.classList.add('snap');}
+    else{ring.style.width=ring.style.height='38px';ring.style.margin='-19px';cur.classList.remove('snap');}
+    ring.style.transform=`translate(${rx}px,${ry}px)`;dot.style.transform=`translate(${mouse.x}px,${mouse.y}px)`;
+    cur.classList.toggle('on',mouse.inside);
+    if(!reduce&&finePointer)requestAnimationFrame(frame);
+  }
+  if(finePointer&&!reduce)requestAnimationFrame(frame);
+  document.getElementById('s4').addEventListener('input',e=>strength=e.target.value/100);
+})();
+
+/* ---------- 3. hero point cloud (three.js) with magnetic attraction ---------- */
+let cloudCfg={size:.016,density:.62};
+(function(){
+  const canvas=document.getElementById('cloud'),hero=document.querySelector('.hero');
+  let renderer;
+  try{if(!window.THREE)throw 0;renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:true});}catch(e){canvas.remove();return}
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(38,1,.1,100);
+  camera.position.set(0,2.6,10);camera.lookAt(0,.6,0);
+  // procedural city: ground grid, towers, a bridge arch, sparse "scan noise"
+  const P=[];let s=7;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
+  for(let i=0;i<5200;i++){const x=(rnd()-.5)*12,z=(rnd()-.5)*6;P.push(x,-.02*rnd(),z);}               // ground
+  const towers=[[-3.4,-.6,.5,.5,2.2],[-2.2,.4,.6,.6,3.4],[-.8,-.9,.45,.45,1.6],[.6,.3,.7,.5,4.4],[1.9,-.5,.5,.5,2.6],[3.1,.6,.4,.4,1.9],[-1.4,1.6,.4,.6,1.2],[2.4,1.7,.5,.5,1.4]];
+  towers.forEach(([cx,cz,w,d,h])=>{const n=Math.round(h*620);for(let i=0;i<n;i++){
+    const face=rnd()*4|0,y=rnd()*h;let x,z;
+    if(face<2){x=cx+(face?w:-w)/2;z=cz+(rnd()-.5)*d;}else{z=cz+(face===2?d:-d)/2;x=cx+(rnd()-.5)*w;}
+    P.push(x,y,z);}
+    for(let i=0;i<60;i++)P.push(cx+(rnd()-.5)*.05,h+rnd()*.5,cz);});                                    // antenna
+  for(let i=0;i<1500;i++){const t=rnd(),x=-5+t*10,y=Math.sin(t*Math.PI)*1.2+.25,z=2.2+(rnd()-.5)*.25;P.push(x,y*(rnd()<.5?1:.95),z);} // bridge arch
+  for(let i=0;i<900;i++){const t=rnd();P.push(-5+t*10,.25,2.2+(rnd()-.5)*.4);}                          // deck
+  for(let i=0;i<40;i++){const t=i/40,x=-5+t*10,top=Math.sin(t*Math.PI)*1.2+.25;for(let k=0;k<12;k++)P.push(x,.25+(top-.25)*k/12,2.2);} // cables
+  for(let i=0;i<1400;i++)P.push((rnd()-.5)*12,rnd()*5,(rnd()-.5)*6);                                    // scan noise
+  const N=P.length/3,base=new Float32Array(P),pos=new Float32Array(P),col=new Float32Array(N*3);
+  const lime=new THREE.Color('#c6f432'),white=new THREE.Color('#dfe8ec'),cyan=new THREE.Color('#5fe1e7');
+  for(let i=0;i<N;i++){const y=base[i*3+1],c=y>3.4?lime:(rnd()<.06?cyan:white);const f=.35+.65*Math.min(1,y/3+.25);col.set([c.r*f,c.g*f,c.b*f],i*3);}
+  document.getElementById('pts').textContent=N.toLocaleString('en');
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const mat=new THREE.PointsMaterial({size:cloudCfg.size,vertexColors:true,transparent:true,opacity:.95,depthWrite:false});
+  const cloud=new THREE.Points(geo,mat);scene.add(cloud);
+  const ray=new THREE.Raycaster(),plane=new THREE.Plane(new THREE.Vector3(0,0,1),-1),hit=new THREE.Vector3(),local=new THREE.Vector3(),ndc=new THREE.Vector2();
+  function resize(){const r=hero.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();
+    cloud.position.x=r.width>900?1.6:0;cloud.scale.setScalar(r.width>900?1:.7);}
+  addEventListener('resize',resize);resize();
+  const t0=performance.now();let visible=true;
+  new IntersectionObserver(es=>visible=es[0].isIntersecting).observe(hero);
+  function frame(now){
+    const t=(now-t0)/1000;
+    if(visible){
+      cloud.rotation.y=Math.sin(t*.12)*.35+(reduce?0:mouse.nx*.12);
+      // magnet: project the cursor onto a plane through the city and pull nearby points toward it
+      const r=hero.getBoundingClientRect();let active=false;
+      if(mouse.inside&&mouse.y>r.top&&mouse.y<r.bottom){
+        ndc.set((mouse.x-r.left)/r.width*2-1,-((mouse.y-r.top)/r.height*2-1));ray.setFromCamera(ndc,camera);
+        if(ray.ray.intersectPlane(plane,hit)){local.copy(hit);cloud.worldToLocal(local);active=true;}
+      }
+      const R=1.6,str=active?.45*(+document.getElementById('s4').value/70):0;
+      const keep=cloudCfg.density;
+      for(let i=0;i<N;i++){
+        const j=i*3;let bx=base[j],by=base[j+1],bz=base[j+2];
+        if((i*2654435761%1000)/1000>keep+.38){pos[j]=pos[j+1]=pos[j+2]=999;continue}
+        let tx=bx,ty=by,tz=bz;
+        if(active){const dx=local.x-bx,dy=local.y-by,d=Math.hypot(dx,dy);if(d<R){const k=(1-d/R)**2*str;tx+=dx*k;ty+=dy*k;tz+=(.6)*k;}}
+        if(!reduce){ty+=Math.sin(t*1.5+bx*2+bz)*.01;}
+        pos[j]+=(tx-pos[j])*.18;pos[j+1]+=(ty-pos[j+1])*.18;pos[j+2]+=(tz-pos[j+2])*.18;
+      }
+      geo.attributes.position.needsUpdate=true;mat.size=cloudCfg.size;
+      renderer.render(scene,camera);
+      document.getElementById('cxy').textContent=active?`${local.x.toFixed(2)} · ${local.y.toFixed(2)}`:'— · —';
+    }
+    if(!reduce)requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  // render settings sliders drive the hero and the rain
+  const bind=(id,fn)=>{const el=document.getElementById(id),out=el.nextElementSibling;el.addEventListener('input',()=>{out.textContent=el.value;fn(+el.value);});};
+  bind('s1',v=>cloudCfg.size=.006+v*.0006);
+  bind('s2',v=>cloudCfg.density=v/100);
+  bind('s3',v=>document.getElementById('rain').style.opacity=String(v/100));
+  bind('s4',()=>{});
+})();
+
+/* ---------- 4. voxel city (isometric canvas) ---------- */
+function voxels(canvas,seed,lit){
+  const g=canvas.getContext('2d');const dpr=Math.min(devicePixelRatio,1.5);
+  const W=canvas.clientWidth,H=canvas.clientHeight;canvas.width=W*dpr;canvas.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);
+  g.fillStyle='#0d1216';g.fillRect(0,0,W,H);
+  let s=seed;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
+  const S=W<500?22:30,cols=Math.ceil(W/S)+6,rows=Math.ceil(H/(S*.5))+6;
+  for(let r=0;r<rows;r++)for(let q=0;q<cols;q++){
+    const x=(q-r)*S*.866+W/2,y=(q+r)*S*.5-H*.6,h=(1+rnd()*3|0)*S*.45,glow=rnd()<lit;
+    if(x<-S*2||x>W+S*2||y<-S*3||y>H+S*2)continue;
+    const top=glow?'#c6f432':'#2a343b',left=glow?'#7fa21a':'#1a2227',right=glow?'#a4cf22':'#222c33';
+    g.fillStyle=left;g.beginPath();g.moveTo(x,y);g.lineTo(x-S*.866,y-S*.5);g.lineTo(x-S*.866,y-S*.5-h);g.lineTo(x,y-h);g.fill();
+    g.fillStyle=right;g.beginPath();g.moveTo(x,y);g.lineTo(x+S*.866,y-S*.5);g.lineTo(x+S*.866,y-S*.5-h);g.lineTo(x,y-h);g.fill();
+    g.fillStyle=top;g.beginPath();g.moveTo(x,y-h);g.lineTo(x-S*.866,y-S*.5-h);g.lineTo(x,y-S-h);g.lineTo(x+S*.866,y-S*.5-h);g.fill();
+    if(glow){g.shadowColor='#c6f432';g.shadowBlur=24;g.fillRect(x-1,y-h-S*.5-1,2,2);g.shadowBlur=0;}
+    if(rnd()<.08){g.strokeStyle='rgba(95,225,231,.5)';g.lineWidth=1;g.beginPath();g.moveTo(x,y-h);g.lineTo(x+S*2,y-h+S);g.lineTo(x+S*2,y-h+S*2);g.stroke();}
+  }
+}
+let twinSeed=1;
+function drawTwin(){
+  const c=document.getElementById('twin'),g=c.getContext('2d');const dpr=Math.min(devicePixelRatio,1.5);
+  const W=c.clientWidth,H=c.clientHeight;c.width=W*dpr;c.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);
+  g.fillStyle='#0d1216';g.fillRect(0,0,W,H);
+  // perspective grid floor
+  g.strokeStyle='rgba(95,225,231,.22)';g.lineWidth=1;const hz=H*.38;
+  for(let i=-20;i<=20;i++){g.beginPath();g.moveTo(W/2+i*12,hz);g.lineTo(W/2+i*90,H);g.stroke();}
+  for(let k=0;k<14;k++){const y=hz+(H-hz)*Math.pow(k/14,1.8);g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke();}
+  // wireframe volumes, different per industry
+  let s=twinSeed*97;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
+  for(let i=0;i<7;i++){
+    const x=W*(.12+rnd()*.76),w=30+rnd()*70,h=40+rnd()*(H*.5),y=hz+20+rnd()*(H-hz-60);
+    g.strokeStyle=i===0?'#c6f432':'rgba(223,232,236,.55)';g.lineWidth=i===0?1.6:1;g.strokeRect(x-w/2,y-h,w,h);
+    g.beginPath();g.moveTo(x-w/2,y-h);g.lineTo(x-w/2+14,y-h-10);g.lineTo(x+w/2+14,y-h-10);g.lineTo(x+w/2,y-h);g.moveTo(x+w/2+14,y-h-10);g.lineTo(x+w/2+14,y-10);g.lineTo(x+w/2,y);g.stroke();
+    if(i===0){g.fillStyle='#c6f432';g.font='10px "Space Mono",monospace';g.fillText('ID-'+(1000+twinSeed*37)+' · '+(['LIVE','ACTIVE','QUEUED'][twinSeed%3]),x-w/2,y-h-16);}
+  }
+}
+function drawAll(){voxels(document.getElementById('voxels'),11,.12);voxels(document.getElementById('cubes'),29,.16);drawTwin();}
+addEventListener('resize',()=>{clearTimeout(window.__rz);window.__rz=setTimeout(drawAll,150);});
+(document.fonts?document.fonts.ready:Promise.resolve()).then(drawAll);
+
+/* ---------- 5. industries tabs ---------- */
+const tabs=[...document.querySelectorAll('.ind-list button')];
+tabs.forEach(b=>b.addEventListener('click',()=>{setInd(+b.dataset.i);drawTwin();}));
+document.querySelector('.ind-list').addEventListener('keydown',e=>{
+  if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;e.preventDefault();
+  const i=(indIndex+(e.key==='ArrowDown'?1:-1)+tabs.length)%tabs.length;setInd(i);drawTwin();tabs[i].focus();
+});
+
+/* ---------- 6. counters ---------- */
+const counter=new IntersectionObserver((es,o)=>es.forEach(e=>{if(!e.isIntersecting)return;o.unobserve(e.target);
+  const el=e.target,to=+el.dataset.count;if(reduce){el.textContent=to;return}
+  const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/1200);el.textContent=Math.round(to*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f);})(t0);
+}),{threshold:.5});
+document.querySelectorAll('[data-count]').forEach(el=>counter.observe(el));
+
+/* ---------- 7. form ---------- */
+document.getElementById('form').addEventListener('submit',e=>{e.preventDefault();if(!e.target.checkValidity()){e.target.reportValidity();return}document.getElementById('ok').hidden=false;});
+
+let saved=null;try{saved=localStorage.getItem('atlasio-tech-lang')}catch(e){}
+setLang(saved==='tr'?'tr':'en');
+</script>
+</body>
+</html>
