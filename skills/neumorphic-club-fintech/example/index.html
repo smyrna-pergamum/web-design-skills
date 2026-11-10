@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atlasio Reserve · Neumorphic Club Example</title>
+<meta name="description" content="Template site for a fictional members-only card club: dark neumorphic relief surfaces, a cursor-driven light source, engraved text that lights up on scroll, and a slide-to-join control.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Urbanist:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a members-only club carved out of one soft material. Every surface is the page colour; depth comes only
+   from paired shadows (raised = outer, pressed = inset). A single light source follows the cursor, so every shadow on
+   the page turns with it. Lowercase heavy serif headlines, a geometric sans for everything else, wide-tracked
+   uppercase eyebrows, one lime "LED" accent for live states. Dark by default, light relief on the theme switch. */
+:root{
+  color-scheme:dark;
+  --bg:#1f2126; --hi:#25282e; --lo:#1a1c20;
+  --text:#f4f5f7; --soft:#c5c9d1; --muted:#8e939d; --ghost:#3a3e46;
+  --d:rgba(0,0,0,.62); --l:rgba(255,255,255,.055);
+  --eng-d:rgba(0,0,0,.8); --eng-l:rgba(255,255,255,.09);
+  --accent:#b9f26b; --accent-ink:#13200a;
+  --g-pink:#ff3fa4; --g-violet:#8f5bff; --g-green:#35e07a; --g-blue:#3b8cff; --g-amber:#ffb057;
+  --lx:.7071; --ly:.7071;
+  --sx:calc(var(--lx)*10px); --sy:calc(var(--ly)*10px);
+  --raise:var(--sx) var(--sy) 24px var(--d), calc(var(--sx)*-1) calc(var(--sy)*-1) 24px var(--l);
+  --raise-sm:calc(var(--sx)*.5) calc(var(--sy)*.5) 12px var(--d), calc(var(--sx)*-.5) calc(var(--sy)*-.5) 12px var(--l);
+  --inset:inset var(--sx) var(--sy) 18px var(--d), inset calc(var(--sx)*-1) calc(var(--sy)*-1) 18px var(--l);
+  --inset-sm:inset calc(var(--sx)*.45) calc(var(--sy)*.45) 9px var(--d), inset calc(var(--sx)*-.45) calc(var(--sy)*-.45) 9px var(--l);
+  --f-display:"Fraunces","Denton",Georgia,serif;
+  --f-body:"Urbanist","Gilroy","Helvetica Neue",Arial,sans-serif;
+  --gutter:max(16px,env(safe-area-inset-left,0px));
+  --gutter-r:max(16px,env(safe-area-inset-right,0px));
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#e3e6eb; --hi:#eef0f4; --lo:#d5d9df;
+  --text:#191c22; --soft:#3c414c; --muted:#646a76; --ghost:#c6cbd3;
+  --d:rgba(146,156,172,.7); --l:rgba(255,255,255,.95);
+  --eng-d:rgba(140,150,166,.85); --eng-l:#ffffff;
+  --accent:#3e8a1d; --accent-ink:#ffffff;
+}
+*{box-sizing:border-box}
+html{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);font:400 17px/1.6 var(--f-body);-webkit-font-smoothing:antialiased;overflow-x:clip;transition:background .4s,color .4s}
+h1,h2,h3,p{margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.wrap{width:100%;max-width:1200px;margin:0 auto;padding-left:var(--gutter);padding-right:var(--gutter-r)}
+section{padding-block:clamp(72px,11vw,140px)}
+.eyebrow{font:700 13px/1.4 var(--f-body);letter-spacing:.32em;text-transform:uppercase;color:var(--soft)}
+.display{font:700 clamp(46px,6.6vw,96px)/.92 var(--f-display);font-variation-settings:"opsz" 144;letter-spacing:-.035em;text-transform:lowercase;text-wrap:balance}
+.h2{font:700 clamp(38px,5.6vw,76px)/.95 var(--f-display);font-variation-settings:"opsz" 144;letter-spacing:-.03em;text-wrap:balance}
+.lead{color:var(--soft);font-size:clamp(16px,1.4vw,19px);max-width:52ch}
+.center{text-align:center;margin-inline:auto}
+
+/* ---------- material ---------- */
+.raised{background:var(--bg);box-shadow:var(--raise)}
+.convex{background:linear-gradient(145deg,var(--hi),var(--lo));box-shadow:var(--raise)}
+.pressed{background:var(--bg);box-shadow:var(--inset)}
+.btn{display:inline-flex;align-items:center;gap:12px;padding:16px 26px;border-radius:999px;background:var(--bg);box-shadow:var(--raise-sm);
+  font:700 13px/1 var(--f-body);letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:var(--text);transition:box-shadow .18s,color .18s,transform .18s}
+.btn:hover{color:var(--accent)}
+.btn:active,.btn[aria-pressed="true"]{box-shadow:var(--inset-sm);transform:scale(.985)}
+.btn.primary{color:var(--accent)}
+.btn .arr{font-size:16px;letter-spacing:0}
+.led{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent),0 0 2px var(--accent)}
+
+/* ---------- header ---------- */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--bg);transition:box-shadow .3s,background .4s}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:41;background:var(--bg)}
+header.top.scrolled{box-shadow:0 10px 24px -14px var(--d)}
+.bar{display:flex;align-items:center;gap:18px;height:84px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.mono{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font:700 24px/1 var(--f-display);color:var(--accent);padding-bottom:3px}
+.word{font:700 24px/1 var(--f-display);letter-spacing:-.02em}
+.word small{display:block;font:700 9px/1 var(--f-body);letter-spacing:.42em;color:var(--muted);margin-top:4px;text-transform:uppercase}
+.pill{margin-left:auto;display:flex;align-items:center;gap:10px;padding:11px 18px;border-radius:999px;font:700 11px/1 var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:var(--soft)}
+.seg{display:flex;padding:5px;border-radius:999px}
+.seg button{padding:9px 13px;border-radius:999px;font:700 12px/1 var(--f-body);letter-spacing:.12em;color:var(--muted);transition:box-shadow .2s,color .2s}
+.seg button[aria-pressed="true"]{box-shadow:var(--raise-sm);color:var(--text)}
+.round{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;box-shadow:var(--raise-sm);transition:box-shadow .2s}
+.round:active{box-shadow:var(--inset-sm)}
+.round svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:1.8}
+
+/* ---------- hero ---------- */
+.hero{padding-block:clamp(40px,6vw,80px) clamp(72px,10vw,120px)}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:clamp(32px,5vw,72px);align-items:center}
+.hero-copy{display:grid;gap:28px;min-width:0}
+.hero-actions{display:flex;flex-wrap:wrap;gap:18px}
+.stage{position:relative;aspect-ratio:1;max-width:100%;display:grid;place-items:center}
+.ring{position:absolute;border-radius:50%}
+.ring.r1{inset:0;box-shadow:var(--raise)}
+.ring.r2{inset:8%;box-shadow:var(--inset)}
+.ring.r3{inset:18%;box-shadow:var(--raise-sm)}
+.card3d{position:relative;width:min(400px,78%);aspect-ratio:1.586;border-radius:24px;padding:7% 8%;display:grid;grid-template-rows:auto 1fr auto auto;
+  transform:perspective(900px) rotateX(var(--tx,0deg)) rotateY(var(--ty,0deg)) rotateZ(-8deg);transition:transform .25s ease-out;will-change:transform}
+.card3d .brand{display:flex;justify-content:space-between;align-items:center;font:700 13px/1 var(--f-body);letter-spacing:.32em;text-transform:uppercase;color:var(--soft)}
+.chip{width:52px;height:40px;border-radius:9px;margin-top:14%;position:relative;overflow:hidden}
+.chip::before,.chip::after{content:"";position:absolute;background:var(--ghost)}
+.chip::before{left:0;right:0;top:50%;height:1px}
+.chip::after{top:0;bottom:0;left:50%;width:1px}
+.engraved{color:var(--bg);text-shadow:1px 1px 1px var(--eng-l),-1px -1px 1px var(--eng-d)}
+.card3d .num{font:700 clamp(17px,2.2vw,24px)/1 var(--f-body);letter-spacing:.2em}
+.card3d .who{display:flex;justify-content:space-between;margin-top:10px;font:600 11px/1 var(--f-body);letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.streak{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px}
+.streak > div{flex:1 1 150px;border-radius:20px;padding:16px 20px;display:grid;gap:4px}
+.streak b{font:700 28px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.streak span{font:600 11px/1.3 var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- story: engraved words light up ---------- */
+.story-panel{border-radius:40px;padding:clamp(28px,6vw,80px)}
+.reveal{margin-top:28px;font:400 clamp(28px,4vw,54px)/1.28 var(--f-display);font-variation-settings:"opsz" 72;letter-spacing:-.01em;max-width:26ch}
+.reveal .w{color:var(--bg);text-shadow:1px 1px 1px var(--eng-l),-1px -1px 1px var(--eng-d);transition:color .4s,text-shadow .4s}
+.reveal .w.on{color:var(--text);text-shadow:none}
+
+/* ---------- app: phone rises out of a slot ---------- */
+.app{text-align:center}
+.phone-zone{position:relative;height:clamp(420px,52vw,600px);overflow:hidden;margin-top:12px}
+.slot{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(620px,92%);height:28px;border-radius:999px;box-shadow:var(--inset);z-index:2}
+.phone{position:absolute;left:50%;bottom:14px;width:min(290px,72vw);aspect-ratio:290/580;border-radius:46px;padding:14px;
+  transform:translate(-50%,calc((1 - var(--p,1)) * 62%));z-index:1}
+.screen{height:100%;border-radius:34px;padding:22px 16px;display:grid;align-content:start;gap:16px;text-align:left}
+.screen .row{display:flex;justify-content:space-between;align-items:center;font:700 11px/1 var(--f-body);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.bill{border-radius:24px;padding:18px;display:grid;gap:10px}
+.bill .due{display:flex;align-items:center;gap:8px;font:700 11px/1 var(--f-body);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.bill .amt{font:700 30px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.bill .btn{justify-content:center;padding:13px;font-size:11px}
+.mini{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:18px;font:600 14px/1.2 var(--f-body)}
+.mini i{width:34px;height:34px;border-radius:12px;box-shadow:var(--inset-sm);flex:none}
+.mini small{display:block;color:var(--muted);font-size:12px}
+.app .h2{margin-top:56px}
+.app .lead{margin:22px auto 0}
+
+/* ---------- cards: slabs fan out ---------- */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,80px);align-items:center}
+.split > *{min-width:0}
+.split .copy{display:grid;gap:24px}
+.fan{position:relative;height:clamp(320px,34vw,420px)}
+.slab{position:absolute;left:50%;bottom:8%;width:min(300px,70%);aspect-ratio:1.586;border-radius:20px;padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;
+  transform-origin:50% 140%;transform:translateX(-50%) rotate(calc(var(--i) * var(--fan,10) * 1deg));transition:transform .2s linear}
+.slab .top{display:flex;justify-content:space-between;align-items:center;font:700 10px/1 var(--f-body);letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+.slab .n{font:700 15px/1 var(--f-body);letter-spacing:.2em}
+.slab.live .top span:last-child{display:flex;align-items:center;gap:8px;color:var(--accent)}
+
+/* ---------- pay: horizontal rail of relief tiles ---------- */
+.rail-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:24px}
+.rail-head > div:first-child{display:grid;gap:18px}
+.rail-nav{display:flex;gap:16px}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(270px,340px);gap:32px;overflow-x:auto;scroll-snap-type:x mandatory;padding:40px 30px 44px;margin:0 -30px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.tile{scroll-snap-align:start;border-radius:32px;padding:26px;display:grid;gap:18px;align-content:start}
+.tile .lab{display:flex;align-items:center;gap:12px;font:700 12px/1 var(--f-body);letter-spacing:.24em;text-transform:uppercase;color:var(--soft)}
+.tile .well{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;box-shadow:var(--inset-sm)}
+.tile .well svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:1.7}
+.tile h3{font:700 26px/1.12 var(--f-body);letter-spacing:-.01em}
+.tile .btn{justify-self:start;padding:12px 18px;font-size:11px}
+.show{position:relative;height:220px;border-radius:24px;box-shadow:var(--inset);overflow:hidden;display:grid;place-items:center}
+.show::before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 50% 62%,var(--glow) 0%,transparent 55%);opacity:.38}
+.show > *{position:relative}
+.qrphone{width:92px;height:150px;border-radius:20px;padding:10px}
+.qrphone div{height:100%;border-radius:12px;box-shadow:var(--inset-sm);background-image:radial-gradient(var(--soft) 1.4px,transparent 1.6px);background-size:10px 10px;background-position:center}
+.bigchip{width:120px;height:92px;border-radius:18px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:6px;padding:12px}
+.bigchip span{border-radius:6px;box-shadow:var(--inset-sm)}
+.waves{width:150px;height:150px;border-radius:50%;display:grid;place-items:center}
+.waves div{width:70%;height:70%;border-radius:50%;box-shadow:var(--inset);display:grid;place-items:center}
+.waves div div{width:60%;height:60%;box-shadow:var(--raise-sm)}
+.bars{display:grid;gap:12px;width:150px}
+.bars span{height:24px;border-radius:999px}
+.bars span:nth-child(2){width:72%}
+.bars span:nth-child(3){width:46%}
+
+/* ---------- rewards: pressable coins ---------- */
+.coins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,4vw,48px);max-width:600px;margin:56px auto 0}
+.coin{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;text-align:center;padding:16%;transition:box-shadow .25s;animation:float 6s ease-in-out infinite;animation-delay:calc(var(--i) * -1s)}
+.coin .face{font:700 12px/1 var(--f-body);letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+.coin .prize{display:none;font:600 clamp(13px,1.6vw,17px)/1.25 var(--f-body);color:var(--text)}
+.coin[aria-pressed="true"]{box-shadow:var(--inset);background:var(--bg)}
+.coin[aria-pressed="true"] .face{display:none}
+.coin[aria-pressed="true"] .prize{display:block}
+@keyframes float{50%{transform:translateY(-10px)}}
+
+/* ---------- security: lock dial + spotlight text ---------- */
+.dial{position:relative;width:min(340px,80%);aspect-ratio:1;border-radius:50%;margin-inline:auto;display:grid;place-items:center}
+.dial svg{position:absolute;inset:7%;width:86%;height:86%;transform:rotate(var(--rot,0deg))}
+.dial svg line{stroke:var(--muted);stroke-width:1.4}
+.dial svg line.major{stroke:var(--text);stroke-width:2}
+.dial .knob{width:46%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center}
+.dial .knob svg{position:static;width:34%;height:34%;transform:none;stroke:var(--accent);fill:none;stroke-width:1.8}
+.spot{position:relative;margin-top:24px;font:600 clamp(24px,3vw,38px)/1.32 var(--f-body);letter-spacing:-.01em}
+.spot .base{color:var(--muted)}
+.spot .lit{position:absolute;inset:0;color:var(--text);-webkit-mask-image:radial-gradient(circle 190px at var(--mx,30%) var(--my,40%),#000 25%,transparent 75%);mask-image:radial-gradient(circle 190px at var(--mx,30%) var(--my,40%),#000 25%,transparent 75%)}
+
+/* ---------- proof ---------- */
+.proof-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:32px;align-items:center}
+.proof-grid > div:first-child{display:grid;gap:18px}
+.rate{border-radius:30px;padding:28px;display:grid;gap:14px}
+.rate b{font:700 64px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.rate b small{font-size:.45em;color:var(--muted)}
+.track{height:12px;border-radius:999px;box-shadow:var(--inset-sm);padding:3px}
+.track span{display:block;height:100%;border-radius:999px;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.rate .eyebrow{font-size:11px;color:var(--muted)}
+
+/* ---------- join ---------- */
+.join-panel{border-radius:44px;padding:clamp(28px,6vw,72px);display:grid;grid-template-columns:1.3fr .7fr;gap:clamp(28px,5vw,64px);align-items:center}
+.join-panel > div:first-child{display:grid;gap:24px;min-width:0}
+.slide{position:relative;height:76px;border-radius:999px;box-shadow:var(--inset);max-width:460px;touch-action:none;user-select:none}
+.slide .fill{position:absolute;inset:8px auto 8px 8px;width:calc(var(--k,0) * (100% - 76px) + 60px);border-radius:999px;background:var(--accent);opacity:calc(var(--k,0) * .9);transition:opacity .2s}
+.slide .txt{position:absolute;inset:0;display:grid;place-items:center;padding-left:70px;font:700 12px/1 var(--f-body);letter-spacing:.24em;text-transform:uppercase;color:var(--muted);pointer-events:none}
+.knob2{position:absolute;top:8px;left:calc(8px + var(--k,0) * (100% - 76px));width:60px;height:60px;border-radius:50%;display:grid;place-items:center;cursor:grab}
+.knob2 svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:2}
+.slide.done .txt{color:var(--accent-ink);z-index:1}
+.qrwell{border-radius:32px;padding:24px;display:grid;justify-items:center;gap:14px;text-align:center}
+.qrwell canvas{width:150px;height:150px;border-radius:14px;box-shadow:var(--raise-sm);padding:10px;background:var(--bg)}
+.qrwell span{font:700 11px/1.4 var(--f-body);letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- faq ---------- */
+.faq{display:grid;gap:22px;max-width:860px;margin:44px auto 0}
+.faq details{border-radius:26px;box-shadow:var(--raise-sm);transition:box-shadow .25s}
+.faq details[open]{box-shadow:var(--inset-sm)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:22px 26px;font:600 19px/1.3 var(--f-body)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:400 26px/1 var(--f-body);color:var(--accent)}
+.faq details[open] summary::after{content:"–"}
+.faq p{padding:0 26px 24px;color:var(--soft);max-width:66ch}
+
+/* ---------- footer ---------- */
+footer{padding-block:40px 56px}
+.foot{border-radius:40px;padding:clamp(28px,5vw,56px);display:grid;grid-template-columns:1.2fr 1fr 1fr 1.4fr;gap:32px}
+.foot h4{margin:0 0 14px;font:700 11px/1 var(--f-body);letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.foot a{text-decoration:none;color:var(--soft)}
+.foot a:hover{color:var(--accent)}
+.promo{border-radius:26px;padding:22px;display:grid;gap:10px}
+.promo .tag{justify-self:start;padding:7px 12px;border-radius:999px;box-shadow:var(--raise-sm);font:700 10px/1 var(--f-body);letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+.promo b{font:700 24px/1.1 var(--f-display)}
+.fine{margin-top:28px;font-size:13px;color:var(--muted);text-align:center}
+
+/* ---------- floating app badge ---------- */
+.badge{position:fixed;right:calc(24px + env(safe-area-inset-right,0px));bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:14px;padding:12px 18px 12px 12px;border-radius:22px;
+  text-decoration:none;transition:opacity .3s,transform .3s}
+.badge canvas{width:58px;height:58px;border-radius:10px;box-shadow:var(--inset-sm);padding:5px;background:var(--bg)}
+.badge span{font:700 12px/1.35 var(--f-body);letter-spacing:.16em;text-transform:uppercase}
+.badge.away{opacity:0;transform:translateY(16px);pointer-events:none}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .hero-grid,.split,.join-panel,.proof-grid{grid-template-columns:1fr}
+  .stage{width:min(460px,100%);margin-inline:auto}
+  .foot{grid-template-columns:1fr 1fr}
+  .badge{display:none}
+}
+@media (max-width:640px){
+  .pill{display:none}
+  .seg{margin-left:auto}
+  .word small{display:none}
+  .coins{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .foot{grid-template-columns:1fr}
+  .bar{gap:10px}
+  .story-panel,.join-panel,.foot{border-radius:28px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="wrap bar">
+    <a class="logo" href="#hero" aria-label="Atlasio Reserve home"><span class="mono raised" aria-hidden="true">a</span><span class="word">atlasio<small>reserve</small></span></a>
+    <div class="pill pressed"><span class="led" aria-hidden="true"></span><span data-k="pill">new · the obsidian card</span></div>
+    <div class="seg pressed" role="group" aria-label="Language"><button id="lang-en" aria-pressed="true">EN</button><button id="lang-tr" aria-pressed="false">TR</button></div>
+    <button class="round" id="theme" aria-pressed="false" aria-label="Switch to light relief">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow" data-k="heroEye">members-only card club</span>
+      <h1 class="display" data-k="heroH" data-html>built for people<br>who pay on time</h1>
+      <p class="lead" data-k="heroP">Atlasio Reserve is a members-only card club that rewards a good payment record with better rates, real perks and fewer surprises.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#join"><span data-k="ctaJoin">check eligibility</span><span class="arr" aria-hidden="true">→</span></a>
+        <a class="btn" href="#story" data-k="ctaHow">how it works</a>
+      </div>
+      <div class="streak">
+        <div class="pressed"><b>26</b><span data-k="streak1">on-time months · sample</span></div>
+        <div class="pressed"><b>0</b><span data-k="streak2">hidden fees · sample</span></div>
+      </div>
+    </div>
+    <div class="stage" id="stage" aria-hidden="true">
+      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+      <div class="card3d raised" id="card">
+        <div class="brand"><span>atlasio</span><span class="led"></span></div>
+        <div class="chip convex"></div>
+        <div class="num engraved">4821 •••• •••• 0907</div>
+        <div class="who"><span data-k="cardWho">sample member</span><span>09/31</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="story">
+  <div class="wrap">
+    <div class="story-panel raised">
+      <span class="eyebrow" data-k="storyEye">membership is earned.</span>
+      <p class="reveal" id="reveal" data-k="story">we started with a simple idea. people who keep their word with money deserve a bank that keeps its word too: clear fees, rewards worth claiming, and a real person when something goes wrong. pay on time, earn your place, and see what changes.</p>
+    </div>
+  </div>
+</section>
+
+<section class="app" id="app">
+  <div class="wrap">
+    <div class="phone-zone" id="phoneZone" aria-hidden="true">
+      <div class="phone raised" id="phone">
+        <div class="screen pressed">
+          <div class="row"><span>atlasio</span><span data-k="phHi">hi, member</span></div>
+          <div class="bill raised">
+            <span class="due"><span class="led"></span><span data-k="phDue">due in 3 days</span></span>
+            <span class="amt" data-k="phAmt">$1,248.00</span>
+            <span class="btn primary" data-k="phPay">pay now</span>
+          </div>
+          <div class="mini raised"><i></i><span data-k="phR1" data-html>travel card<small>paid · 2 days early</small></span></div>
+          <div class="mini raised"><i></i><span data-k="phR2" data-html>everyday card<small>statement ready</small></span></div>
+        </div>
+      </div>
+      <div class="slot"></div>
+    </div>
+    <h2 class="h2" data-k="appH" data-html>everything you earned.<br>nothing you didn't ask for.</h2>
+    <p class="lead" data-k="appP">every bill, due date and reward sits on one calm screen. you decide what happens next.</p>
+  </div>
+</section>
+
+<section id="cards">
+  <div class="wrap split">
+    <div class="copy">
+      <span class="eyebrow" data-k="cardsEye">all your cards</span>
+      <h2 class="h2" data-k="cardsH" data-html>every card.<br>one quiet place.</h2>
+      <p class="lead" data-k="cardsP">add the cards you already have. get a reminder before each due date, spot hidden fees, and see which card earns the most for each purchase.</p>
+    </div>
+    <div class="fan" id="fan" aria-hidden="true">
+      <div class="slab raised" style="--i:-2"><div class="top"><span>travel</span><span>visa</span></div><span class="n engraved">•••• 1180</span></div>
+      <div class="slab raised" style="--i:-1"><div class="top"><span>store</span><span>mc</span></div><span class="n engraved">•••• 5523</span></div>
+      <div class="slab raised" style="--i:1"><div class="top"><span>fuel</span><span>visa</span></div><span class="n engraved">•••• 7741</span></div>
+      <div class="slab raised" style="--i:2"><div class="top"><span>business</span><span>amex</span></div><span class="n engraved">•••• 3002</span></div>
+      <div class="slab raised live" style="--i:0"><div class="top"><span>everyday</span><span><span class="led"></span><span data-k="slabDue">due in 3 days</span></span></div><span class="n">•••• 0907</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="pay">
+  <div class="wrap">
+    <div class="rail-head">
+      <div><span class="eyebrow" data-k="payEye">the club, in your pocket</span><h2 class="h2" data-k="payH">pay the way you already do</h2></div>
+      <div class="rail-nav">
+        <button class="round" id="prev" aria-label="Previous"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <button class="round" id="next" aria-label="Next"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+    <div class="rail" id="rail">
+      <article class="tile raised">
+        <span class="lab"><span class="well"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M8 12h8"/></svg></span><span data-k="t1l">scan & pay</span></span>
+        <h3 data-k="t1h" data-html>scan any qr.<br>pay from your card.</h3>
+        <a class="btn" href="#faq"><span data-k="more">learn more</span><span class="arr" aria-hidden="true">→</span></a>
+        <div class="show" style="--glow:var(--g-pink)" aria-hidden="true"><div class="qrphone raised"><div></div></div></div>
+      </article>
+      <article class="tile raised">
+        <span class="lab"><span class="well"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg></span><span data-k="t2l">credit line</span></span>
+        <h3 data-k="t2h" data-html>a credit line<br>that grows with you.</h3>
+        <a class="btn" href="#faq"><span data-k="more">learn more</span><span class="arr" aria-hidden="true">→</span></a>
+        <div class="show" style="--glow:var(--g-violet)" aria-hidden="true"><div class="bigchip convex"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+      </article>
+      <article class="tile raised">
+        <span class="lab"><span class="well"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8a6 6 0 010 8M12 5a10 10 0 010 14M16 2.5a14 14 0 010 19"/></svg></span><span data-k="t3l">tap to pay</span></span>
+        <h3 data-k="t3h" data-html>hold your phone.<br>that's the whole step.</h3>
+        <a class="btn" href="#faq"><span data-k="more">learn more</span><span class="arr" aria-hidden="true">→</span></a>
+        <div class="show" style="--glow:var(--g-green)" aria-hidden="true"><div class="waves raised"><div><div class="ring" style="position:static;border-radius:50%"></div></div></div></div>
+      </article>
+      <article class="tile raised">
+        <span class="lab"><span class="well"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c1-3 3-4 5-4s4 1 5 4M11 19c1-3 3-4 5-4s4 1 5 4"/></svg></span><span data-k="t4l">split bills</span></span>
+        <h3 data-k="t4h" data-html>split the bill<br>before it gets awkward.</h3>
+        <a class="btn" href="#faq"><span data-k="more">learn more</span><span class="arr" aria-hidden="true">→</span></a>
+        <div class="show" style="--glow:var(--g-blue)" aria-hidden="true"><div class="bars"><span class="raised"></span><span class="raised"></span><span class="raised"></span></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="rewards">
+  <div class="wrap">
+    <h2 class="h2 center" style="text-align:center" data-k="rewH" data-html>rewards you can<br>actually use</h2>
+    <p class="lead center" style="text-align:center;margin-top:22px" data-k="rewP">tap a coin to see a sample reward. members unlock cashback, partner offers and early access to limited drops.</p>
+    <div class="coins" id="coins"></div>
+  </div>
+</section>
+
+<section id="security">
+  <div class="wrap split">
+    <div class="dial raised" aria-hidden="true">
+      <svg viewBox="-100 -100 200 200" id="ticks"></svg>
+      <div class="knob convex"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg></div>
+    </div>
+    <div>
+      <span class="eyebrow" data-k="secEye">your data stays yours.</span>
+      <div class="spot" id="spot">
+        <p class="base" data-k="secP">everything you share is encrypted in transit and at rest. we never sell your data, and you can export or delete it whenever you want.</p>
+        <p class="lit" aria-hidden="true" data-k="secP">everything you share is encrypted in transit and at rest. we never sell your data, and you can export or delete it whenever you want.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap proof-grid">
+    <div>
+      <span class="eyebrow" data-k="proofEye">sample figures · not real data</span>
+      <h2 class="h2" data-k="proofH" data-html>members do<br>the talking</h2>
+    </div>
+    <div class="rate raised"><b>4.8<small>/5</small></b><div class="track"><span style="width:96%"></span></div><span class="eyebrow" data-k="rate1">app store · sample</span></div>
+    <div class="rate raised"><b>4.7<small>/5</small></b><div class="track"><span style="width:94%"></span></div><span class="eyebrow" data-k="rate2">play store · sample</span></div>
+  </div>
+</section>
+
+<section id="join">
+  <div class="wrap">
+    <div class="join-panel raised">
+      <div>
+        <span class="eyebrow" data-k="joinEye">by invitation and record</span>
+        <h2 class="h2" data-k="joinH" data-html>the door opens<br>for some.</h2>
+        <p class="lead" data-k="joinP">membership is open to people with a strong repayment record. slide to try the check. this demo sends nothing and checks nothing.</p>
+        <div class="slide" id="slide">
+          <div class="fill"></div>
+          <div class="txt" id="slideTxt" data-k="slide">slide to check</div>
+          <button class="knob2 convex" id="knob" role="slider" aria-label="Slide to check eligibility" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="qrwell pressed">
+        <canvas id="qrBig" width="130" height="130" aria-hidden="true"></canvas>
+        <span data-k="qr">get the app · sample code</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2 class="eyebrow center" style="text-align:center;font-size:clamp(20px,2.4vw,28px)" data-k="faqH">faqs</h2>
+    <div class="faq">
+      <details><summary data-k="q1">who can join?</summary><p data-k="a1">Anyone over 18 with a credit card and a good repayment history. Atlasio Reserve is a fictional brand, so there is nothing to join yet.</p></details>
+      <details><summary data-k="q2">does the eligibility check affect my score?</summary><p data-k="a2">In this example, no: the slider is a demo and sends nothing. A real product must state its own rules here.</p></details>
+      <details><summary data-k="q3">what does membership cost?</summary><p data-k="a3">Membership is free in this example. Partner offers would have their own terms.</p></details>
+      <details><summary data-k="q4">how is my data protected?</summary><p data-k="a4">Replace this answer with the client's real security statement. Never invent certifications.</p></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot pressed">
+      <div><a class="logo" href="#hero"><span class="mono raised" aria-hidden="true">a</span><span class="word">atlasio<small>reserve</small></span></a></div>
+      <div><h4 data-k="fCo">company</h4><ul><li><a href="#story" data-k="fAbout">about</a></li><li><a href="#hero" data-k="fCareers">careers</a></li><li><a href="#hero" data-k="fPress">press</a></li></ul></div>
+      <div><h4 data-k="fHelp">help</h4><ul><li><a href="#faq" data-k="fSupport">support</a></li><li><a href="#security" data-k="fSec">security</a></li><li><a href="#faq" data-k="fPriv">privacy</a></li></ul></div>
+      <div class="promo raised"><span class="tag" data-k="pTag">new</span><b data-k="pH">the obsidian card</b><span class="lead" style="font-size:15px" data-k="pP">a metal card with no printed number. sample product.</span></div>
+    </div>
+    <p class="fine" data-k="fine">Atlasio Reserve is a fictional brand made for the neumorphic-club-fintech design example. No real product, offer or rating is shown.</p>
+  </div>
+</footer>
+
+<a class="badge raised" id="badge" href="#join"><canvas id="qrSmall" width="48" height="48" aria-hidden="true"></canvas><span data-k="badge" data-html>get<br>the app</span></a>
+
+<script>
+const I18N={
+en:{pill:"new · the obsidian card",heroEye:"members-only card club",heroH:"built for people<br>who pay on time",heroP:"Atlasio Reserve is a members-only card club that rewards a good payment record with better rates, real perks and fewer surprises.",ctaJoin:"check eligibility",ctaHow:"how it works",streak1:"on-time months · sample",streak2:"hidden fees · sample",cardWho:"sample member",
+storyEye:"membership is earned.",story:"we started with a simple idea. people who keep their word with money deserve a bank that keeps its word too: clear fees, rewards worth claiming, and a real person when something goes wrong. pay on time, earn your place, and see what changes.",
+phHi:"hi, member",phDue:"due in 3 days",phAmt:"$1,248.00",phPay:"pay now",phR1:"travel card<small>paid · 2 days early</small>",phR2:"everyday card<small>statement ready</small>",
+appH:"everything you earned.<br>nothing you didn't ask for.",appP:"every bill, due date and reward sits on one calm screen. you decide what happens next.",
+cardsEye:"all your cards",cardsH:"every card.<br>one quiet place.",cardsP:"add the cards you already have. get a reminder before each due date, spot hidden fees, and see which card earns the most for each purchase.",slabDue:"due in 3 days",
+payEye:"the club, in your pocket",payH:"pay the way you already do",t1l:"scan & pay",t1h:"scan any qr.<br>pay from your card.",t2l:"credit line",t2h:"a credit line<br>that grows with you.",t3l:"tap to pay",t3h:"hold your phone.<br>that's the whole step.",t4l:"split bills",t4h:"split the bill<br>before it gets awkward.",more:"learn more",
+rewH:"rewards you can<br>actually use",rewP:"tap a coin to see a sample reward. members unlock cashback, partner offers and early access to limited drops.",coinFace:"tap",
+coins:["2% back on groceries","airport lounge pass","concert presale","no fx fee for a month","free coffee, weekly","early card unlock"],
+secEye:"your data stays yours.",secP:"everything you share is encrypted in transit and at rest. we never sell your data, and you can export or delete it whenever you want.",
+proofEye:"sample figures · not real data",proofH:"members do<br>the talking",rate1:"app store · sample",rate2:"play store · sample",
+joinEye:"by invitation and record",joinH:"the door opens<br>for some.",joinP:"membership is open to people with a strong repayment record. slide to try the check. this demo sends nothing and checks nothing.",slide:"slide to check",slideDone:"demo only · nothing sent",qr:"get the app · sample code",
+faqH:"faqs",q1:"who can join?",a1:"Anyone over 18 with a credit card and a good repayment history. Atlasio Reserve is a fictional brand, so there is nothing to join yet.",q2:"does the eligibility check affect my score?",a2:"In this example, no: the slider is a demo and sends nothing. A real product must state its own rules here.",q3:"what does membership cost?",a3:"Membership is free in this example. Partner offers would have their own terms.",q4:"how is my data protected?",a4:"Replace this answer with the client's real security statement. Never invent certifications.",
+fCo:"company",fAbout:"about",fCareers:"careers",fPress:"press",fHelp:"help",fSupport:"support",fSec:"security",fPriv:"privacy",pTag:"new",pH:"the obsidian card",pP:"a metal card with no printed number. sample product.",
+fine:"Atlasio Reserve is a fictional brand made for the neumorphic-club-fintech design example. No real product, offer or rating is shown.",badge:"get<br>the app",themeToLight:"Switch to light relief",themeToDark:"Switch to dark relief"},
+tr:{pill:"yeni · obsidyen kart",heroEye:"yalnızca üyelere açık kart kulübü",heroH:"zamanında ödeyenler<br>için tasarlandı",heroP:"Atlasio Reserve, iyi bir ödeme geçmişini daha iyi oranlar, gerçek ayrıcalıklar ve daha az sürprizle ödüllendiren, yalnızca üyelere açık bir kart kulübü.",ctaJoin:"uygunluğunu kontrol et",ctaHow:"nasıl çalışır",streak1:"zamanında ödenen ay · örnek",streak2:"gizli ücret · örnek",cardWho:"örnek üye",
+storyEye:"üyelik hak edilir.",story:"basit bir fikirle başladık. parasıyla ilgili sözünü tutan insanlar, sözünü tutan bir bankayı hak eder: açık ücretler, almaya değer ödüller ve bir sorun çıktığında karşına çıkan gerçek bir insan. zamanında öde, yerini kazan ve neyin değiştiğini gör.",
+phHi:"merhaba, üye",phDue:"3 gün içinde ödenecek",phAmt:"₺12.480,00",phPay:"şimdi öde",phR1:"seyahat kartı<small>ödendi · 2 gün erken</small>",phR2:"günlük kart<small>ekstre hazır</small>",
+appH:"hak ettiğin her şey.<br>istemediğin hiçbir şey.",appP:"tüm faturalar, son ödeme tarihleri ve ödüller tek bir sakin ekranda. sonra ne olacağına sen karar verirsin.",
+cardsEye:"tüm kartların",cardsH:"tüm kartlar.<br>tek sakin bir yer.",cardsP:"zaten sahip olduğun kartları ekle. her son ödeme tarihinden önce hatırlatma al, gizli ücretleri yakala ve hangi alışverişte hangi kartın daha çok kazandırdığını gör.",slabDue:"3 gün kaldı",
+payEye:"kulüp cebinde",payH:"zaten nasıl ödüyorsan öyle öde",t1l:"tara & öde",t1h:"her qr kodu tara.<br>kartınla öde.",t2l:"kredi limiti",t2h:"seninle büyüyen<br>bir limit.",t3l:"temassız öde",t3h:"telefonunu yaklaştır.<br>hepsi bu.",t4l:"hesap böl",t4h:"hesabı tuhaflaşmadan<br>böl.",more:"daha fazla",
+rewH:"gerçekten<br>kullanabileceğin ödüller",rewP:"örnek bir ödülü görmek için bir jetona dokun. üyeler nakit iade, iş ortağı teklifleri ve sınırlı ürünlere erken erişim kazanır.",coinFace:"dokun",
+coins:["markette %2 iade","havalimanı salon girişi","konser ön satışı","bir ay kur farkı yok","her hafta ücretsiz kahve","karta erken erişim"],
+secEye:"verin sende kalır.",secP:"paylaştığın her şey aktarımda ve depolamada şifrelenir. verini asla satmayız; dilediğin zaman dışa aktarabilir veya silebilirsin.",
+proofEye:"örnek rakamlar · gerçek veri değil",proofH:"konuşan<br>üyelerimiz",rate1:"app store · örnek",rate2:"play store · örnek",
+joinEye:"davet ve geçmişle",joinH:"kapı herkese<br>açılmaz.",joinP:"üyelik, güçlü bir geri ödeme geçmişi olanlara açık. kontrolü denemek için kaydır. bu demo hiçbir şey göndermez ve hiçbir şey kontrol etmez.",slide:"kontrol için kaydır",slideDone:"yalnızca demo · gönderilmedi",qr:"uygulamayı indir · örnek kod",
+faqH:"sss",q1:"kimler katılabilir?",a1:"Kredi kartı ve iyi bir geri ödeme geçmişi olan 18 yaş üstü herkes. Atlasio Reserve kurgusal bir marka; henüz katılınacak bir şey yok.",q2:"uygunluk kontrolü notumu etkiler mi?",a2:"Bu örnekte hayır: kaydırıcı bir demo ve hiçbir şey göndermiyor. Gerçek bir ürün kendi kurallarını burada açıkça yazmalı.",q3:"üyelik ücreti ne kadar?",a3:"Bu örnekte üyelik ücretsiz. İş ortağı tekliflerinin kendi koşulları olur.",q4:"verilerim nasıl korunuyor?",a4:"Bu cevabı müşterinin gerçek güvenlik açıklamasıyla değiştirin. Asla sertifika uydurmayın.",
+fCo:"şirket",fAbout:"hakkımızda",fCareers:"kariyer",fPress:"basın",fHelp:"yardım",fSupport:"destek",fSec:"güvenlik",fPriv:"gizlilik",pTag:"yeni",pH:"obsidyen kart",pP:"üzerinde numara basılı olmayan metal kart. örnek ürün.",
+fine:"Atlasio Reserve, neumorphic-club-fintech tasarım örneği için oluşturulmuş kurgusal bir markadır. Gerçek bir ürün, teklif veya puan gösterilmemektedir.",badge:"uygulamayı<br>indir",themeToLight:"Açık rölyefe geç",themeToDark:"Koyu rölyefe geç"}
+};
+const root=document.documentElement;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine=matchMedia('(pointer: fine)').matches;
+let lang='en';
+
+/* ---------- reveal words ---------- */
+const reveal=document.getElementById('reveal');
+let words=[];
+function splitWords(){
+  const t=reveal.textContent.trim();
+  reveal.innerHTML=t.split(/\s+/).map(w=>'<span class="w">'+w+'</span>').join(' ');
+  words=[...reveal.querySelectorAll('.w')];
+  if(reduce)words.forEach(w=>w.classList.add('on'));
+}
+
+/* ---------- coins ---------- */
+const coinsEl=document.getElementById('coins');
+function buildCoins(){
+  const d=I18N[lang];
+  coinsEl.innerHTML=d.coins.map((c,i)=>'<button class="coin convex" style="--i:'+i+'" aria-pressed="false"><span class="face">'+d.coinFace+'</span><span class="prize">'+c+'</span></button>').join('');
+}
+coinsEl.addEventListener('click',e=>{const b=e.target.closest('.coin');if(b)b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true')});
+
+/* ---------- language ---------- */
+function setLang(l){
+  lang=l;const d=I18N[l];root.lang=l;
+  document.querySelectorAll('[data-k]').forEach(n=>{const v=d[n.dataset.k];if(v==null)return;if(n.hasAttribute('data-html'))n.innerHTML=v;else n.textContent=v});
+  document.getElementById('lang-en').setAttribute('aria-pressed',l==='en');
+  document.getElementById('lang-tr').setAttribute('aria-pressed',l==='tr');
+  splitWords();buildCoins();setThemeLabel();
+  if(slideDone)document.getElementById('slideTxt').textContent=d.slideDone;
+  try{localStorage.setItem('atlasio-club-lang',l)}catch(e){}
+  onScroll();
+}
+document.getElementById('lang-en').onclick=()=>setLang('en');
+document.getElementById('lang-tr').onclick=()=>setLang('tr');
+
+/* ---------- theme ---------- */
+const themeBtn=document.getElementById('theme');
+function setThemeLabel(){const light=root.dataset.theme==='light';themeBtn.setAttribute('aria-pressed',light);themeBtn.setAttribute('aria-label',light?I18N[lang].themeToDark:I18N[lang].themeToLight)}
+themeBtn.onclick=()=>{root.dataset.theme=root.dataset.theme==='light'?'dark':'light';setThemeLabel();drawQR();try{localStorage.setItem('atlasio-club-theme',root.dataset.theme)}catch(e){}};
+
+/* ---------- light source follows the cursor ---------- */
+let tx=.7071,ty=.7071,cx=tx,cy=ty,lightRaf=0;
+function lightLoop(){
+  cx+=(tx-cx)*.08;cy+=(ty-cy)*.08;const m=Math.hypot(cx,cy)||1;
+  root.style.setProperty('--lx',(cx/m).toFixed(3));root.style.setProperty('--ly',(cy/m).toFixed(3));
+  lightRaf=(Math.abs(tx-cx)+Math.abs(ty-cy)>.004)?requestAnimationFrame(lightLoop):0;
+}
+if(fine&&!reduce){
+  addEventListener('pointermove',e=>{
+    // shadows fall away from the light: light at the cursor, shadow vector = centre - cursor
+    const dx=innerWidth/2-e.clientX,dy=innerHeight/2-e.clientY,m=Math.hypot(dx,dy);
+    if(m<40)return;tx=dx/m;ty=dy/m;if(!lightRaf)lightRaf=requestAnimationFrame(lightLoop);
+  },{passive:true});
+}
+
+/* ---------- hero card tilt ---------- */
+const stage=document.getElementById('stage'),card=document.getElementById('card');
+if(fine&&!reduce){
+  stage.addEventListener('pointermove',e=>{const r=stage.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    card.style.setProperty('--ty',(x*22).toFixed(1)+'deg');card.style.setProperty('--tx',(-y*22).toFixed(1)+'deg')});
+  stage.addEventListener('pointerleave',()=>{card.style.setProperty('--ty','0deg');card.style.setProperty('--tx','0deg')});
+}
+
+/* ---------- scroll-linked pieces ---------- */
+const header=document.getElementById('top'),phone=document.getElementById('phone'),zone=document.getElementById('phoneZone'),fan=document.getElementById('fan'),ticks=document.getElementById('ticks');
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+function prog(el,start=1,end=.3){const r=el.getBoundingClientRect(),h=innerHeight;return clamp((h*start-r.top)/(h*start-h*end))}
+let scrollRaf=0;
+function onScroll(){
+  scrollRaf=0;
+  header.classList.toggle('scrolled',scrollY>10);
+  if(reduce){phone.style.setProperty('--p',1);fan.style.setProperty('--fan',10);return}
+  const p=prog(reveal,.85,.25),n=Math.round(p*words.length);
+  words.forEach((w,i)=>w.classList.toggle('on',i<n));
+  phone.style.setProperty('--p',prog(zone,1,.45).toFixed(3));
+  fan.style.setProperty('--fan',(prog(fan,1,.35)*12).toFixed(2));
+  ticks.style.setProperty('--rot',(prog(ticks,1.1,-.1)*180-90).toFixed(1)+'deg');
+}
+addEventListener('scroll',()=>{if(!scrollRaf)scrollRaf=requestAnimationFrame(onScroll)},{passive:true});
+addEventListener('resize',()=>{if(!scrollRaf)scrollRaf=requestAnimationFrame(onScroll)});
+
+/* dial ticks */
+(function(){let s='';for(let i=0;i<60;i++){const a=i*6*Math.PI/180,maj=i%5===0,r1=maj?78:84,r2=92;
+  s+='<line'+(maj?' class="major"':'')+' x1="'+(Math.sin(a)*r1).toFixed(2)+'" y1="'+(-Math.cos(a)*r1).toFixed(2)+'" x2="'+(Math.sin(a)*r2).toFixed(2)+'" y2="'+(-Math.cos(a)*r2).toFixed(2)+'"/>'}
+  ticks.innerHTML=s})();
+
+/* ---------- rail ---------- */
+const rail=document.getElementById('rail');
+document.getElementById('prev').onclick=()=>rail.scrollBy({left:-360,behavior:reduce?'auto':'smooth'});
+document.getElementById('next').onclick=()=>rail.scrollBy({left:360,behavior:reduce?'auto':'smooth'});
+
+/* ---------- spotlight text ---------- */
+const spot=document.getElementById('spot');
+let spotHover=false,spotT=0,spotVisible=false;
+if(reduce){spot.querySelector('.lit').style.webkitMaskImage='none';spot.querySelector('.lit').style.maskImage='none'}
+else{
+  spot.addEventListener('pointermove',e=>{spotHover=true;const r=spot.getBoundingClientRect();spot.style.setProperty('--mx',(e.clientX-r.left)+'px');spot.style.setProperty('--my',(e.clientY-r.top)+'px')});
+  spot.addEventListener('pointerleave',()=>spotHover=false);
+  new IntersectionObserver(es=>{spotVisible=es[0].isIntersecting;if(spotVisible)requestAnimationFrame(autoSpot)}).observe(spot);
+}
+function autoSpot(){
+  if(!spotVisible)return;
+  if(!spotHover){spotT+=.006;spot.style.setProperty('--mx',(50+42*Math.sin(spotT*1.3))+'%');spot.style.setProperty('--my',(50+38*Math.sin(spotT*2.1))+'%')}
+  requestAnimationFrame(autoSpot);
+}
+
+/* ---------- slide to join ---------- */
+const slide=document.getElementById('slide'),knob=document.getElementById('knob');
+let k=0,dragging=false,startX=0,startK=0,slideDone=false,resetTimer;
+function setK(v){k=clamp(v);slide.style.setProperty('--k',k.toFixed(3));knob.setAttribute('aria-valuenow',Math.round(k*100))}
+function finish(){slideDone=true;setK(1);slide.classList.add('done');document.getElementById('slideTxt').textContent=I18N[lang].slideDone;
+  clearTimeout(resetTimer);resetTimer=setTimeout(()=>{slideDone=false;slide.classList.remove('done');document.getElementById('slideTxt').textContent=I18N[lang].slide;setK(0)},3500)}
+knob.addEventListener('pointerdown',e=>{if(slideDone)return;dragging=true;startX=e.clientX;startK=k;knob.setPointerCapture(e.pointerId)});
+knob.addEventListener('pointermove',e=>{if(!dragging)return;const w=slide.clientWidth-76;setK(startK+(e.clientX-startX)/w)});
+knob.addEventListener('pointerup',()=>{if(!dragging)return;dragging=false;k>.9?finish():setK(0)});
+knob.addEventListener('keydown',e=>{if(slideDone)return;if(e.key==='ArrowRight'){setK(k+.2);if(k>=1)finish();e.preventDefault()}else if(e.key==='ArrowLeft'){setK(k-.2);e.preventDefault()}else if(e.key==='Enter'||e.key===' '){finish();e.preventDefault()}});
+
+/* ---------- decorative QR pattern (not a real code) ---------- */
+function drawQR(){
+  const ink=getComputedStyle(root).getPropertyValue('--text').trim()||'#fff';
+  [['qrBig',130],['qrSmall',48]].forEach(([id,size])=>{
+    const c=document.getElementById(id),x=c.getContext('2d'),n=25,s=size/n;let seed=7;
+    const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+    x.clearRect(0,0,size,size);x.fillStyle=ink;
+    const finder=(fx,fy)=>{x.fillRect(fx*s,fy*s,7*s,7*s);x.clearRect((fx+1)*s,(fy+1)*s,5*s,5*s);x.fillRect((fx+2)*s,(fy+2)*s,3*s,3*s)};
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++){const inF=(i<8&&j<8)||(i>n-9&&j<8)||(i<8&&j>n-9);if(!inF&&rnd()>.52)x.fillRect(i*s,j*s,s,s)}
+    finder(0,0);finder(n-7,0);finder(0,n-7);
+  });
+}
+
+/* ---------- floating badge hides near the join section ---------- */
+const badge=document.getElementById('badge');
+new IntersectionObserver(es=>badge.classList.toggle('away',es[0].isIntersecting),{threshold:.2}).observe(document.getElementById('join'));
+
+/* ---------- boot ---------- */
+let savedTheme=null,savedLang=null;
+try{savedTheme=localStorage.getItem('atlasio-club-theme');savedLang=localStorage.getItem('atlasio-club-lang')}catch(e){}
+if(savedTheme==='light'||savedTheme==='dark')root.dataset.theme=savedTheme;
+drawQR();
+setLang(savedLang==='tr'?'tr':'en');
+</script>
+</body>
+</html>

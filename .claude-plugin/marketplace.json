@@ -43,6 +43,15 @@
       "skills": [
         "./skills/pointcloud-matrix-tech"
       ]
+    },
+    {
+      "name": "neumorphic-club-fintech",
+      "description": "Premium fintech, card and membership sites in dark neumorphism: one soft material with raised and pressed relief, a cursor-driven light source, engraved scroll-reveal text, a tilting embossed card, pressable coins and a slide-to-join control.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/neumorphic-club-fintech"
+      ]
     }
   ]
 }
