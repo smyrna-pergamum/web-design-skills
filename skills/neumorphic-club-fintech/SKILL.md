@@ -1,12 +1,13 @@
 ---
 name: neumorphic-club-fintech
-description: Build a premium fintech, card or membership website in dark neumorphism (soft UI) — every surface is the page colour and depth comes only from paired shadows (raised outer / pressed inset), heavy lowercase serif headlines, wide-tracked uppercase eyebrows and one lime "LED" accent — with signature effects - a light source that follows the cursor so every shadow on the page turns with it, engraved text that lights up word by word on scroll, an embossed credit card that tilts with the mouse, a phone rising out of an inset slot, fanning card slabs, pressable reward coins, a rotating lock dial with spotlight text and a slide-to-join control, plus a light-relief theme switch. Use for banks, credit cards, payments, wallets, members-only clubs, premium subscriptions, or when the user asks for neumorphism, neumorphic, soft UI, embossed or "extruded" design, or a dark luxury fintech landing page. Produces a single HTML file with optional multi-language switching.
+description: Build a premium fintech, card or membership website in two-material neumorphism (soft UI) — a dark relief page with light relief "islands" for cards, panels, coins and the phone (inverted in the light theme), depth only from paired shadows (raised outer / pressed inset), heavy lowercase serif headlines, wide-tracked uppercase eyebrows and one lime "LED" accent — with signature effects - a light source that follows the cursor so every shadow on the page turns with it, engraved text that lights up word by word on scroll, an embossed credit card that tilts with the mouse, a phone rising out of an inset slot, fanning card slabs, pressable reward coins, a rotating lock dial with spotlight text and a slide-to-join control, plus a light-relief theme switch. Use for banks, credit cards, payments, wallets, members-only clubs, premium subscriptions, or when the user asks for neumorphism, neumorphic, soft UI, embossed or "extruded" design, or a dark luxury fintech landing page. Produces a single HTML file with optional multi-language switching.
 ---
 
 # Neumorphic club fintech
 
-A members-only finance site carved from one soft material. The whole page is a single colour; buttons, cards and wells
-are pushed out of it or pressed into it, and a light that follows the cursor makes the relief feel physical. The tone is
+A members-only finance site carved from two soft materials: a dark page and light islands set into it (cards, panels,
+coins, the phone, FAQ bars). Inside each material, buttons and wells are pushed out of it or pressed into it, and a light
+that follows the cursor makes the relief feel physical. The light theme swaps the two: light page, dark islands. The tone is
 quiet and exclusive: big lowercase serif statements, little copy, lots of air.
 
 The reference build is `example/index.html` (Atlasio Reserve, a fictional card club, EN/TR, dark and light relief).
@@ -27,11 +28,12 @@ If the user names a reference site, take its *structure and mood* only. Never co
 
 | Element | Rule |
 |---|---|
-| Material | One colour for page **and** every surface. Dark `#1f2126` (hi `#25282e`, lo `#1a1c20`); light `#e3e6eb` (hi `#eef0f4`, lo `#d5d9df`). Never pure black or white: shadows need room on both sides. |
-| Relief | Raised = `X Y 24px dark, -X -Y 24px light`; pressed = the same pair `inset`. Dark shadow `rgba(0,0,0,.62)`, light `rgba(255,255,255,.055)`; in light theme `rgba(146,156,172,.7)` and `rgba(255,255,255,.95)`. Small variants at half offset. Convex knobs and chips add `linear-gradient(145deg, hi, lo)`. |
+| Materials | Two. Page: dark `#272a31` (hi `#2e3139`, lo `#212329`). Islands (`.alt`): light `#e6e9ee` (hi `#f1f3f6`, lo `#d7dbe1`). The light theme swaps them. Inside one material every surface is that colour. Never pure black or white: shadows need room on both sides. |
+| Islands | Cards, story and join panels, the phone, rail tiles, coins, dial, rating tiles, FAQ bars, footer promo, app badge. Header, hero copy, stat wells, headings and the footer stay on the page material. Aim for roughly half light, half dark on every screen. |
+| Relief | Raised = `X Y 24px dark, -X -Y 24px light`; pressed = the same pair `inset`. Dark material `rgba(0,0,0,.55)` / `rgba(255,255,255,.06)`; light material `rgba(146,156,172,.75)` / `rgba(255,255,255,.95)`. Small variants at half offset. Convex knobs and chips add `linear-gradient(145deg, hi, lo)`. An island's **own** outer shadow falls on the page, so it uses the page pair (`--island`), never its own white highlight (that would glow as a halo on dark). |
 | Light | Offsets come from `--lx/--ly` (a unit vector). Default top-left light (`.7071, .7071`); JS turns it toward the cursor. |
-| Text | Dark: `#f4f5f7`, soft `#c5c9d1`, muted `#8e939d`. Text is **never** low-contrast: relief is for surfaces, not for type you must read. |
-| Accent | Lime LED `#b9f26b` (light theme `#3e8a1d`) with a small glow. Feature wells may hold one saturated glow each (pink, violet, green, blue) at ~38% opacity. |
+| Text | Each material has its own ink: on dark `#f4f5f7` / `#c9cdd5` / `#959aa4`, on light `#191c22` / `#3c414c` / `#5f6571`. Text is **never** low-contrast: relief is for surfaces, not for type you must read. |
+| Accent | Lime LED `#b9f26b` on dark material, `#3e8a1d` on light material, with a small glow. Feature wells may hold one saturated glow each (pink, violet, green, blue) at ~38% opacity. |
 | Display type | **Fraunces** 700, `opsz 144`, `letter-spacing:-.035em`, lowercase, line-height .92 (Denton is the paid original look). |
 | Body / UI | **Urbanist** 400–700 (Gilroy look). Eyebrows 13px 700 uppercase `letter-spacing:.32em`. Buttons 13px 700 uppercase `.18em`. |
 | Shapes | Pills for buttons and toggles; 20–44px radii for panels; circles for icon wells, coins and the dial. No borders, no hairlines. |
@@ -87,8 +89,11 @@ If the user names a reference site, take its *structure and mood* only. Never co
 
 * Standalone HTML with doctype/charset/viewport; Google Fonts only; no images required (all relief is CSS, QR is a
   decorative canvas pattern, marked as sample).
-* Define the material once as tokens (`--bg --hi --lo --d --l --raise --raise-sm --inset --inset-sm`); components never
-  write a shadow by hand.
+* Define both materials as token sets. The page set sits on `:root`; the opposite set on `.alt` (swapped under
+  `[data-theme="light"]`). Rebuild `--raise --raise-sm --inset --inset-sm` on `:root, .alt` so each island uses its own
+  pair; declare `--island` / `--island-sm` on `:root` only so islands inherit the page pair for their outer shadow.
+  Components never write a shadow by hand.
+* Anything that reads colours in JS (the QR canvas) must read them from its own element, not from `:root`.
 * Every element that casts a shadow sits on `background: var(--bg)`. Overflowing containers (rails) need ~30px padding
   so shadows are not clipped.
 * Accessibility: text contrast ≥ 4.5:1 regardless of the relief; visible lime focus ring; pressed state is also exposed
@@ -105,7 +110,8 @@ If the user names a reference site, take its *structure and mood* only. Never co
 
 ## 7. Finish checklist
 
-- [ ] One material colour; no borders; every shadow comes from the tokens.
+- [ ] Two materials, roughly balanced on every screen; no borders; every shadow comes from the tokens.
+- [ ] No white halo around light islands on the dark page (outer shadow uses `--island`).
 - [ ] Moving the mouse turns every shadow on the page; touch and reduced motion get a fixed light.
 - [ ] All readable text passes contrast in both themes; engraving only on decoration.
 - [ ] Rail shadows are not clipped; nothing scrolls horizontally at 390px.

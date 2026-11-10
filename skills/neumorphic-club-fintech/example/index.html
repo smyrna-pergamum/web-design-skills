@@ -14,31 +14,53 @@
    the page turns with it. Lowercase heavy serif headlines, a geometric sans for everything else, wide-tracked
    uppercase eyebrows, one lime "LED" accent for live states. Dark by default, light relief on the theme switch. */
 :root{
+  /* page material (dark) */
   color-scheme:dark;
-  --bg:#1f2126; --hi:#25282e; --lo:#1a1c20;
-  --text:#f4f5f7; --soft:#c5c9d1; --muted:#8e939d; --ghost:#3a3e46;
-  --d:rgba(0,0,0,.62); --l:rgba(255,255,255,.055);
-  --eng-d:rgba(0,0,0,.8); --eng-l:rgba(255,255,255,.09);
+  --bg:#272a31; --hi:#2e3139; --lo:#212329;
+  --text:#f4f5f7; --soft:#c9cdd5; --muted:#959aa4; --ghost:#41454e;
+  --d:rgba(0,0,0,.55); --l:rgba(255,255,255,.06);
+  --eng-d:rgba(0,0,0,.75); --eng-l:rgba(255,255,255,.1);
   --accent:#b9f26b; --accent-ink:#13200a;
   --g-pink:#ff3fa4; --g-violet:#8f5bff; --g-green:#35e07a; --g-blue:#3b8cff; --g-amber:#ffb057;
   --lx:.7071; --ly:.7071;
-  --sx:calc(var(--lx)*10px); --sy:calc(var(--ly)*10px);
-  --raise:var(--sx) var(--sy) 24px var(--d), calc(var(--sx)*-1) calc(var(--sy)*-1) 24px var(--l);
-  --raise-sm:calc(var(--sx)*.5) calc(var(--sy)*.5) 12px var(--d), calc(var(--sx)*-.5) calc(var(--sy)*-.5) 12px var(--l);
-  --inset:inset var(--sx) var(--sy) 18px var(--d), inset calc(var(--sx)*-1) calc(var(--sy)*-1) 18px var(--l);
-  --inset-sm:inset calc(var(--sx)*.45) calc(var(--sy)*.45) 9px var(--d), inset calc(var(--sx)*-.45) calc(var(--sy)*-.45) 9px var(--l);
   --f-display:"Fraunces","Denton",Georgia,serif;
   --f-body:"Urbanist","Gilroy","Helvetica Neue",Arial,sans-serif;
   --gutter:max(16px,env(safe-area-inset-left,0px));
   --gutter-r:max(16px,env(safe-area-inset-right,0px));
 }
-:root[data-theme="light"]{
+/* islands: cards, panels, coins… are made of the opposite material (light on the dark page, dark on the light page) */
+:root:not([data-theme="light"]) .alt,:root[data-theme="light"]{
   color-scheme:light;
-  --bg:#e3e6eb; --hi:#eef0f4; --lo:#d5d9df;
-  --text:#191c22; --soft:#3c414c; --muted:#646a76; --ghost:#c6cbd3;
-  --d:rgba(146,156,172,.7); --l:rgba(255,255,255,.95);
+  --bg:#e6e9ee; --hi:#f1f3f6; --lo:#d7dbe1;
+  --text:#191c22; --soft:#3c414c; --muted:#5f6571; --ghost:#c6cbd3;
+  --d:rgba(146,156,172,.75); --l:rgba(255,255,255,.95);
   --eng-d:rgba(140,150,166,.85); --eng-l:#ffffff;
   --accent:#3e8a1d; --accent-ink:#ffffff;
+}
+:root[data-theme="light"] .alt{
+  color-scheme:dark;
+  --bg:#272a31; --hi:#2e3139; --lo:#212329;
+  --text:#f4f5f7; --soft:#c9cdd5; --muted:#959aa4; --ghost:#41454e;
+  --d:rgba(0,0,0,.55); --l:rgba(255,255,255,.06);
+  --eng-d:rgba(0,0,0,.75); --eng-l:rgba(255,255,255,.1);
+  --accent:#b9f26b; --accent-ink:#13200a;
+}
+/* shadows are rebuilt wherever the material changes, so each surface uses its own pair */
+:root,.alt{
+  --sx:calc(var(--lx)*10px); --sy:calc(var(--ly)*10px);
+  --raise:var(--sx) var(--sy) 24px var(--d), calc(var(--sx)*-1) calc(var(--sy)*-1) 24px var(--l);
+  --raise-sm:calc(var(--sx)*.5) calc(var(--sy)*.5) 12px var(--d), calc(var(--sx)*-.5) calc(var(--sy)*-.5) 12px var(--l);
+  --inset:inset var(--sx) var(--sy) 18px var(--d), inset calc(var(--sx)*-1) calc(var(--sy)*-1) 18px var(--l);
+  --inset-sm:inset calc(var(--sx)*.45) calc(var(--sy)*.45) 9px var(--d), inset calc(var(--sx)*-.45) calc(var(--sy)*-.45) 9px var(--l);
+}
+/* the island's own outer shadow falls on the page, so it uses the page pair (declared on :root only, inherited) */
+:root{
+  --island:calc(var(--sx)*1.3) calc(var(--sy)*1.3) 34px rgba(0,0,0,.5), calc(var(--sx)*-.5) calc(var(--sy)*-.5) 22px rgba(255,255,255,.05);
+  --island-sm:calc(var(--sx)*.7) calc(var(--sy)*.7) 18px rgba(0,0,0,.45), calc(var(--sx)*-.3) calc(var(--sy)*-.3) 12px rgba(255,255,255,.04);
+}
+:root[data-theme="light"]{
+  --island:calc(var(--sx)*1.3) calc(var(--sy)*1.3) 34px rgba(110,120,138,.55), calc(var(--sx)*-1) calc(var(--sy)*-1) 26px rgba(255,255,255,.95);
+  --island-sm:calc(var(--sx)*.7) calc(var(--sy)*.7) 18px rgba(110,120,138,.5), calc(var(--sx)*-.6) calc(var(--sy)*-.6) 14px rgba(255,255,255,.9);
 }
 *{box-sizing:border-box}
 html{overflow-x:clip}
@@ -59,6 +81,8 @@ section{padding-block:clamp(72px,11vw,140px)}
 .raised{background:var(--bg);box-shadow:var(--raise)}
 .convex{background:linear-gradient(145deg,var(--hi),var(--lo));box-shadow:var(--raise)}
 .pressed{background:var(--bg);box-shadow:var(--inset)}
+.alt{color:var(--text)}
+.alt.raised,.alt.convex{box-shadow:var(--island)}
 .btn{display:inline-flex;align-items:center;gap:12px;padding:16px 26px;border-radius:999px;background:var(--bg);box-shadow:var(--raise-sm);
   font:700 13px/1 var(--f-body);letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:var(--text);transition:box-shadow .18s,color .18s,transform .18s}
 .btn:hover{color:var(--accent)}
@@ -176,7 +200,7 @@ header.top.scrolled{box-shadow:0 10px 24px -14px var(--d)}
 .coin{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;text-align:center;padding:16%;transition:box-shadow .25s;animation:float 6s ease-in-out infinite;animation-delay:calc(var(--i) * -1s)}
 .coin .face{font:700 12px/1 var(--f-body);letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
 .coin .prize{display:none;font:600 clamp(13px,1.6vw,17px)/1.25 var(--f-body);color:var(--text)}
-.coin[aria-pressed="true"]{box-shadow:var(--inset);background:var(--bg)}
+.coin[aria-pressed="true"]{box-shadow:var(--island-sm),var(--inset);background:var(--bg)}
 .coin[aria-pressed="true"] .face{display:none}
 .coin[aria-pressed="true"] .prize{display:block}
 @keyframes float{50%{transform:translateY(-10px)}}
@@ -217,8 +241,8 @@ header.top.scrolled{box-shadow:0 10px 24px -14px var(--d)}
 
 /* ---------- faq ---------- */
 .faq{display:grid;gap:22px;max-width:860px;margin:44px auto 0}
-.faq details{border-radius:26px;box-shadow:var(--raise-sm);transition:box-shadow .25s}
-.faq details[open]{box-shadow:var(--inset-sm)}
+.faq details{border-radius:26px;background:var(--bg);box-shadow:var(--island-sm);transition:box-shadow .25s}
+.faq details[open]{box-shadow:var(--island-sm),var(--inset-sm)}
 .faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:22px 26px;font:600 19px/1.3 var(--f-body)}
 .faq summary::-webkit-details-marker{display:none}
 .faq summary::after{content:"+";font:400 26px/1 var(--f-body);color:var(--accent)}
@@ -295,7 +319,7 @@ footer{padding-block:40px 56px}
     </div>
     <div class="stage" id="stage" aria-hidden="true">
       <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
-      <div class="card3d raised" id="card">
+      <div class="card3d raised alt" id="card">
         <div class="brand"><span>atlasio</span><span class="led"></span></div>
         <div class="chip convex"></div>
         <div class="num engraved">4821 •••• •••• 0907</div>
@@ -307,7 +331,7 @@ footer{padding-block:40px 56px}
 
 <section id="story">
   <div class="wrap">
-    <div class="story-panel raised">
+    <div class="story-panel raised alt">
       <span class="eyebrow" data-k="storyEye">membership is earned.</span>
       <p class="reveal" id="reveal" data-k="story">we started with a simple idea. people who keep their word with money deserve a bank that keeps its word too: clear fees, rewards worth claiming, and a real person when something goes wrong. pay on time, earn your place, and see what changes.</p>
     </div>
@@ -317,7 +341,7 @@ footer{padding-block:40px 56px}
 <section class="app" id="app">
   <div class="wrap">
     <div class="phone-zone" id="phoneZone" aria-hidden="true">
-      <div class="phone raised" id="phone">
+      <div class="phone raised alt" id="phone">
         <div class="screen pressed">
           <div class="row"><span>atlasio</span><span data-k="phHi">hi, member</span></div>
           <div class="bill raised">
@@ -344,11 +368,11 @@ footer{padding-block:40px 56px}
       <p class="lead" data-k="cardsP">add the cards you already have. get a reminder before each due date, spot hidden fees, and see which card earns the most for each purchase.</p>
     </div>
     <div class="fan" id="fan" aria-hidden="true">
-      <div class="slab raised" style="--i:-2"><div class="top"><span>travel</span><span>visa</span></div><span class="n engraved">•••• 1180</span></div>
-      <div class="slab raised" style="--i:-1"><div class="top"><span>store</span><span>mc</span></div><span class="n engraved">•••• 5523</span></div>
-      <div class="slab raised" style="--i:1"><div class="top"><span>fuel</span><span>visa</span></div><span class="n engraved">•••• 7741</span></div>
-      <div class="slab raised" style="--i:2"><div class="top"><span>business</span><span>amex</span></div><span class="n engraved">•••• 3002</span></div>
-      <div class="slab raised live" style="--i:0"><div class="top"><span>everyday</span><span><span class="led"></span><span data-k="slabDue">due in 3 days</span></span></div><span class="n">•••• 0907</span></div>
+      <div class="slab raised alt" style="--i:-2"><div class="top"><span>travel</span><span>visa</span></div><span class="n engraved">•••• 1180</span></div>
+      <div class="slab raised alt" style="--i:-1"><div class="top"><span>store</span><span>mc</span></div><span class="n engraved">•••• 5523</span></div>
+      <div class="slab raised alt" style="--i:1"><div class="top"><span>fuel</span><span>visa</span></div><span class="n engraved">•••• 7741</span></div>
+      <div class="slab raised alt" style="--i:2"><div class="top"><span>business</span><span>amex</span></div><span class="n engraved">•••• 3002</span></div>
+      <div class="slab raised alt live" style="--i:0"><div class="top"><span>everyday</span><span><span class="led"></span><span data-k="slabDue">due in 3 days</span></span></div><span class="n">•••• 0907</span></div>
     </div>
   </div>
 </section>
@@ -363,25 +387,25 @@ footer{padding-block:40px 56px}
       </div>
     </div>
     <div class="rail" id="rail">
-      <article class="tile raised">
+      <article class="tile raised alt">
         <span class="lab"><span class="well"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4M8 12h8"/></svg></span><span data-k="t1l">scan & pay</span></span>
         <h3 data-k="t1h" data-html>scan any qr.<br>pay from your card.</h3>
         <a class="btn" href="#faq"><span data-k="more">learn more</span><span class="arr" aria-hidden="true">→</span></a>
         <div class="show" style="--glow:var(--g-pink)" aria-hidden="true"><div class="qrphone raised"><div></div></div></div>
       </article>
-      <article class="tile raised">
+      <article class="tile raised alt">
         <span class="lab"><span class="well"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/></svg></span><span data-k="t2l">credit line</span></span>
         <h3 data-k="t2h" data-html>a credit line<br>that grows with you.</h3>
         <a class="btn" href="#faq"><span data-k="more">learn more</span><span class="arr" aria-hidden="true">→</span></a>
         <div class="show" style="--glow:var(--g-violet)" aria-hidden="true"><div class="bigchip convex"><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
       </article>
-      <article class="tile raised">
+      <article class="tile raised alt">
         <span class="lab"><span class="well"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8a6 6 0 010 8M12 5a10 10 0 010 14M16 2.5a14 14 0 010 19"/></svg></span><span data-k="t3l">tap to pay</span></span>
         <h3 data-k="t3h" data-html>hold your phone.<br>that's the whole step.</h3>
         <a class="btn" href="#faq"><span data-k="more">learn more</span><span class="arr" aria-hidden="true">→</span></a>
         <div class="show" style="--glow:var(--g-green)" aria-hidden="true"><div class="waves raised"><div><div class="ring" style="position:static;border-radius:50%"></div></div></div></div>
       </article>
-      <article class="tile raised">
+      <article class="tile raised alt">
         <span class="lab"><span class="well"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c1-3 3-4 5-4s4 1 5 4M11 19c1-3 3-4 5-4s4 1 5 4"/></svg></span><span data-k="t4l">split bills</span></span>
         <h3 data-k="t4h" data-html>split the bill<br>before it gets awkward.</h3>
         <a class="btn" href="#faq"><span data-k="more">learn more</span><span class="arr" aria-hidden="true">→</span></a>
@@ -401,7 +425,7 @@ footer{padding-block:40px 56px}
 
 <section id="security">
   <div class="wrap split">
-    <div class="dial raised" aria-hidden="true">
+    <div class="dial raised alt" aria-hidden="true">
       <svg viewBox="-100 -100 200 200" id="ticks"></svg>
       <div class="knob convex"><svg viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 018 0v3"/></svg></div>
     </div>
@@ -421,14 +445,14 @@ footer{padding-block:40px 56px}
       <span class="eyebrow" data-k="proofEye">sample figures · not real data</span>
       <h2 class="h2" data-k="proofH" data-html>members do<br>the talking</h2>
     </div>
-    <div class="rate raised"><b>4.8<small>/5</small></b><div class="track"><span style="width:96%"></span></div><span class="eyebrow" data-k="rate1">app store · sample</span></div>
-    <div class="rate raised"><b>4.7<small>/5</small></b><div class="track"><span style="width:94%"></span></div><span class="eyebrow" data-k="rate2">play store · sample</span></div>
+    <div class="rate raised alt"><b>4.8<small>/5</small></b><div class="track"><span style="width:96%"></span></div><span class="eyebrow" data-k="rate1">app store · sample</span></div>
+    <div class="rate raised alt"><b>4.7<small>/5</small></b><div class="track"><span style="width:94%"></span></div><span class="eyebrow" data-k="rate2">play store · sample</span></div>
   </div>
 </section>
 
 <section id="join">
   <div class="wrap">
-    <div class="join-panel raised">
+    <div class="join-panel raised alt">
       <div>
         <span class="eyebrow" data-k="joinEye">by invitation and record</span>
         <h2 class="h2" data-k="joinH" data-html>the door opens<br>for some.</h2>
@@ -453,10 +477,10 @@ footer{padding-block:40px 56px}
   <div class="wrap">
     <h2 class="eyebrow center" style="text-align:center;font-size:clamp(20px,2.4vw,28px)" data-k="faqH">faqs</h2>
     <div class="faq">
-      <details><summary data-k="q1">who can join?</summary><p data-k="a1">Anyone over 18 with a credit card and a good repayment history. Atlasio Reserve is a fictional brand, so there is nothing to join yet.</p></details>
-      <details><summary data-k="q2">does the eligibility check affect my score?</summary><p data-k="a2">In this example, no: the slider is a demo and sends nothing. A real product must state its own rules here.</p></details>
-      <details><summary data-k="q3">what does membership cost?</summary><p data-k="a3">Membership is free in this example. Partner offers would have their own terms.</p></details>
-      <details><summary data-k="q4">how is my data protected?</summary><p data-k="a4">Replace this answer with the client's real security statement. Never invent certifications.</p></details>
+      <details class="alt"><summary data-k="q1">who can join?</summary><p data-k="a1">Anyone over 18 with a credit card and a good repayment history. Atlasio Reserve is a fictional brand, so there is nothing to join yet.</p></details>
+      <details class="alt"><summary data-k="q2">does the eligibility check affect my score?</summary><p data-k="a2">In this example, no: the slider is a demo and sends nothing. A real product must state its own rules here.</p></details>
+      <details class="alt"><summary data-k="q3">what does membership cost?</summary><p data-k="a3">Membership is free in this example. Partner offers would have their own terms.</p></details>
+      <details class="alt"><summary data-k="q4">how is my data protected?</summary><p data-k="a4">Replace this answer with the client's real security statement. Never invent certifications.</p></details>
     </div>
   </div>
 </section>
@@ -468,13 +492,13 @@ footer{padding-block:40px 56px}
       <div><a class="logo" href="#hero"><span class="mono raised" aria-hidden="true">a</span><span class="word">atlasio<small>reserve</small></span></a></div>
       <div><h4 data-k="fCo">company</h4><ul><li><a href="#story" data-k="fAbout">about</a></li><li><a href="#hero" data-k="fCareers">careers</a></li><li><a href="#hero" data-k="fPress">press</a></li></ul></div>
       <div><h4 data-k="fHelp">help</h4><ul><li><a href="#faq" data-k="fSupport">support</a></li><li><a href="#security" data-k="fSec">security</a></li><li><a href="#faq" data-k="fPriv">privacy</a></li></ul></div>
-      <div class="promo raised"><span class="tag" data-k="pTag">new</span><b data-k="pH">the obsidian card</b><span class="lead" style="font-size:15px" data-k="pP">a metal card with no printed number. sample product.</span></div>
+      <div class="promo raised alt"><span class="tag" data-k="pTag">new</span><b data-k="pH">the obsidian card</b><span class="lead" style="font-size:15px" data-k="pP">a metal card with no printed number. sample product.</span></div>
     </div>
     <p class="fine" data-k="fine">Atlasio Reserve is a fictional brand made for the neumorphic-club-fintech design example. No real product, offer or rating is shown.</p>
   </div>
 </footer>
 
-<a class="badge raised" id="badge" href="#join"><canvas id="qrSmall" width="48" height="48" aria-hidden="true"></canvas><span data-k="badge" data-html>get<br>the app</span></a>
+<a class="badge raised alt" id="badge" href="#join"><canvas id="qrSmall" width="48" height="48" aria-hidden="true"></canvas><span data-k="badge" data-html>get<br>the app</span></a>
 
 <script>
 const I18N={
@@ -526,7 +550,7 @@ function splitWords(){
 const coinsEl=document.getElementById('coins');
 function buildCoins(){
   const d=I18N[lang];
-  coinsEl.innerHTML=d.coins.map((c,i)=>'<button class="coin convex" style="--i:'+i+'" aria-pressed="false"><span class="face">'+d.coinFace+'</span><span class="prize">'+c+'</span></button>').join('');
+  coinsEl.innerHTML=d.coins.map((c,i)=>'<button class="coin convex alt" style="--i:'+i+'" aria-pressed="false"><span class="face">'+d.coinFace+'</span><span class="prize">'+c+'</span></button>').join('');
 }
 coinsEl.addEventListener('click',e=>{const b=e.target.closest('.coin');if(b)b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true')});
 
@@ -628,9 +652,9 @@ knob.addEventListener('keydown',e=>{if(slideDone)return;if(e.key==='ArrowRight')
 
 /* ---------- decorative QR pattern (not a real code) ---------- */
 function drawQR(){
-  const ink=getComputedStyle(root).getPropertyValue('--text').trim()||'#fff';
   [['qrBig',130],['qrSmall',48]].forEach(([id,size])=>{
     const c=document.getElementById(id),x=c.getContext('2d'),n=25,s=size/n;let seed=7;
+    const ink=getComputedStyle(c).getPropertyValue('--text').trim()||'#fff'; // the island's own ink
     const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
     x.clearRect(0,0,size,size);x.fillStyle=ink;
     const finder=(fx,fy)=>{x.fillRect(fx*s,fy*s,7*s,7*s);x.clearRect((fx+1)*s,(fy+1)*s,5*s,5*s);x.fillRect((fx+2)*s,(fy+2)*s,3*s,3*s)};
