@@ -52,6 +52,15 @@
       "skills": [
         "./skills/neumorphic-club-fintech"
       ]
+    },
+    {
+      "name": "scroll-lock-cyber-brutalism",
+      "description": "Privacy and security product sites in postmodern cyber brutalism: night graphite, hairline grid with amber crosshairs, mono readouts, and a three.js padlock the visitor closes by scrolling, plus honest threat-model, crypto and download-verification sections.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/scroll-lock-cyber-brutalism"
+      ]
     }
   ]
 }
