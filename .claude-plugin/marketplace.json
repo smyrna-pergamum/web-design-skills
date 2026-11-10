@@ -61,6 +61,15 @@
       "skills": [
         "./skills/scroll-lock-cyber-brutalism"
       ]
+    },
+    {
+      "name": "gravity-lens-space",
+      "description": "Cinematic space and launch sites: light editorial page with mouse-reactive dark windows — WebGL black-hole lens, hover video previews, floating astronaut, time-dilation calculator, cursor-reactive headlines.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/gravity-lens-space"
+      ]
     }
   ]
 }

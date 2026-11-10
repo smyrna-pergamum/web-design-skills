@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atlasio · Gravity Lens Example</title>
+<meta name="description" content="Template site for a fictional deep-space expedition: mouse-reactive black-hole shader, floating video previews, time-dilation calculator, light editorial layout with dark media cards.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a calm, light editorial page (pale lavender paper, near-black ink) that holds space in rounded dark "windows":
+   a live black-hole shader, film loops, an astronaut, a tesseract. Everything in the windows answers the mouse.
+   Type is large, tight and quiet; labels are small mono capitals between "+" crosshair marks. One warm accent,
+   accretion-disk amber. Light page + dark media is the deliberate single look (no dark-mode inversion). */
+:root{
+  color-scheme:light;
+  --paper:#eff0f6; --paper-2:#e4e6ef; --ink:#0d0e12; --ink-2:#4a4d5a; --muted:#7c8091; --line:rgba(13,14,18,.12);
+  --void:#050608; --void-2:#0d0f15; --amber:#f29a3a; --amber-2:#ffcf8a; --ice:#9cc7ff;
+  --f-sans:"Inter Tight","Aeonik","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --pad:max(20px,4vw);
+  --r:28px;
+}
+*{box-sizing:border-box}
+html{overflow-x:clip}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.55 var(--f-sans);-webkit-font-smoothing:antialiased;overflow-x:clip}
+h1,h2,h3,p{margin:0}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+img,video{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+.mono{font:500 12px/1.3 var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
+
+/* ---------- rolling letters (hover) ---------- */
+.roll{display:inline-flex;overflow:hidden;vertical-align:bottom;line-height:1.15}
+.roll .ch{display:inline-block;position:relative;transition:transform .45s cubic-bezier(.7,0,.2,1);white-space:pre}
+.roll .ch::after{content:attr(data-c);position:absolute;left:0;top:100%}
+a:hover .roll .ch,button:hover .roll .ch,.roll-host:hover .roll .ch{transform:translateY(-100%)}
+
+/* ---------- mouse-reactive headings: letters gain weight and step away from the cursor ---------- */
+[data-type] .w{display:inline-block;white-space:nowrap}
+[data-type] .l{display:inline-block;will-change:transform,font-variation-settings}
+
+/* ---------- header ---------- */
+header.top{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;gap:12px;padding:22px var(--pad);pointer-events:none}
+header.top > *{pointer-events:auto}
+.brand{display:inline-flex;align-items:center;height:44px;padding:0 20px;border-radius:999px;background:#fff;color:var(--ink);font:600 15px/1 var(--f-sans);letter-spacing:.2em;box-shadow:0 1px 0 var(--line)}
+.spacer{flex:1}
+.pill{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:999px;border:0;font:500 12px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
+.pill.dark{background:var(--ink);color:#fff}
+.pill.light{background:#fff;color:var(--ink);box-shadow:0 1px 0 var(--line)}
+.pill .dots{display:inline-grid;grid-template-columns:4px 4px;gap:3px}
+.pill .dots i{width:4px;height:4px;border-radius:50%;background:currentColor}
+.lang{display:flex;background:#fff;border-radius:999px;padding:4px}
+.lang button{border:0;background:none;padding:9px 12px;border-radius:999px;font:500 11px var(--f-mono);color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.menu{position:fixed;inset:12px;z-index:80;border-radius:var(--r);background:var(--void);color:#fff;padding:90px var(--pad) 40px;display:grid;align-content:space-between}
+.menu[hidden]{display:none}
+.menu ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.menu ul a{font:400 clamp(40px,7vw,96px)/1.05 var(--f-sans);letter-spacing:-.04em}
+.menu ul a:hover{color:var(--amber)}
+.menu .close{position:absolute;top:22px;right:var(--pad)}
+
+/* ---------- hero ---------- */
+.hero{padding:96px var(--pad) 0}
+.hero-head{display:grid;grid-template-columns:1fr 1.25fr;gap:40px;align-items:start;margin-bottom:40px}
+.hero-head .kicker{color:var(--ink-2)}
+.hero-head h1{font-weight:400;font-size:clamp(28px,2.9vw,44px);line-height:1.12;letter-spacing:-.025em;max-width:22ch}
+.window{position:relative;border-radius:var(--r);overflow:hidden;background:var(--void);color:#fff;isolation:isolate}
+.hero .window{height:min(78vh,820px);min-height:460px}
+#lens{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero .window video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.hero .window.no-gl video{opacity:1}
+.hud{position:absolute;inset:auto 0 0 0;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:22px 26px;pointer-events:none;color:rgba(255,255,255,.75)}
+.hud b{color:var(--amber-2);font-weight:500}
+.hint{position:absolute;top:24px;left:26px;color:rgba(255,255,255,.6)}
+.marks{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:22px 0;color:var(--ink-2)}
+.marks span:nth-child(2){padding:0 24px}
+.marks .plus{font:300 20px/1 var(--f-sans)}
+.marks .r{justify-self:end}
+
+/* ---------- mission ---------- */
+.mission{padding:150px var(--pad) 120px;display:grid;grid-template-columns:1fr 1fr;gap:40px 6vw;align-items:end}
+.mission h2{grid-column:1/-1;font-weight:400;font-size:clamp(56px,10vw,170px);line-height:.9;letter-spacing:-.055em}
+.mission h2 .in{display:block;padding-left:12vw}
+.mission p{color:var(--ink-2);font-size:clamp(17px,1.4vw,21px);max-width:44ch}
+.mission .acts{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-self:end}
+.play{width:120px;height:120px;border-radius:50%;border:0;background:var(--ink);color:#fff;display:grid;place-items:center;font:500 11px var(--f-mono);letter-spacing:.06em;
+  transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.play svg{width:18px;height:18px;margin-bottom:6px}
+.play:hover{transform:scale(1.06)}
+
+/* ---------- chapters (hover preview follows cursor) ---------- */
+.chapters{padding:40px var(--pad) 140px}
+.sec-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;align-items:end;padding-bottom:30px;border-bottom:1px solid var(--line)}
+.sec-head h2{font-weight:400;font-size:clamp(40px,5vw,76px);letter-spacing:-.04em;line-height:1}
+.sec-head p{color:var(--muted);max-width:40ch}
+.list{list-style:none;margin:0;padding:0}
+.item{border-bottom:1px solid var(--line)}
+.item button{width:100%;background:none;border:0;padding:30px 0;display:grid;grid-template-columns:70px 1fr auto;gap:20px;align-items:baseline;text-align:left}
+.item .n{color:var(--muted)}
+.item h3{font-weight:400;font-size:clamp(34px,5.4vw,84px);letter-spacing:-.045em;line-height:1}
+.item .tags{color:var(--muted);text-align:right}
+.item button:hover h3{color:var(--ink)}
+.list:hover .item button h3{color:rgba(13,14,18,.35)}
+.list:hover .item button:hover h3{color:var(--ink)}
+.preview{position:fixed;left:0;top:0;z-index:50;width:min(380px,34vw);aspect-ratio:3/4;border-radius:22px;overflow:hidden;pointer-events:none;
+  background:var(--void);opacity:0;transform:translate(-50%,-50%) scale(.6);transition:opacity .3s,transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:0 40px 80px -30px rgba(0,0,0,.6)}
+.preview.on{opacity:1}
+.preview video{width:100%;height:100%;object-fit:cover}
+.preview.wide{aspect-ratio:16/10;width:min(480px,40vw)}
+
+/* ---------- explorer (astronaut, mouse tilt + orbs) ---------- */
+.explorer{padding:0 var(--pad) 40px}
+.explorer .window{height:min(92vh,900px);min-height:520px;perspective:1200px}
+.stage3d{position:absolute;inset:-4%;transform-style:preserve-3d;transition:transform .2s ease-out}
+.stage3d img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:translateZ(-60px) scale(1.12)}
+#orbs{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.glare{position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(260px 260px at var(--gx,50%) var(--gy,40%),rgba(255,207,138,.35),transparent 70%)}
+.explorer .window::after{content:"";position:absolute;inset:auto 0 0 0;height:55%;z-index:2;pointer-events:none;background:linear-gradient(0deg,rgba(5,6,8,.85),transparent)}
+.explorer .copy{position:absolute;z-index:3;left:26px;right:26px;bottom:26px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:20px}
+.explorer h2{font-weight:400;font-size:clamp(34px,5vw,80px);line-height:.98;letter-spacing:-.045em;max-width:14ch;text-shadow:0 2px 30px rgba(0,0,0,.4)}
+.explorer .copy p{max-width:32ch;color:rgba(255,255,255,.8)}
+
+/* ---------- time dilation ---------- */
+.time{padding:140px var(--pad);display:grid;grid-template-columns:1fr 1fr;gap:40px 6vw;align-items:start}
+.time h2{font-weight:400;font-size:clamp(40px,5vw,76px);letter-spacing:-.04em;line-height:1}
+.time .intro{color:var(--ink-2);margin-top:24px;max-width:44ch}
+.calc{background:#fff;border-radius:var(--r);padding:30px;display:grid;gap:26px;box-shadow:0 1px 0 var(--line)}
+.calc label{display:flex;justify-content:space-between;gap:10px}
+.calc input[type=range]{width:100%;accent-color:var(--ink)}
+.clocks{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.clock{border-radius:20px;padding:20px;display:grid;gap:8px}
+.clock.ship{background:var(--void);color:#fff}
+.clock.earth{background:var(--paper-2)}
+.clock b{font:400 clamp(28px,3vw,44px)/1 var(--f-sans);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.clock .mono{opacity:.7}
+.result{font:400 clamp(22px,2vw,30px)/1.25 var(--f-sans);letter-spacing:-.02em}
+.result em{font-style:normal;color:var(--amber)}
+.fine{color:var(--muted);font-size:13px}
+
+/* ---------- tesseract ---------- */
+.tess{padding:0 var(--pad)}
+.tess .window{height:min(86vh,820px);min-height:480px;perspective:600px;display:grid;place-items:center}
+.tunnel{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .25s ease-out}
+/* concentric frames pushed back in z read as a corridor; vertical rules on each frame suggest shelves */
+.tunnel i{position:absolute;inset:4%;border:1.5px solid rgba(255,207,138,.55);border-radius:6px;
+  background:repeating-linear-gradient(90deg,rgba(255,207,138,.10) 0 1px,transparent 1px 8.33%),repeating-linear-gradient(0deg,rgba(156,199,255,.06) 0 1px,transparent 1px 12.5%)}
+.tess .copy{position:relative;z-index:2;text-align:center;padding:0 20px}
+.tess h2{font-weight:400;font-size:clamp(36px,6vw,96px);line-height:.95;letter-spacing:-.05em}
+.tess p{color:rgba(255,255,255,.7);margin:20px auto 0;max-width:40ch}
+
+/* ---------- drifting astronaut over giant words (sticky scene) ---------- */
+.drift{position:relative;height:220vh;padding:0 var(--pad);margin-top:140px}
+.drift .window{position:sticky;top:12px;height:calc(100vh - 24px);min-height:520px;display:grid;place-items:center}
+#dust{position:absolute;inset:0;width:100%;height:100%}
+.words{position:absolute;inset:0;display:grid;align-content:center;gap:0;overflow:hidden;pointer-events:none}
+.words .line{white-space:nowrap;font-weight:400;font-size:clamp(52px,10.5vw,180px);line-height:.95;letter-spacing:-.06em;will-change:transform;color:#fff;padding-left:4vw}
+.words .line:nth-child(2){color:var(--amber);padding-left:16vw}
+.words .line:nth-child(3){padding-left:8vw}
+.astro{position:absolute;left:50%;top:50%;width:min(340px,46vw);margin:0;transform-origin:50% 50%;will-change:transform;z-index:2;
+  filter:drop-shadow(0 40px 60px rgba(0,0,0,.6)) drop-shadow(0 0 40px rgba(242,154,58,.15));cursor:grab}
+.astro svg{display:block;width:100%;height:auto}
+.drift-hint{position:absolute;left:26px;bottom:22px;color:rgba(255,255,255,.6);z-index:3}
+.drift-meta{position:absolute;right:26px;bottom:22px;color:rgba(255,255,255,.6);z-index:3;text-align:right}
+.drift-meta b{color:var(--amber-2);font-weight:500}
+
+/* ---------- contact + footer ---------- */
+.contact{padding:0 var(--pad) 30px}
+.contact .window{padding:clamp(30px,6vw,80px);display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:end;min-height:520px;
+  background:radial-gradient(120% 90% at 85% 10%,rgba(242,154,58,.35),transparent 55%),var(--void)}
+.contact h2{font-weight:400;font-size:clamp(48px,8vw,140px);line-height:.9;letter-spacing:-.055em}
+.contact .side{display:grid;gap:22px;justify-items:start}
+.contact .side p{color:rgba(255,255,255,.75)}
+.big-mail{font:400 clamp(20px,2vw,28px)/1.2 var(--f-sans);border-bottom:1px solid rgba(255,255,255,.35);padding-bottom:6px}
+footer.foot{padding:30px var(--pad) 40px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;color:var(--ink-2)}
+footer.foot b{display:block;color:var(--ink);margin-bottom:8px}
+footer.foot form{display:flex;gap:8px;margin-top:8px}
+footer.foot input{flex:1;min-width:0;border:0;border-radius:999px;padding:12px 16px;font:inherit;font-size:14px;background:#fff}
+.legal{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted)}
+
+/* ---------- video dialog ---------- */
+dialog.reel{border:0;padding:0;background:transparent;width:min(1100px,92vw);max-height:90vh}
+dialog.reel::backdrop{background:rgba(5,6,8,.88)}
+dialog.reel video{width:100%;border-radius:20px}
+dialog.reel .x{position:absolute;top:12px;right:12px}
+
+/* ---------- cursor ---------- */
+.cur{position:fixed;left:0;top:0;z-index:90;pointer-events:none;display:none}
+.cur i{position:absolute;width:12px;height:12px;margin:-6px;border-radius:50%;background:var(--ink);mix-blend-mode:difference;filter:invert(1);
+  transition:width .3s,height .3s,margin .3s}
+.cur span{position:absolute;transform:translate(-50%,-50%);font:500 10px var(--f-mono);letter-spacing:.08em;color:#fff;opacity:0;transition:opacity .2s;white-space:nowrap}
+/* over media: a small frosted-glass ring that keeps the picture visible; amber only for "Play" */
+.cur.label i{width:36px;height:36px;margin:-18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.75);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);filter:none;mix-blend-mode:normal}
+.cur.label span{opacity:1;color:#fff;font-size:9px;text-shadow:0 1px 6px rgba(0,0,0,.6);transform:translate(26px,-50%)}   /* label sits beside the small ring */
+.cur.label.play i{background:var(--amber);border-color:var(--amber)}
+.cur.label.play span{color:#111;text-shadow:none}
+@media (pointer:fine){.cur{display:block;opacity:0}.cur.on{opacity:1}}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .hero-head,.mission,.time,.contact .window{grid-template-columns:1fr}
+  .mission .acts{justify-self:start}
+  .mission h2 .in{padding-left:0}
+  .item button{grid-template-columns:44px 1fr}
+  .item .tags{grid-column:2;text-align:left}
+  .explorer .copy{grid-template-columns:1fr}
+  footer.foot{grid-template-columns:1fr 1fr}
+  .preview{display:none}
+}
+@media (max-width:560px){
+  header.top .pill.dark{display:none}
+  .lang button{padding:8px 9px}
+  .marks{grid-template-columns:auto 1fr auto}
+  .marks span:nth-child(2){text-align:center;padding:0 8px}
+  footer.foot{grid-template-columns:1fr}
+  .clocks{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur" aria-hidden="true"><i></i><span id="cur-label"></span></div>
+
+<header class="top">
+  <a class="brand" href="#top" aria-label="Atlasio home">ATLASIO</a>
+  <span class="spacer"></span>
+  <div class="lang" role="group" aria-label="Language"><button id="lang-en" aria-pressed="true">EN</button><button id="lang-tr" aria-pressed="false">TR</button></div>
+  <a class="pill dark" href="#contact"><span class="roll" data-roll>Let's talk</span></a>
+  <button class="pill light" id="menu-open" aria-expanded="false" aria-controls="menu"><span class="roll" data-roll>Menu</span><span class="dots" aria-hidden="true"><i></i><i></i></span></button>
+</header>
+
+<nav class="menu" id="menu" hidden aria-label="Main">
+  <button class="pill light close" id="menu-close"><span class="roll" data-roll>Close</span></button>
+  <ul>
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#chapters">Chapters</a></li>
+    <li><a href="#time">Time</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <p class="mono" style="color:rgba(255,255,255,.6)">Atlasio · deep-space expedition · fictional template</p>
+</nav>
+
+<main id="top">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-head">
+      <p class="mono kicker">Atlasio expedition · 2026</p>
+      <h1 data-type>We travel past the edge of the known sky and bring back stories you can step into.</h1>
+    </div>
+    <div class="window" id="hero-window" data-cursor="Drag">
+      <video muted loop playsinline preload="none" poster="assets/blackhole.jpg" data-src="assets/blackhole.mp4" aria-hidden="true"></video>
+      <canvas id="lens" aria-label="Interactive black hole: move the mouse to bend the light around it" role="img"></canvas>
+      <p class="mono hint">Move to bend the light · click to pulse</p>
+      <div class="hud mono" aria-hidden="true">
+        <span>Gravity lens · <b>live</b></span>
+        <span>Horizon distance <b id="hud-r">1.82</b> R<sub>s</sub></span>
+        <span>Time factor <b id="hud-t">×1.66</b></span>
+      </div>
+    </div>
+    <div class="marks mono" aria-hidden="true"><span class="plus">+</span><span>Scroll to explore</span><span class="plus r">+</span></div>
+  </section>
+
+  <!-- MISSION -->
+  <section class="mission" id="mission">
+    <h2 data-type>Beyond the<span class="in">horizon</span></h2>
+    <p>Atlasio maps the places where gravity bends light and time. We turn the data from each crossing into films, live models and journeys anyone can explore from home.</p>
+    <div class="acts">
+      <a class="pill dark" href="#chapters"><span class="roll" data-roll>Our mission</span></a>
+      <button class="play" id="play-reel" data-cursor="Play" aria-label="Play reel">
+        <span><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M4 2l12 7-12 7z" fill="currentColor"/></svg><span class="lbl">Play reel</span></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- CHAPTERS -->
+  <section class="chapters" id="chapters">
+    <div class="sec-head">
+      <h2 data-type>Mission chapters</h2>
+      <p class="mono">Five crossings, one way home. Hover to look, click to watch.</p>
+    </div>
+    <ul class="list" id="list">
+      <li class="item"><button data-video="assets/nebula-fire.mp4" data-cursor="Watch"><span class="n mono">01</span><h3 data-type>Leaving the cradle</h3><span class="tags mono">Launch · Nebula</span></button></li>
+      <li class="item"><button data-video="assets/wormhole.mp4" data-wide="1" data-cursor="Watch"><span class="n mono">02</span><h3 data-type>The ring gate</h3><span class="tags mono">Wormhole · Transit</span></button></li>
+      <li class="item"><button data-video="assets/blackhole.mp4" data-wide="1" data-cursor="Watch"><span class="n mono">03</span><h3 data-type>The sleeping giant</h3><span class="tags mono">Black hole · Lensing</span></button></li>
+      <li class="item"><button data-video="assets/edge.mp4" data-cursor="Watch"><span class="n mono">04</span><h3 data-type>Edge of the shelf</h3><span class="tags mono">Planet · Survey</span></button></li>
+      <li class="item"><button data-video="assets/galaxy-core.mp4" data-cursor="Watch"><span class="n mono">05</span><h3 data-type>Signal from the core</h3><span class="tags mono">Galaxy · Return</span></button></li>
+    </ul>
+  </section>
+
+  <!-- EXPLORER -->
+  <section class="explorer">
+    <div class="window" id="explorer" data-cursor="Look">
+      <div class="stage3d" id="stage3d"><img src="assets/astronaut.jpg" alt="An astronaut drifting in front of a dense field of stars and nebulae, Earth's edge glowing at the lower right"></div>
+      <canvas id="orbs" aria-hidden="true"></canvas>
+      <div class="glare" id="glare" aria-hidden="true"></div>
+      <div class="copy">
+        <h2 data-type>Every hour near the giant is borrowed from home</h2>
+        <p>Our explorers carry two clocks: one for the ship, one for the people waiting on Earth.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIME DILATION -->
+  <section class="time" id="time">
+    <div>
+      <p class="mono" style="color:var(--muted)">Time dilation calculator</p>
+      <h2 style="margin-top:14px" data-type>How far can you fall?</h2>
+      <p class="intro">Move the ship closer to the event horizon. Near a non-rotating black hole, time on board runs slower than on Earth by a factor of 1 / √(1 − R<sub>s</sub>/r).</p>
+    </div>
+    <div class="calc">
+      <div>
+        <label class="mono" for="dist"><span>Distance from centre</span><span id="dist-out">2.00 R<sub>s</sub></span></label>
+        <input id="dist" type="range" min="0" max="1000" value="620" aria-describedby="dist-out">
+      </div>
+      <div class="clocks">
+        <div class="clock ship"><span class="mono">Ship clock</span><b id="ship">00:00:00</b><span class="mono">1 hour on board</span></div>
+        <div class="clock earth"><span class="mono">Earth clock</span><b id="earth">00:00:00</b><span class="mono" id="earth-sub">passes on Earth</span></div>
+      </div>
+      <p class="result" id="result">One hour on board is <em>1.41 hours</em> on Earth.</p>
+      <p class="fine">Schwarzschild model, illustrative only. Rotating black holes can stretch the effect much further.</p>
+    </div>
+  </section>
+
+  <!-- TESSERACT -->
+  <section class="tess">
+    <div class="window" id="tess" data-cursor="Look">
+      <div class="tunnel" id="tunnel" aria-hidden="true"></div>
+      <div class="copy">
+        <p class="mono" style="color:var(--amber-2)">Chapter 06 · The fifth room</p>
+        <h2 style="margin-top:14px" data-type>Gravity travels<br>where light can't</h2>
+        <p>A room built from time instead of walls. Move to look along its corridors.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DRIFT: astronaut floating over giant words (studio-style finale) -->
+  <section class="drift" id="drift" aria-label="Statement">
+    <div class="window" data-cursor="Drag">
+      <canvas id="dust" aria-hidden="true"></canvas>
+      <div class="words">
+        <div class="line" data-speed="-.18" data-type>Fall past the horizon</div>
+        <div class="line" data-speed=".22" data-type>and let gravity</div>
+        <div class="line" data-speed="-.12" data-type>write the story</div>
+      </div>
+      <div class="astro" id="astro" role="img" aria-label="A drifting astronaut that follows the mouse">
+        <svg viewBox="0 0 320 400" aria-hidden="true">
+          <defs>
+            <radialGradient id="suit" cx=".35" cy=".28" r=".9"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#dcdfe7"/><stop offset="1" stop-color="#9097a8"/></radialGradient>
+            <radialGradient id="suitDark" cx=".3" cy=".25" r="1"><stop offset="0" stop-color="#d4d7df"/><stop offset="1" stop-color="#737a8c"/></radialGradient>
+            <linearGradient id="visor" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a0b10"/><stop offset=".45" stop-color="#2a1608"/><stop offset=".8" stop-color="#c46a1f"/><stop offset="1" stop-color="#ffcf8a"/></linearGradient>
+            <clipPath id="visorClip"><ellipse cx="165" cy="112" rx="52" ry="44"/></clipPath>
+          </defs>
+          <path d="M100 230 C40 260 30 330 70 390" fill="none" stroke="#c9ccd6" stroke-width="5" stroke-linecap="round"/>
+          <rect x="95" y="122" width="130" height="150" rx="26" fill="url(#suitDark)"/>
+          <g id="legL"><rect x="116" y="252" width="42" height="96" rx="19" fill="url(#suit)" stroke="#8a90a0" stroke-width="1.5"/><rect x="108" y="330" width="56" height="32" rx="13" fill="#eef0f4" stroke="#8a90a0" stroke-width="1.5"/></g>
+          <g id="legR"><rect x="164" y="252" width="42" height="92" rx="19" fill="url(#suit)" stroke="#8a90a0" stroke-width="1.5"/><rect x="160" y="326" width="56" height="32" rx="13" fill="#eef0f4" stroke="#8a90a0" stroke-width="1.5"/></g>
+          <g id="armL"><rect x="64" y="158" width="44" height="98" rx="20" fill="url(#suit)" stroke="#8a90a0" stroke-width="1.5"/><circle cx="86" cy="258" r="20" fill="#eef0f4" stroke="#8a90a0" stroke-width="1.5"/></g>
+          <rect x="100" y="150" width="120" height="132" rx="42" fill="url(#suit)" stroke="#8a90a0" stroke-width="1.5"/>
+          <rect x="130" y="196" width="60" height="40" rx="8" fill="#e8eaf0" stroke="#b5bac6" stroke-width="1.5"/>
+          <circle cx="144" cy="210" r="5" fill="#f29a3a"/><circle cx="160" cy="210" r="5" fill="#9cc7ff"/><circle cx="176" cy="210" r="5" fill="#e5484d"/>
+          <rect x="140" y="222" width="40" height="6" rx="3" fill="#b5bac6"/>
+          <rect x="104" y="262" width="112" height="14" rx="7" fill="#c3c7d1"/>
+          <g id="armR"><rect x="212" y="158" width="44" height="98" rx="20" fill="url(#suit)" stroke="#8a90a0" stroke-width="1.5"/><circle cx="234" cy="258" r="20" fill="#eef0f4" stroke="#8a90a0" stroke-width="1.5"/>
+            <circle cx="234" cy="186" r="11" fill="#f29a3a"/><path d="M229 192l5-12 5 12M231 188h6" fill="none" stroke="#111" stroke-width="2"/></g>
+          <ellipse cx="160" cy="172" rx="58" ry="14" fill="#c3c7d1" stroke="#8a90a0" stroke-width="1.5"/>
+          <circle cx="160" cy="110" r="72" fill="url(#suit)" stroke="#8a90a0" stroke-width="1.5"/>
+          <rect x="84" y="96" width="14" height="30" rx="5" fill="#b5bac6"/><circle cx="91" cy="104" r="4" fill="#ffcf8a"/>
+          <ellipse cx="165" cy="112" rx="52" ry="44" fill="url(#visor)" stroke="#5b6070" stroke-width="2"/>
+          <g clip-path="url(#visorClip)">
+            <g fill="#fff" opacity=".85"><circle cx="140" cy="100" r="1.2"/><circle cx="182" cy="92" r="1"/><circle cx="196" cy="118" r="1.4"/><circle cx="150" cy="132" r=".9"/><circle cx="168" cy="84" r=".8"/></g>
+            <ellipse id="visorHi" cx="146" cy="94" rx="18" ry="9" fill="#fff" opacity=".55" transform="rotate(-25 146 94)"/>
+          </g>
+        </svg>
+      </div>
+      <p class="mono drift-hint">Move to steer · click to nudge</p>
+      <p class="mono drift-meta" aria-hidden="true">Drift <b id="drift-v">0.0</b> m/s<br>Depth <b id="drift-z">0</b>%</p>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="window">
+      <h2 data-type>Ready for launch?</h2>
+      <div class="side">
+        <p>Tell us about your film, exhibition or brand world. We reply within two working days.</p>
+        <span class="big-mail">hello@atlasio.example</span>
+        <a class="pill light" href="#contact"><span class="roll" data-roll>Let's work together</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div><b>Atlasio</b>Deep-space stories, a fictional studio for this template.</div>
+  <div><b>Mission control</b>Levent, Istanbul<br>Mitte, Berlin</div>
+  <div><b>Follow</b>Instagram · YouTube · LinkedIn</div>
+  <div><b>Newsletter</b><form id="news"><label class="sr" for="news-mail" style="position:absolute;left:-9999px">Email</label><input id="news-mail" type="email" required placeholder="Your email"><button class="pill dark" type="submit"><span class="roll" data-roll>Join</span></button></form><p id="news-ok" hidden style="margin-top:8px">Thanks. Nothing was sent; this is a template.</p></div>
+  <div class="legal mono"><span>© 2026 Atlasio · template, fictional</span><span>Video: Pixabay · free license</span></div>
+</footer>
+
+<dialog class="reel" id="reel" aria-label="Video">
+  <video id="reel-video" controls playsinline></video>
+  <button class="pill light x" id="reel-close"><span class="roll" data-roll>Close</span></button>
+</dialog>
+
+<script>
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine=matchMedia('(pointer:fine)').matches;
+const M={x:innerWidth/2,y:innerHeight/2,vx:0,vy:0};
+addEventListener('pointermove',e=>{M.vx=e.clientX-M.x;M.vy=e.clientY-M.y;M.x=e.clientX;M.y=e.clientY;});
+
+/* ---------- translations ---------- */
+const I18N={
+  "Let's talk":"Konuşalım","Menu":"Menü","Close":"Kapat","Mission":"Görev","Chapters":"Bölümler","Time":"Zaman","Contact":"İletişim",
+  "Atlasio · deep-space expedition · fictional template":"Atlasio · derin uzay keşfi · kurgusal şablon",
+  "Atlasio expedition · 2026":"Atlasio keşfi · 2026",
+  "We travel past the edge of the known sky and bring back stories you can step into.":"Bilinen göğün sınırının ötesine gidiyor, içine adım atabileceğiniz hikâyelerle dönüyoruz.",
+  "Move to bend the light · click to pulse":"Işığı bükmek için fareyi gezdirin · dalga için tıklayın",
+  "Gravity lens ·":"Kütleçekim merceği ·","live":"canlı","Horizon distance":"Ufka uzaklık","Time factor":"Zaman çarpanı",
+  "Scroll to explore":"Keşfetmek için kaydırın",
+  "Beyond the":"Ufkun","horizon":"ötesinde",
+  "Atlasio maps the places where gravity bends light and time. We turn the data from each crossing into films, live models and journeys anyone can explore from home.":"Atlasio, kütleçekimin ışığı ve zamanı büktüğü yerlerin haritasını çıkarır. Her geçişten gelen veriyi filmlere, canlı modellere ve herkesin evinden keşfedebileceği yolculuklara dönüştürürüz.",
+  "Our mission":"Görevimiz","Play reel":"Filmi oynat",
+  "Mission chapters":"Görev bölümleri",
+  "Five crossings, one way home. Hover to look, click to watch.":"Beş geçiş, eve tek yol. Bakmak için üzerine gelin, izlemek için tıklayın.",
+  "Leaving the cradle":"Beşikten ayrılış","Launch · Nebula":"Fırlatma · Nebula",
+  "The ring gate":"Halka kapı","Wormhole · Transit":"Solucan deliği · Geçiş",
+  "The sleeping giant":"Uyuyan dev","Black hole · Lensing":"Kara delik · Mercek",
+  "Edge of the shelf":"Rafın kıyısı","Planet · Survey":"Gezegen · Keşif",
+  "Signal from the core":"Çekirdekten sinyal","Galaxy · Return":"Galaksi · Dönüş",
+  "Every hour near the giant is borrowed from home":"Devin yanındaki her saat evden ödünç alınır",
+  "Our explorers carry two clocks: one for the ship, one for the people waiting on Earth.":"Kâşiflerimiz iki saat taşır: biri gemi için, biri Dünya'da bekleyenler için.",
+  "Time dilation calculator":"Zaman genişlemesi hesaplayıcı",
+  "How far can you fall?":"Ne kadar yaklaşabilirsin?",
+  "Move the ship closer to the event horizon. Near a non-rotating black hole, time on board runs slower than on Earth by a factor of 1 / √(1 − R":"Gemiyi olay ufkuna yaklaştırın. Dönmeyen bir kara deliğin yakınında gemideki zaman Dünya'dakinden 1 / √(1 − R",
+  "/r).":"/r) kat daha yavaş akar.",
+  "Distance from centre":"Merkeze uzaklık","Ship clock":"Gemi saati","1 hour on board":"Gemide 1 saat","Earth clock":"Dünya saati","passes on Earth":"Dünya'da geçer",
+  "Schwarzschild model, illustrative only. Rotating black holes can stretch the effect much further.":"Schwarzschild modeli, yalnızca örnek amaçlı. Dönen kara delikler etkiyi çok daha fazla büyütebilir.",
+  "Chapter 06 · The fifth room":"Bölüm 06 · Beşinci oda",
+  "Gravity travels":"Kütleçekim","where light can't":"ışığın gidemediği yere gider",
+  "A room built from time instead of walls. Move to look along its corridors.":"Duvarlardan değil zamandan yapılmış bir oda. Koridorlarına bakmak için fareyi gezdirin.",
+  "Fall past the horizon":"Ufkun ötesine düş","and let gravity":"ve bırak kütleçekim","write the story":"hikâyeyi yazsın",
+  "Move to steer · click to nudge":"Yönlendirmek için fareyi gezdirin · itmek için tıklayın","Drift":"Sürüklenme","Depth":"Derinlik",
+  "Ready for launch?":"Fırlatmaya hazır mısınız?",
+  "Tell us about your film, exhibition or brand world. We reply within two working days.":"Filminizi, serginizi ya da marka dünyanızı anlatın. İki iş günü içinde dönüyoruz.",
+  "Let's work together":"Birlikte çalışalım",
+  "Deep-space stories, a fictional studio for this template.":"Derin uzay hikâyeleri; bu şablon için kurgusal bir stüdyo.",
+  "Email":"E-posta","Mission control":"Görev merkezi","Levent, Istanbul":"Levent, İstanbul","Follow":"Takip","Newsletter":"Bülten","Join":"Katıl",
+  "Thanks. Nothing was sent; this is a template.":"Teşekkürler. Bu bir şablon; hiçbir şey gönderilmedi.",
+  "© 2026 Atlasio · template, fictional":"© 2026 Atlasio · şablon, kurgusal","Video: Pixabay · free license":"Video: Pixabay · ücretsiz lisans"
+};
+const ATTR={"A drifting astronaut that follows the mouse":"Fareyi takip eden, süzülen bir astronot","Atlasio home":"Atlasio ana sayfa","Language":"Dil","Main":"Ana menü","Play reel":"Filmi oynat","Video":"Video","Statement":"Bildiri",
+  "Interactive black hole: move the mouse to bend the light around it":"Etkileşimli kara delik: etrafındaki ışığı bükmek için fareyi hareket ettirin",
+  "An astronaut drifting in front of a dense field of stars and nebulae, Earth's edge glowing at the lower right":"Yoğun bir yıldız ve nebula alanının önünde süzülen bir astronot; sağ altta Dünya'nın kenarı parlıyor",
+  "Your email":"E-posta adresiniz"};
+const CURSOR={en:{Drag:"",Play:"Play",Watch:"Watch",Look:"Look"},tr:{Drag:"",Play:"Oynat",Watch:"İzle",Look:"Bak"}};   /* "Drag" windows: ring only, no word */
+let lang='en';const tt=(m,s)=>lang==='en'?s:(s in m?m[s]:s);
+
+/* rolling-letter labels: split once, keep the source text for translation */
+const rolls=[...document.querySelectorAll('[data-roll]')].map(el=>({el,src:el.textContent.trim()}));
+function paintRoll(r){r.el.textContent='';[...tt(I18N,r.src)].forEach(c=>{const s=document.createElement('span');s.className='ch';s.dataset.c=c;s.textContent=c;r.el.append(s);});r.el.setAttribute('aria-label',tt(I18N,r.src));}
+
+const nodes=[];
+const tw=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+for(let n;(n=tw.nextNode());){
+  if(n.parentElement.closest('script,style,[data-roll],[data-type],#hud-r,#hud-t,#dist-out,#ship,#earth,#result,#cur-label,#drift-v,#drift-z'))continue;
+  const raw=n.nodeValue,key=raw.replace(/\s+/g,' ').trim();
+  if(key&&key in I18N)nodes.push({n,key,lead:raw.match(/^\s*/)[0],trail:raw.match(/\s*$/)[0]});
+}
+const attrs=[];document.querySelectorAll('[aria-label],[alt],[placeholder]').forEach(el=>['aria-label','alt','placeholder'].forEach(a=>{const v=el.getAttribute(a);if(v&&v in ATTR&&!el.hasAttribute('data-roll'))attrs.push({el,a,v});}));
+const langBtns=[...document.querySelectorAll('.lang button')];
+function setLang(l){
+  lang=l;document.documentElement.lang=l;
+  nodes.forEach(x=>x.n.nodeValue=x.lead+tt(I18N,x.key)+x.trail);
+  attrs.forEach(x=>x.el.setAttribute(x.a,tt(ATTR,x.v)));
+  rolls.forEach(paintRoll);
+  typeHeads.forEach(paintType);
+  langBtns.forEach(b=>b.setAttribute('aria-pressed',String(b.id==='lang-'+l)));
+  updateTime();
+  try{localStorage.setItem('atlasio-space-lang',l)}catch(e){}
+}
+langBtns.forEach(b=>b.addEventListener('click',()=>setLang(b.id.slice(5))));
+
+/* ---------- cursor with contextual label ---------- */
+(function(){
+  if(!fine)return;
+  const cur=document.getElementById('cur'),lab=document.getElementById('cur-label');let x=M.x,y=M.y;
+  document.addEventListener('pointerover',e=>{const h=e.target.closest('[data-cursor]');
+    if(h&&!(e.target.closest('a,button')&&!h.matches('a,button'))){cur.classList.add('label');cur.classList.toggle('play',h.dataset.cursor==='Play');lab.textContent=CURSOR[lang][h.dataset.cursor]??h.dataset.cursor;}
+    else cur.classList.remove('label','play');});
+  addEventListener('pointermove',()=>cur.classList.add('on'));
+  document.addEventListener('pointerleave',()=>cur.classList.remove('on'));
+  (function f(){x+=(M.x-x)*.25;y+=(M.y-y)*.25;cur.style.transform=`translate(${x}px,${y}px)`;requestAnimationFrame(f);})();
+})();
+
+/* ---------- menu ---------- */
+const menu=document.getElementById('menu'),mOpen=document.getElementById('menu-open'),mClose=document.getElementById('menu-close');
+function setMenu(o){menu.hidden=!o;mOpen.setAttribute('aria-expanded',String(o));(o?mClose:mOpen).focus();}
+mOpen.onclick=()=>setMenu(true);mClose.onclick=()=>setMenu(false);
+menu.addEventListener('click',e=>{if(e.target.closest('ul a'))setMenu(false)});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden)setMenu(false)});
+
+/* ---------- lazy videos ---------- */
+const vio=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){if(!v.src&&v.dataset.src)v.src=v.dataset.src;if(!reduce)v.play().catch(()=>{});}else v.pause();}),{rootMargin:'200px'});
+document.querySelectorAll('video[data-src]').forEach(v=>vio.observe(v));
+
+/* ---------- 1. black-hole lens shader (raw WebGL) ---------- */
+const lensState={r:1.82};
+(function(){
+  const win=document.getElementById('hero-window'),cv=document.getElementById('lens');
+  const gl=cv.getContext('webgl',{antialias:false,premultipliedAlpha:false});
+  if(!gl){win.classList.add('no-gl');cv.remove();return}
+  const vs=`attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+  const fs=`precision highp float;
+  uniform vec2 uRes;uniform float uTime;uniform vec2 uM;uniform float uPulse;uniform float uShift;
+  float h(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
+  float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+  float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*n(p);p*=2.03;a*=.5;}return v;}
+  vec3 sky(vec2 p){
+    vec3 c=vec3(0.);
+    for(int i=0;i<3;i++){float fi=float(i);vec2 g=p*(28.+fi*34.);vec2 id=floor(g);vec2 f=fract(g)-.5;
+      float r=h(id+fi*7.1);vec2 o=vec2(h(id+fi+1.3),h(id+fi+2.7))-.5;float d=length(f-o*.7);
+      c+=smoothstep(.07,0.,d)*step(.9,r)*mix(vec3(1.,.82,.62),vec3(.68,.8,1.),h(id+9.))*(1.25-fi*.3);}
+    float neb=fbm(p*1.6+vec2(0.,uTime*.01));
+    c+=vec3(.16,.09,.06)*pow(neb,3.)*2.2+vec3(.03,.05,.1)*fbm(p*3.1-7.);
+    return c;}
+  void main(){
+    vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
+    vec2 cen=vec2(uShift,0.)+uM*vec2(.07,.05);
+    vec2 p=uv-cen;float r=length(p);
+    float rs=.12*(1.+uPulse*.06);
+    vec2 dir=p/max(r,1e-4);
+    float bend=rs*rs*1.9/max(r,rs*.9);
+    vec3 col=sky(uv-dir*bend+uM*.04+vec2(uTime*.004,0.));
+    col*=smoothstep(rs*.98,rs*1.08,r);                          /* shadow */
+    float tilt=.16+uM.y*.07;
+    vec2 q=vec2(p.x,p.y/tilt);float dr=length(q);float ang=atan(q.y,q.x);
+    float band=smoothstep(rs*1.25,rs*1.75,dr)*smoothstep(rs*4.6,rs*1.9,dr);
+    float a2=ang-uTime*.35;                                      /* periodic in angle: no seam at ±pi */
+    float sw=.55+.45*n(vec2(cos(a2),sin(a2))*2.6+vec2(dr*26.,0.))+.25*sin(dr*90.-uTime*3.);
+    float dop=1.+.75*(-p.x/(rs*4.));                            /* approaching side brighter */
+    vec3 disk=mix(vec3(1.,.5,.16),vec3(1.,.92,.78),smoothstep(rs*4.,rs*1.6,dr))*band*sw*dop*1.7;
+    disk*= (r<rs*1.02 && p.y>0.)?0.:1.;                         /* far side hidden behind the hole */
+    col+=disk;
+    float arc=exp(-pow((r-rs*1.42)/(rs*.13),2.));                /* lensed image of the far disk */
+    col+=vec3(1.,.72,.42)*arc*(.55+.75*smoothstep(-.05,.12,p.y))*(1.1+uPulse);
+    col+=vec3(1.,.88,.66)*exp(-pow((r-rs*1.06)/(rs*.035),2.))*.95;  /* photon ring */
+    col+=vec3(1.,.55,.25)*.035/(r+.04)*smoothstep(rs,rs*1.5,r);
+    col+=vec3(1.,.7,.4)*uPulse*exp(-pow((r-rs*(1.5+ (1.-uPulse)*4.))/(rs*.25),2.))*.6;
+    col*=1.-.35*length(uv*vec2(.7,1.));
+    col=1.-exp(-col*1.25);
+    gl_FragColor=vec4(pow(col,vec3(.95)),1.);
+  }`;
+  const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw gl.getShaderInfoLog(o);return o;};
+  let pr;try{pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);}
+  catch(e){console.warn(e);win.classList.add('no-gl');cv.remove();return}
+  gl.useProgram(pr);
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  const U=k=>gl.getUniformLocation(pr,k);const uRes=U('uRes'),uTime=U('uTime'),uM=U('uM'),uPulse=U('uPulse'),uShift=U('uShift');
+  let w=0,hgt=0,mx=0,my=0,pulse=0,vis=true;
+  function size(){const r=win.getBoundingClientRect(),d=Math.min(devicePixelRatio,1.5)*(innerWidth<700?.8:1);w=cv.width=Math.round(r.width*d);hgt=cv.height=Math.round(r.height*d);gl.viewport(0,0,w,hgt);}
+  addEventListener('resize',size);size();
+  new IntersectionObserver(es=>vis=es[0].isIntersecting).observe(win);
+  win.addEventListener('pointerdown',()=>pulse=1);
+  const hr=document.getElementById('hud-r'),ht=document.getElementById('hud-t');
+  const t0=performance.now();
+  (function frame(now){
+    if(vis){
+      const r=win.getBoundingClientRect();
+      const tx=Math.max(-1,Math.min(1,(M.x-r.left)/r.width*2-1)),ty=Math.max(-1,Math.min(1,-((M.y-r.top)/r.height*2-1)));
+      mx+=(tx-mx)*.06;my+=(ty-my)*.06;pulse*=.95;
+      gl.uniform2f(uRes,w,hgt);gl.uniform1f(uTime,(now-t0)/1000);gl.uniform2f(uM,mx,my);gl.uniform1f(uPulse,pulse);gl.uniform1f(uShift,r.width>900?.22:0.);
+      gl.drawArrays(gl.TRIANGLES,0,3);
+      const d=1.35+Math.hypot(mx,my)*1.1;lensState.r=d;hr.textContent=d.toFixed(2);ht.textContent='×'+(1/Math.sqrt(1-1/d)).toFixed(2);
+    }
+    if(!reduce)requestAnimationFrame(frame);
+  })(t0);
+})();
+
+/* ---------- 2. chapters: preview follows the cursor, leans with velocity ---------- */
+(function(){
+  const prev=document.createElement('div');prev.className='preview';prev.setAttribute('aria-hidden','true');
+  const pv=document.createElement('video');pv.muted=true;pv.loop=true;pv.playsInline=true;prev.append(pv);document.body.append(prev);
+  let x=M.x,y=M.y,rot=0,active=false;
+  document.querySelectorAll('.item button').forEach(b=>{
+    b.addEventListener('pointerenter',()=>{if(!fine)return;active=true;prev.classList.toggle('wide',!!b.dataset.wide);if(!pv.src.endsWith(b.dataset.video))pv.src=b.dataset.video;pv.play().catch(()=>{});prev.classList.add('on');});
+    b.addEventListener('pointerleave',()=>{active=false;prev.classList.remove('on');pv.pause();});
+    b.addEventListener('click',()=>openReel(b.dataset.video));
+  });
+  (function f(){x+=(M.x-x)*.14;y+=(M.y-y)*.14;rot+=(Math.max(-12,Math.min(12,M.vx*.6))-rot)*.1;M.vx*=.85;
+    prev.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%) rotate(${rot}deg) scale(${active?1:.6})`;requestAnimationFrame(f);})();
+})();
+
+/* ---------- 3. reel dialog ---------- */
+const reel=document.getElementById('reel'),rv=document.getElementById('reel-video');
+function openReel(src){rv.src=src;reel.showModal();rv.play().catch(()=>{});}
+document.getElementById('play-reel').onclick=()=>openReel('assets/blackhole.mp4');
+document.getElementById('reel-close').onclick=()=>reel.close();
+reel.addEventListener('close',()=>{rv.pause();rv.removeAttribute('src');rv.load();});
+reel.addEventListener('click',e=>{if(e.target===reel)reel.close();});
+
+/* ---------- 4. explorer: 3D tilt, visor glare, orbs that flee the cursor ---------- */
+(function(){
+  const win=document.getElementById('explorer'),st=document.getElementById('stage3d'),gl=document.getElementById('glare'),cv=document.getElementById('orbs'),g=cv.getContext('2d');
+  let W,H,orbs=[];
+  function size(){const r=win.getBoundingClientRect(),d=Math.min(devicePixelRatio,1.5);W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;g.setTransform(d,0,0,d,0,0);
+    orbs=Array.from({length:W<700?26:46},(_,i)=>({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*7,vx:0,vy:0,hx:0,hy:0,warm:Math.random()<.6}));orbs.forEach(o=>{o.hx=o.x;o.hy=o.y;});}
+  addEventListener('resize',size);size();
+  let vis=false;new IntersectionObserver(es=>vis=es[0].isIntersecting).observe(win);
+  (function f(){
+    if(vis){
+      const r=win.getBoundingClientRect(),lx=M.x-r.left,ly=M.y-r.top,nx=lx/r.width-.5,ny=ly/r.height-.5,inside=lx>0&&ly>0&&lx<r.width&&ly<r.height;
+      if(!reduce)st.style.transform=`rotateY(${nx*8}deg) rotateX(${-ny*6}deg) translate3d(${-nx*20}px,${-ny*14}px,0)`;
+      gl.style.setProperty('--gx',(inside?lx:r.width*.55)+'px');gl.style.setProperty('--gy',(inside?ly:r.height*.35)+'px');
+      g.clearRect(0,0,W,H);
+      orbs.forEach(o=>{
+        if(inside&&!reduce){const dx=o.x-lx,dy=o.y-ly,d=Math.hypot(dx,dy);if(d<160){const k=(1-d/160)*2.2;o.vx+=dx/d*k;o.vy+=dy/d*k;}}
+        o.vx+=(o.hx-o.x)*.004;o.vy+=(o.hy-o.y)*.004;o.vx*=.92;o.vy*=.92;o.x+=o.vx;o.y+=o.vy;
+        const gr=g.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r*3);
+        gr.addColorStop(0,o.warm?'rgba(255,207,138,.95)':'rgba(190,215,255,.9)');gr.addColorStop(.35,o.warm?'rgba(242,154,58,.35)':'rgba(156,199,255,.3)');gr.addColorStop(1,'rgba(0,0,0,0)');
+        g.fillStyle=gr;g.beginPath();g.arc(o.x,o.y,o.r*3,0,7);g.fill();
+      });
+    }
+    requestAnimationFrame(f);
+  })();
+})();
+
+/* ---------- 5. time dilation calculator ---------- */
+const dist=document.getElementById('dist');
+function distValue(){const s=+dist.value/1000;return 1+Math.pow(10,-9+s*10);}          // 1 + 1e-9 … 1 + 10 (log scale)
+function fmtDur(hours){
+  const L=lang==='tr'?{s:'saniye',m:'dakika',h:'saat',d:'gün',y:'yıl'}:{s:'seconds',m:'minutes',h:'hours',d:'days',y:'years'};
+  if(hours<1/60)return (hours*3600).toFixed(1)+' '+L.s;
+  if(hours<1)return (hours*60).toFixed(1)+' '+L.m;
+  if(hours<48)return hours.toFixed(2)+' '+L.h;
+  if(hours<24*730)return (hours/24).toFixed(1)+' '+L.d;
+  const y=hours/8766;return (y<1000?y.toFixed(1):Math.round(y).toLocaleString(lang))+' '+L.y;
+}
+function updateTime(){
+  const x=distValue(),f=1/Math.sqrt(1-1/x);
+  const e=x-1,digits=e>=1?2:Math.min(10,Math.ceil(-Math.log10(e))+2);
+  document.getElementById('dist-out').innerHTML=x.toFixed(digits)+' R<sub>s</sub>';
+  const out=fmtDur(f);
+  document.getElementById('result').innerHTML=lang==='tr'?`Gemide bir saat, Dünya'da <em>${out}</em> eder.`:`One hour on board is <em>${out}</em> on Earth.`;
+  timeState.f=f;
+}
+const timeState={f:1.41,ship:0,earth:0};
+dist.addEventListener('input',updateTime);
+(function(){
+  const sEl=document.getElementById('ship'),eEl=document.getElementById('earth');
+  const fmt=s=>{s=Math.floor(s);const h=Math.floor(s/3600)%100000,m=Math.floor(s/60)%60,ss=s%60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0');};
+  let last=performance.now();
+  (function f(now){const dt=Math.min(.1,(now-last)/1000);last=now;timeState.ship=(timeState.ship+dt*60)%3600;timeState.earth+=dt*60*Math.min(timeState.f,1e7);
+    sEl.textContent=fmt(timeState.ship);eEl.textContent=fmt(timeState.earth);if(!reduce)requestAnimationFrame(f);})(last);
+})();
+
+/* ---------- 6. tesseract tunnel ---------- */
+(function(){
+  const t=document.getElementById('tunnel'),win=document.getElementById('tess');
+  for(let i=0;i<14;i++){const f=document.createElement('i');f.style.transform=`translateZ(${-i*260}px)`;f.style.opacity=String(Math.pow(1-i/14,1.4));t.append(f);}
+  let rx=0,ry=0,z=0;
+  (function f(){const r=win.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight){
+      const nx=(M.x-r.left)/r.width-.5,ny=(M.y-r.top)/r.height-.5;rx+=((reduce?0:-ny*14)-rx)*.08;ry+=((reduce?0:nx*18)-ry)*.08;z=reduce?0:(z+2)%260;
+      t.style.transform=`translateZ(${z}px) rotateX(${rx}deg) rotateY(${ry}deg)`;}requestAnimationFrame(f);})();
+})();
+
+/* ---------- 7. drift: giant words slide with scroll, astronaut follows the mouse ---------- */
+(function(){
+  const sec=document.getElementById('drift'),win=sec.querySelector('.window'),lines=[...sec.querySelectorAll('.line')];
+  const astro=document.getElementById('astro'),hi=document.getElementById('visorHi');
+  const armL=document.getElementById('armL'),armR=document.getElementById('armR'),legL=document.getElementById('legL'),legR=document.getElementById('legR');
+  const cv=document.getElementById('dust'),g=cv.getContext('2d'),vOut=document.getElementById('drift-v'),zOut=document.getElementById('drift-z');
+  let W,H,stars=[];
+  function size(){const r=win.getBoundingClientRect(),d=Math.min(devicePixelRatio,1.5);W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;g.setTransform(d,0,0,d,0,0);
+    stars=Array.from({length:W<700?120:240},()=>({x:Math.random()*W,y:Math.random()*H,z:.2+Math.random()*.8}));}
+  addEventListener('resize',size);size();
+  // astronaut physics: a spring toward a point between the centre and the cursor, plus idle bobbing
+  let x=0,y=0,vx=0,vy=0,rot=0,vis=false,prog=0,lastScroll=scrollY,streak=0;
+  new IntersectionObserver(es=>vis=es[0].isIntersecting).observe(win);
+  win.addEventListener('pointerdown',e=>{const r=astro.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=cx-e.clientX,dy=cy-e.clientY,d=Math.hypot(dx,dy)||1;
+    vx+=dx/d*28;vy+=dy/d*28;});
+  const t0=performance.now();
+  (function f(now){
+    const r=sec.getBoundingClientRect();
+    prog=Math.max(0,Math.min(1,-r.top/(r.height-innerHeight)));
+    if(vis){
+      const t=(now-t0)/1000,wr=win.getBoundingClientRect();
+      const inside=M.x>wr.left&&M.x<wr.right&&M.y>wr.top&&M.y<wr.bottom;
+      const tx=inside&&!reduce?(M.x-wr.left-wr.width/2)*.42:Math.sin(t*.3)*40,ty=inside&&!reduce?(M.y-wr.top-wr.height/2)*.42:Math.cos(t*.25)*24;
+      vx+=(tx-x)*.012;vy+=(ty-y)*.012;vx*=.93;vy*=.93;x+=vx;y+=vy;
+      rot+=((vx*1.6+Math.sin(t*.6)*6)-rot)*.06;
+      const bob=reduce?0:Math.sin(t*1.1)*10,sc=.72+prog*.55;
+      astro.style.transform=`translate(-50%,-50%) translate(${x}px,${y+bob}px) rotate(${rot}deg) scale(${sc})`;
+      // limbs drift a little; visor highlight slides toward the cursor
+      const s=reduce?0:1;
+      armL.setAttribute('transform',`rotate(${(12+Math.sin(t*1.3)*10)*s} 108 165)`);armR.setAttribute('transform',`rotate(${(-22+Math.sin(t*1.1+1)*12)*s} 212 165)`);
+      legL.setAttribute('transform',`rotate(${(6+Math.sin(t*.9)*6)*s} 137 258)`);legR.setAttribute('transform',`rotate(${(-12+Math.sin(t*.8+2)*7)*s} 185 258)`);
+      const ar=astro.getBoundingClientRect(),hx=Math.max(-1,Math.min(1,(M.x-(ar.left+ar.width/2))/300)),hy=Math.max(-1,Math.min(1,(M.y-(ar.top+ar.height*.28))/300));
+      hi.setAttribute('transform',`translate(${hx*16} ${hy*12}) rotate(-25 146 94)`);
+      // star dust: parallax with the astronaut, streaks with scroll speed
+      const sv=scrollY-lastScroll;lastScroll=scrollY;streak+=(Math.abs(sv)-streak)*.2;
+      g.clearRect(0,0,W,H);g.fillStyle='rgba(255,255,255,.85)';g.strokeStyle='rgba(255,207,138,.5)';
+      stars.forEach(st=>{const px=((st.x-x*st.z*.3)%W+W)%W,py=((st.y-y*st.z*.3-scrollY*st.z*.15)%H+H)%H;
+        if(streak>2&&!reduce){g.lineWidth=st.z;g.beginPath();g.moveTo(px,py);g.lineTo(px,py-Math.min(40,streak*st.z*2));g.stroke();}
+        else{g.globalAlpha=.3+st.z*.7;g.fillRect(px,py,st.z*1.6,st.z*1.6);g.globalAlpha=1;}});
+      vOut.textContent=Math.hypot(vx,vy).toFixed(1);zOut.textContent=Math.round(prog*100);
+    }
+    lines.forEach(l=>l.style.transform=`translateX(${reduce?0:(prog-.5)*+l.dataset.speed*100}vw)`);
+    requestAnimationFrame(f);
+  })(t0);
+})();
+
+/* ---------- 9. mouse-reactive headings ---------- */
+/* each [data-type] heading keeps its source HTML; on every language change it is restored, translated and split
+   into words (.w) and letters (.l). Letters near the cursor gain weight and step away from it. */
+const typeHeads=[...document.querySelectorAll('[data-type]')].map(el=>({el,src:el.innerHTML,letters:[],vis:false}));
+function paintType(h){
+  h.el.innerHTML=h.src;
+  const tws=document.createTreeWalker(h.el,NodeFilter.SHOW_TEXT),texts=[];for(let n;(n=tws.nextNode());)texts.push(n);
+  h.letters=[];
+  texts.forEach(n=>{
+    const raw=n.nodeValue,key=raw.replace(/\s+/g,' ').trim();if(!key){return}
+    const txt=raw.match(/^\s*/)[0]+tt(I18N,key)+raw.match(/\s*$/)[0];
+    const frag=document.createDocumentFragment();
+    txt.split(/(\s+)/).forEach(part=>{
+      if(!part)return;if(/^\s+$/.test(part)){frag.append(' ');return}
+      const w=document.createElement('span');w.className='w';
+      [...part].forEach(c=>{const l=document.createElement('span');l.className='l';l.textContent=c;w.append(l);h.letters.push({el:l,k:0});});
+      frag.append(w);
+    });
+    n.replaceWith(frag);
+  });
+  h.el.setAttribute('aria-label',(h.el.innerText||h.el.textContent).replace(/\s+/g,' ').trim());
+}
+(function(){
+  if(!fine||reduce)return;
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const h=typeHeads.find(x=>x.el===e.target);if(h)h.vis=e.isIntersecting;}));
+  typeHeads.forEach(h=>io.observe(h.el));
+  const R=170;
+  (function f(){
+    typeHeads.forEach(h=>{
+      if(!h.vis)return;
+      const hr=h.el.getBoundingClientRect();
+      if(M.y<hr.top-R||M.y>hr.bottom+R){h.letters.forEach(L=>{if(L.k>.001){L.k*=.85;apply(L,0,0);}});return}
+      h.letters.forEach(L=>{
+        const r=L.el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=cx-M.x,dy=cy-M.y,d=Math.hypot(dx,dy)||1;
+        const target=d<R?Math.pow(1-d/R,2):0;L.k+=(target-L.k)*.2;
+        if(L.k>.001||target>0)apply(L,dx/d,dy/d);
+      });
+    });
+    requestAnimationFrame(f);
+  })();
+  function apply(L,ux,uy){const k=L.k;L.el.style.fontVariationSettings=`'wght' ${Math.round(400+300*k)}`;L.el.style.transform=k>.002?`translate(${ux*k*9}px,${uy*k*9}px)`:'';}
+})();
+
+/* ---------- 8. newsletter ---------- */
+document.getElementById('news').addEventListener('submit',e=>{e.preventDefault();if(!e.target.checkValidity()){e.target.reportValidity();return}document.getElementById('news-ok').hidden=false;});
+
+let saved=null;try{saved=localStorage.getItem('atlasio-space-lang')}catch(e){}
+setLang(saved==='tr'?'tr':'en');
+</script>
+</body>
+</html>
