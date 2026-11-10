@@ -10,6 +10,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="OSINT-Book">
 <meta property="og:description" content="A passive, source-first OSINT notebook for Android and Windows. Free and open source (GPL-3.0-or-later).">
+<link rel="canonical" href="https://smyrna-pergamum.github.io/osint-book/">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,7 +91,11 @@ code,kbd{font-family:var(--mono);font-size:.88em}
 .hero-title{position:absolute;left:max(24px,calc((100% - 1180px)/2 + 64px));bottom:6px;margin:0;z-index:2;
   font:700 clamp(2.6rem,6.2vw,5.2rem)/.86 var(--display);letter-spacing:0;color:#fff6f1;
   text-shadow:0 0 2px rgba(255,255,255,.86),0 0 18px rgba(255,182,143,.36),0 0 48px rgba(82,213,173,.14),0 18px 52px rgba(0,0,0,.6)}
-.hero-sub{margin:14px 0 0;color:var(--fg-2);font-size:17px;max-width:46ch}
+.hero-sub{margin:14px 0 0;color:var(--fg-2);font-size:17px;max-width:52ch}
+.ai-pill{display:inline-flex;align-items:center;gap:10px;margin-top:16px;padding:5px 12px 5px 5px;border:1px solid rgba(255,182,143,.35);border-radius:999px;background:linear-gradient(90deg,rgba(232,89,12,.16),rgba(232,89,12,.04));color:var(--fg);font-size:13.5px;line-height:1.35}
+.ai-pill:hover{border-color:var(--brand-2);text-decoration:none}
+.ai-pill .tag{flex:none;padding:3px 9px;border-radius:999px;background:var(--brand);color:#fff;font:600 11px var(--mono);letter-spacing:.04em;box-shadow:0 0 14px var(--brand-glow)}
+.ai-pill .icon{width:15px;height:15px;color:var(--brand-2)}
 .hero-actions{display:grid;grid-template-columns:1.05fr 1fr auto;gap:40px;margin-top:34px;align-items:start}
 .hero-col{min-width:0}
 .hero-col h2{font-size:15px;font-weight:600;margin:0 0 10px;color:var(--fg)}
@@ -395,6 +400,7 @@ details.left-out ul{margin:12px 0 0;padding-left:18px;color:var(--fg-2);font-siz
   .hero-title{position:relative;left:auto;bottom:auto;padding:0 16px;margin-top:-4px}
   .cmd .arr,.cmd .s{display:none}
   .hero-sub{padding:0 16px}
+  .ai-pill{margin:14px 16px 0;border-radius:14px}
   .hero-actions{grid-template-columns:1fr;gap:28px}
   .sec{padding:72px 0}
   .sec-head{grid-template-columns:1fr;gap:16px}
@@ -454,8 +460,8 @@ details.left-out ul{margin:12px 0 0;padding-left:18px;color:var(--fg-2);font-siz
     <a class="brand" href="#top" aria-label="OSINT-Book home"><img src="assets/icon.svg" alt="" width="30" height="30"><span>osint<b>book</b></span></a>
     <nav class="nav-links" aria-label="Main">
       <a href="#how" data-i18n="nav.how">How it works</a>
-      <a href="#editions" data-i18n="nav.editions">Editions</a>
-      <a href="#ai" class="opt" data-i18n="nav.ai">AI analysis</a>
+      <a href="#ai" data-i18n="nav.ai">AI analysis</a>
+      <a href="#editions" class="opt" data-i18n="nav.editions">Editions</a>
       <a href="#sources" data-i18n="nav.sources">Sources</a>
       <a href="#install" class="opt" data-i18n="nav.install">Install</a>
     </nav>
@@ -478,7 +484,8 @@ details.left-out ul{margin:12px 0 0;padding-left:18px;color:var(--fg-2);font-siz
     <h1 class="hero-title" id="hero-title" data-i18n="hero.title">Source-first<br>OSINT notebook</h1>
   </div>
   <div class="shell">
-    <p class="hero-sub" data-i18n="hero.sub">Research domains, URLs, IPs, organisations, repositories, packages and file hashes with public sources you pick yourself. Every claim traces back to where it came from.</p>
+    <p class="hero-sub" data-i18n="hero.sub">Research domains, URLs, IPs, organisations, repositories, packages and file hashes with public sources you pick yourself. Rule-based analysis, and optional AI analysis, turn the findings into observations that cite their evidence.</p>
+    <a class="ai-pill" href="#ai"><span class="tag" data-i18n="hero.ai.tag">AI analysis</span><span data-i18n="hero.ai">Local models offline, or cloud APIs after you confirm. Windows edition.</span><svg class="icon"><use href="#i-arrow"/></svg></a>
     <div class="hero-actions">
       <div class="hero-col">
         <h2 data-i18n="hero.win.h">Windows edition</h2>
@@ -493,7 +500,7 @@ details.left-out ul{margin:12px 0 0;padding-left:18px;color:var(--fg-2);font-siz
       <div class="hero-col">
         <h2 data-i18n="hero.and.h">Same sources, same file format</h2>
         <p data-i18n="hero.and.p"><b>One person on a phone, or a team on a local network.</b> Both editions share the sources, the rule-based analysis and a versioned JSON exchange format. No account, no ads, no tracking, no telemetry.</p>
-        <div class="facts"><span>GPL-3.0-or-later</span><span>Android 8.0+</span><span class="o">Windows 10/11</span><span class="k" data-i18n="hero.langs">9 languages</span></div>
+        <div class="facts"><span>GPL-3.0-or-later</span><span>Android 8.0+</span><span class="o">Windows 10/11</span><span class="k" data-i18n="hero.langs">9 languages</span><span class="o" data-i18n="hero.fact.ai">AI analysis (Windows)</span></div>
       </div>
       <div class="hero-side">
         <span data-i18n="hero.oss">Free and open source</span>
@@ -536,41 +543,11 @@ details.left-out ul{margin:12px 0 0;padding-left:18px;color:var(--fg-2);font-siz
   </div>
 </div>
 
-<!-- ===== Editions ===== -->
-<section class="sec" id="editions" aria-labelledby="ed-title">
-  <div class="shell">
-    <div class="sec-head">
-      <div><span class="eyebrow" data-i18n="eb1">01 / editions</span><h2 class="reveal" id="ed-title" data-i18n="ed.h">Two editions.<br>One file format.</h2></div>
-      <p data-i18n="ed.p">The Android app keeps everything on your phone. The Windows edition runs as a small server for a team on one PC or a trusted local network. Investigations move between them as versioned JSON.</p>
-    </div>
-    <div class="panel">
-      <div style="padding:18px 22px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-        <div class="tabs" role="tablist" aria-label="Edition">
-          <button type="button" role="tab" id="tab-and" aria-selected="true" aria-controls="ed-panel" data-ed="android" data-i18n="ed.tab.and">Android app</button>
-          <button type="button" role="tab" id="tab-win" aria-selected="false" aria-controls="ed-panel" data-ed="windows" tabindex="-1" data-i18n="ed.tab.win">Windows edition</button>
-        </div>
-        <span style="font:500 12px var(--mono);color:var(--muted)" id="edVer">v0.1.0 · Android 8.0+</span>
-      </div>
-      <div class="ed-body" id="ed-panel" role="tabpanel" aria-labelledby="tab-and">
-        <div class="ed-text" id="edText"></div>
-        <div>
-          <div class="diagram" id="edDiagram" aria-hidden="true"></div>
-          <div class="shots" id="edShots"></div>
-        </div>
-      </div>
-      <div class="panel-foot">
-        <div class="legend"><span style="--c:var(--brand-2)" data-i18n="ed.leg1">target value only</span><span style="--c:var(--teal)" data-i18n="ed.leg2">findings with evidence</span><span style="--c:var(--gold)" data-i18n="ed.leg3">optional, after you confirm</span></div>
-        <span data-i18n="ed.foot">Exchange: versioned JSON, both ways</span>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ===== AI ===== -->
-<section class="sec" id="ai" aria-labelledby="ai-title" style="padding-top:24px">
+<section class="sec" id="ai" aria-labelledby="ai-title">
   <div class="shell">
     <div class="sec-head">
-      <div><span class="eyebrow" data-i18n="eb2">02 / ai analysis · windows</span><h2 class="reveal" id="ai-title" data-i18n="ai.h">AI that reads findings.<br>Never rewrites them.</h2></div>
+      <div><span class="eyebrow" data-i18n="eb2">01 / ai analysis · windows</span><h2 class="reveal" id="ai-title" data-i18n="ai.h">AI that reads findings.<br>Never rewrites them.</h2></div>
       <p data-i18n="ai.p">Optional. You decide where the model runs: offline on the server, or with a cloud provider after you confirm. The output is shown as interpretation, linked to the findings it cites.</p>
     </div>
     <div class="panel ai-wrap">
@@ -592,6 +569,36 @@ details.left-out ul{margin:12px 0 0;padding-left:18px;color:var(--fg-2);font-siz
         <div class="blk out"><h4 data-i18n="ai.o6">Risk matrix</h4></div>
       </div>
       <p class="ai-note" data-i18n="ai.note">Original findings and their review status are never changed · every cloud analysis is recorded in the activity log</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Editions ===== -->
+<section class="sec" id="editions" aria-labelledby="ed-title" style="padding-top:24px">
+  <div class="shell">
+    <div class="sec-head">
+      <div><span class="eyebrow" data-i18n="eb1">02 / editions</span><h2 class="reveal" id="ed-title" data-i18n="ed.h">Two editions.<br>One file format.</h2></div>
+      <p data-i18n="ed.p">The Android app keeps everything on your phone. The Windows edition runs as a small server for a team on one PC or a trusted local network. Investigations move between them as versioned JSON.</p>
+    </div>
+    <div class="panel">
+      <div style="padding:18px 22px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="tabs" role="tablist" aria-label="Edition">
+          <button type="button" role="tab" id="tab-and" aria-selected="true" aria-controls="ed-panel" data-ed="android" data-i18n="ed.tab.and">Android app</button>
+          <button type="button" role="tab" id="tab-win" aria-selected="false" aria-controls="ed-panel" data-ed="windows" tabindex="-1" data-i18n="ed.tab.win">Windows edition</button>
+        </div>
+        <span style="font:500 12px var(--mono);color:var(--muted)" id="edVer">v0.1.0 · Android 8.0+</span>
+      </div>
+      <div class="ed-body" id="ed-panel" role="tabpanel" aria-labelledby="tab-and">
+        <div class="ed-text" id="edText"></div>
+        <div>
+          <div class="diagram" id="edDiagram" aria-hidden="true"></div>
+          <div class="shots" id="edShots"></div>
+        </div>
+      </div>
+      <div class="panel-foot">
+        <div class="legend"><span style="--c:var(--brand-2)" data-i18n="ed.leg1">target value only</span><span style="--c:var(--teal)" data-i18n="ed.leg2">findings with evidence</span><span style="--c:var(--gold)" data-i18n="ed.leg3">optional, after you confirm</span></div>
+        <span data-i18n="ed.foot">Exchange: versioned JSON, both ways</span>
+      </div>
     </div>
   </div>
 </section>
@@ -732,7 +739,8 @@ var TR = {
   'skip':'İçeriğe geç',
   'nav.how':'Nasıl çalışır','nav.editions':'Sürümler','nav.ai':'Yapay zekâ analizi','nav.sources':'Kaynaklar','nav.install':'Kurulum','nav.download':'İndir',
   'hero.title':'Kaynak öncelikli<br>OSINT defteri',
-  'hero.sub':'Alan adlarını, URL\'leri, IP\'leri, kuruluşları, depoları, paketleri ve dosya hash\'lerini kendi seçtiğiniz açık kaynaklarla araştırın. Her iddia geldiği yere kadar izlenebilir.',
+  'hero.sub':'Alan adlarını, URL\'leri, IP\'leri, kuruluşları, depoları, paketleri ve dosya hash\'lerini kendi seçtiğiniz açık kaynaklarla araştırın. Kural tabanlı analiz ve isteğe bağlı yapay zekâ analizi, bulguları kanıtına dayanan gözlemlere çevirir.',
+  'hero.ai.tag':'Yapay zekâ analizi','hero.ai':'Yerel modeller çevrimdışı ya da onayınızdan sonra bulut API\'leri. Windows sürümü.','hero.fact.ai':'YZ analizi (Windows)',
   'hero.win.h':'Windows sürümü','hero.win.btn':'Windows ZIP · 0.2.2','hero.and.btn':'Android APK · 0.1.0','hero.more':'Bir hedefi takip edin',
   'hero.and.h':'Aynı kaynaklar, aynı dosya biçimi',
   'hero.and.p':'<b>Telefonda tek kişi ya da yerel ağda bir ekip.</b> İki sürüm de aynı kaynakları, kural tabanlı analizi ve sürümlü JSON değişim biçimini paylaşır. Hesap yok, reklam yok, izleme yok, telemetri yok.',
@@ -765,7 +773,7 @@ var TR = {
   'in.win':'Windows sürümü 0.2.2','in.and':'Android uygulaması 0.1.0','in.copy':'KOPYALA',
   'in.status':'<b>Erken sürümler.</b> Android 0.1.0 birim testleriyle ve bir Android 15 emülatöründe test edildi, henüz çok sayıda gerçek cihazda değil. Windows 0.2.2, Windows 11\'de CPU ve Vulkan GPU üzerinde uçtan uca test edildi. Anahtarlı kaynaklar ve bulut yapay zekâ sağlayıcıları henüz her sağlayıcı için gerçek anahtarlarla test edilmedi.',
   'f.about':'Hakkında','f.aboutp':'OSINT-Book, GPL-3.0-or-later lisanslı özgür bir yazılımdır. Hata bildirimleri ve öneriler Issues bölümüne.','f.proj':'Proje','f.rel':'Sürümler','f.chg':'Değişiklikler','f.iss':'Issues','f.docs':'Belgeler','f.priv':'Gizlilik','f.api':'API kaydı','f.guide':'Windows kılavuzu','f.build':'Derleme',
-  'eb1':'01 / sürümler','eb2':'02 / yapay zekâ analizi · windows','eb3':'03 / kaynaklar','eb4':'04 / gizlilik ve kapsam','eb5':'05 / kurulum',
+  'eb1':'02 / sürümler','eb2':'01 / yapay zekâ analizi · windows','eb3':'03 / kaynaklar','eb4':'04 / gizlilik ve kapsam','eb5':'05 / kurulum',
   'f.osm':'Harita verisi © OpenStreetMap katkıcıları · bu sayfadaki örnek veriler işaretlenmiştir'
 };
 var EN = {};
