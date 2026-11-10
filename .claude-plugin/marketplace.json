@@ -70,6 +70,15 @@
       "skills": [
         "./skills/gravity-lens-space"
       ]
+    },
+    {
+      "name": "network-journey-webgl",
+      "description": "Immersive, scroll-driven 3D product sites in the igloo.inc tradition, built to production standards: one Three.js world behind HTML chapters, HUD and pinned tags, particle morphs, quality tiers with stills, strict CSP and Playwright + axe tests.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/network-journey-webgl"
+      ]
     }
   ]
 }

@@ -1,0 +1,86 @@
+/* LANORA website — design tokens (docs/DESIGN-SYSTEM.md).
+   Layout: one fixed WebGL network world behind eight HTML chapters. Copy sits in a sticky left column,
+   the scene owns the centre, a HUD frames the corners. Forest night + the app's lime; acid signal green
+   only for live states. Dark only, by design. */
+:root {
+  color-scheme: dark;
+  --void: #050a08;
+  --bg: #080b09;
+  --fog: #0e1b15;
+  --surface: #111713;
+  --forest: #173c33;
+  --green: #245b48;
+  --primary: #2d7659;
+  --lime: #c6eea3;
+  --signal: #a3ff12;
+  --text: #e6eee8;
+  --secondary: #d5e2d2;
+  --muted: #8a948c;
+  --border: #27312a;
+  --warning: #dc8b40;
+  --critical: #ff4d4d;
+  --paper: #f5f7f6;
+  --f-display: 'Space Grotesk', 'Arial Narrow', system-ui, sans-serif;
+  --f-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+  --gl: max(16px, env(safe-area-inset-left, 0px));
+  --gr: max(16px, env(safe-area-inset-right, 0px));
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { background: var(--bg); overflow-x: clip; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 17px/1.6 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+.app { display: contents; }
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; padding: 0; }
+:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.eyebrow { font: 500 12px/1.4 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--lime); }
+.eyebrow span { color: var(--muted); }
+.big { font: 700 clamp(46px, 7vw, 112px)/0.9 var(--f-display); letter-spacing: -0.045em; text-transform: uppercase; text-wrap: balance; }
+.h2 { font: 700 clamp(36px, 4.8vw, 76px)/0.92 var(--f-display); letter-spacing: -0.04em; text-transform: uppercase; text-wrap: balance; }
+.lime { color: var(--lime); }
+.lead { color: var(--secondary); font-size: clamp(16px, 1.3vw, 18px); max-width: 44ch; }
+.note { font: 400 13.5px/1.55 var(--f-body); color: var(--muted); max-width: 46ch; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 12px 20px;
+  font: 600 15px/1 var(--f-body); text-decoration: none; border: 1px solid var(--lime);
+  transition: background 0.2s, color 0.2s;
+}
+.btn.solid { background: var(--lime); color: #0a1a12; }
+.btn.solid:hover { background: var(--signal); }
+.btn.line { color: var(--lime); }
+.btn.line:hover { background: rgba(198, 238, 163, 0.1); }
+.btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.readout { display: flex; flex-wrap: wrap; gap: 8px 22px; font: 500 12px/1.4 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.readout b { color: var(--text); font-weight: 500; font-variant-numeric: tabular-nums; }
+.sample { display: inline-block; font: 500 10.5px var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--warning); border: 1px solid rgba(220, 139, 64, 0.5); padding: 2px 6px; }
+
+/* labels pinned to 3D points (created by the stage) */
+.tag {
+  position: absolute; left: 0; top: 0; pointer-events: none; display: grid; gap: 2px; padding: 6px 8px; text-align: left;
+  font: 500 11px/1.35 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--lime);
+  background: rgba(8, 11, 9, 0.55); border-left: 1px solid var(--lime); backdrop-filter: blur(4px); white-space: nowrap;
+  opacity: 0; transition: opacity 0.25s;
+}
+.tag.on { opacity: 1; pointer-events: auto; }
+.tag small { font-size: 10.5px; color: var(--secondary); letter-spacing: 0.06em; }
+.tag.warn { color: var(--warning); border-color: var(--warning); }
+button.tag:hover, button.tag:focus-visible { background: rgba(23, 60, 51, 0.85); }
+@media (max-width: 640px) { .tag small { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
