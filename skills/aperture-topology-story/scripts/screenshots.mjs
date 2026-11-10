@@ -65,7 +65,7 @@ await shot('07-close', at(.995));
 await shot('08-editions-android', top('#editions') + '-64');
 await evalJs(`(()=>{document.querySelector('[data-ed=windows]').click();return 1})()`);
 await shot('09-editions-windows', top('#editions') + '+150');
-await shot('10-ai', top('#ai') + '+40');
+await shot('10-ai', top('#ai') + '-64');
 await shot('11-sources', top('#sources') + '-64');
 await shot('12-scope', top('#scope') + '-64');
 await shot('13-install', top('.dl') + '-40');
