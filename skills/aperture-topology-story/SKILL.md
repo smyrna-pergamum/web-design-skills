@@ -42,7 +42,7 @@ If the user names a reference site, take its *style* only. Never copy its render
 | Signals | Two more hues, one meaning each: teal = free / ok / finding returned; gold = needs a key / optional / missing. Outbound packets use brand, returning packets teal. Severity is always colour + icon + word. |
 | Display | **Rajdhani 700**, line-height .84–.98, letter-spacing 0, sentence case. Hero 2.6–5.2rem with a four-layer glow: `0 0 2px #fff·86%, 0 0 18px brand-2·36%, 0 0 48px teal·14%, 0 18px 52px #000·60%`. On paper the same face with `0 1px #fff, 0 14px 34px ink·12%`. |
 | Body / UI | **Geist** 400–700, 14–17px. |
-| Labels | **Geist Mono** 10–13px: node labels, sub-labels, chips, table quotas, terminal, rail, eyebrows (`01 / editions`, uppercase + .14em only here). |
+| Labels | **Geist Mono** 10–13px: node labels, sub-labels, chips, table quotas, terminal, rail, eyebrows (`01 / ai analysis`, uppercase + .14em only here). |
 | Cards | Dark panels: 16px radius, 1px `--line-2`, vertical gradient surface. Paper cards: white, 14px radius, 1px warm line, `0 14px 34px -14px` shadow. Chips are pills (20px tall). Finding rows have a 6×18px gradient handle on the left. |
 | Buttons | Primary = near-white fill with dark ink (8px radius, 40px). Ghost = 1px line that turns brand-2 on hover. Pill buttons in the nav carry a mono suffix (`· web-v0.2.2`). |
 | Icons | 24-grid single-stroke 1.7px line icons in an inline `<symbol>` sprite; the same sprite is `<use>`d inside the SVG graph. |
@@ -55,7 +55,9 @@ If the user names a reference site, take its *style* only. Never copy its render
    on curved dashed edges, each with a mono label and a mono sub-label that states access: `key-free`, `your key`).
    The display headline sits over the lower-left of the graph. Under it: a one-sentence lead and a three-column row –
    "run it" (a command chip with copy + primary/ghost download buttons + "follow …" link), "what it is" (bold first
-   sentence + facts row with coloured dots), and a small brand badge.
+   sentence + facts row with coloured dots), and a small brand badge. If the product has a headline feature that the
+   topology does not show (OSINT-Book: optional AI analysis), name it in the lead and add one pill under it: a filled
+   brand tag (`AI analysis`) + one line + arrow, linking to that section, which then comes first after the story.
 3. **Aperture story** (pinned, ~640vh) – see §4.
 4. **Integration strip** – mono uppercase label left, a wrapped list of dotted names right, hairlines above and below.
 5. **Architecture switcher** – section head (big display title left, paragraph right), then one dark panel: a tablist
