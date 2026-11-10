@@ -3,7 +3,10 @@
 Copy-ready building blocks for the neumorphic club fintech style. Every snippet comes from the working reference in
 `../example/index.html`.
 
-## 1. Tokens, fonts and the material
+## 1. Tokens, fonts and the two materials
+
+Add `alt` to any element that should be made of the opposite material (light on the dark page, dark on the light
+page): `<article class="tile raised alt">`. Everything inside it uses that material's colours and shadows.
 
 ```html
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Urbanist:wght@400;500;600;700&display=swap">
@@ -11,33 +14,59 @@ Copy-ready building blocks for the neumorphic club fintech style. Every snippet 
 
 ```css
 :root{
+  /* page material (dark) */
   color-scheme:dark;
-  --bg:#1f2126; --hi:#25282e; --lo:#1a1c20;                 /* one material: page = every surface */
-  --text:#f4f5f7; --soft:#c5c9d1; --muted:#8e939d; --ghost:#3a3e46;
-  --d:rgba(0,0,0,.62); --l:rgba(255,255,255,.055);          /* shadow pair */
-  --eng-d:rgba(0,0,0,.8); --eng-l:rgba(255,255,255,.09);    /* engraving pair */
-  --accent:#b9f26b; --accent-ink:#13200a;                   /* the LED */
-  --g-pink:#ff3fa4; --g-violet:#8f5bff; --g-green:#35e07a; --g-blue:#3b8cff;
-  --lx:.7071; --ly:.7071;                                   /* light direction, unit vector */
+  --bg:#272a31; --hi:#2e3139; --lo:#212329;
+  --text:#f4f5f7; --soft:#c9cdd5; --muted:#959aa4; --ghost:#41454e;
+  --d:rgba(0,0,0,.55); --l:rgba(255,255,255,.06);
+  --eng-d:rgba(0,0,0,.75); --eng-l:rgba(255,255,255,.1);
+  --accent:#b9f26b; --accent-ink:#13200a;
+  --g-pink:#ff3fa4; --g-violet:#8f5bff; --g-green:#35e07a; --g-blue:#3b8cff; --g-amber:#ffb057;
+  --lx:.7071; --ly:.7071;
+  --f-display:"Fraunces","Denton",Georgia,serif;
+  --f-body:"Urbanist","Gilroy","Helvetica Neue",Arial,sans-serif;
+  --gutter:max(16px,env(safe-area-inset-left,0px));
+  --gutter-r:max(16px,env(safe-area-inset-right,0px));
+}
+/* islands: cards, panels, coins… are made of the opposite material (light on the dark page, dark on the light page) */
+:root:not([data-theme="light"]) .alt,:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#e6e9ee; --hi:#f1f3f6; --lo:#d7dbe1;
+  --text:#191c22; --soft:#3c414c; --muted:#5f6571; --ghost:#c6cbd3;
+  --d:rgba(146,156,172,.75); --l:rgba(255,255,255,.95);
+  --eng-d:rgba(140,150,166,.85); --eng-l:#ffffff;
+  --accent:#3e8a1d; --accent-ink:#ffffff;
+}
+:root[data-theme="light"] .alt{
+  color-scheme:dark;
+  --bg:#272a31; --hi:#2e3139; --lo:#212329;
+  --text:#f4f5f7; --soft:#c9cdd5; --muted:#959aa4; --ghost:#41454e;
+  --d:rgba(0,0,0,.55); --l:rgba(255,255,255,.06);
+  --eng-d:rgba(0,0,0,.75); --eng-l:rgba(255,255,255,.1);
+  --accent:#b9f26b; --accent-ink:#13200a;
+}
+/* shadows are rebuilt wherever the material changes, so each surface uses its own pair */
+:root,.alt{
   --sx:calc(var(--lx)*10px); --sy:calc(var(--ly)*10px);
   --raise:var(--sx) var(--sy) 24px var(--d), calc(var(--sx)*-1) calc(var(--sy)*-1) 24px var(--l);
   --raise-sm:calc(var(--sx)*.5) calc(var(--sy)*.5) 12px var(--d), calc(var(--sx)*-.5) calc(var(--sy)*-.5) 12px var(--l);
   --inset:inset var(--sx) var(--sy) 18px var(--d), inset calc(var(--sx)*-1) calc(var(--sy)*-1) 18px var(--l);
   --inset-sm:inset calc(var(--sx)*.45) calc(var(--sy)*.45) 9px var(--d), inset calc(var(--sx)*-.45) calc(var(--sy)*-.45) 9px var(--l);
-  --f-display:"Fraunces","Denton",Georgia,serif;
-  --f-body:"Urbanist","Gilroy","Helvetica Neue",Arial,sans-serif;
+}
+/* the island's own outer shadow falls on the page, so it uses the page pair (declared on :root only, inherited) */
+:root{
+  --island:calc(var(--sx)*1.3) calc(var(--sy)*1.3) 34px rgba(0,0,0,.5), calc(var(--sx)*-.5) calc(var(--sy)*-.5) 22px rgba(255,255,255,.05);
+  --island-sm:calc(var(--sx)*.7) calc(var(--sy)*.7) 18px rgba(0,0,0,.45), calc(var(--sx)*-.3) calc(var(--sy)*-.3) 12px rgba(255,255,255,.04);
 }
 :root[data-theme="light"]{
-  color-scheme:light;
-  --bg:#e3e6eb; --hi:#eef0f4; --lo:#d5d9df;
-  --text:#191c22; --soft:#3c414c; --muted:#646a76; --ghost:#c6cbd3;
-  --d:rgba(146,156,172,.7); --l:rgba(255,255,255,.95);
-  --eng-d:rgba(140,150,166,.85); --eng-l:#ffffff;
-  --accent:#3e8a1d; --accent-ink:#ffffff;
+  --island:calc(var(--sx)*1.3) calc(var(--sy)*1.3) 34px rgba(110,120,138,.55), calc(var(--sx)*-1) calc(var(--sy)*-1) 26px rgba(255,255,255,.95);
+  --island-sm:calc(var(--sx)*.7) calc(var(--sy)*.7) 18px rgba(110,120,138,.5), calc(var(--sx)*-.6) calc(var(--sy)*-.6) 14px rgba(255,255,255,.9);
 }
 .raised{background:var(--bg);box-shadow:var(--raise)}
 .convex{background:linear-gradient(145deg,var(--hi),var(--lo));box-shadow:var(--raise)}
 .pressed{background:var(--bg);box-shadow:var(--inset)}
+.alt{color:var(--text)}
+.alt.raised,.alt.convex{box-shadow:var(--island)}   /* islands cast the page pair */
 .engraved{color:var(--bg);text-shadow:1px 1px 1px var(--eng-l),-1px -1px 1px var(--eng-d)}
 .led{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent),0 0 2px var(--accent)}
 ```
@@ -187,7 +216,7 @@ ticks.style.setProperty('--rot', (prog(ticks,1.1,-.1)*180-90)+'deg');
 .coin{aspect-ratio:1;border-radius:50%;display:grid;place-items:center;text-align:center;padding:16%;transition:box-shadow .25s;
   animation:float 6s ease-in-out infinite;animation-delay:calc(var(--i) * -1s)}
 .coin .prize{display:none}
-.coin[aria-pressed="true"]{box-shadow:var(--inset);background:var(--bg)}
+.coin[aria-pressed="true"]{box-shadow:var(--island-sm),var(--inset);background:var(--bg)}
 .coin[aria-pressed="true"] .face{display:none}
 .coin[aria-pressed="true"] .prize{display:block}
 @keyframes float{50%{transform:translateY(-10px)}}
@@ -250,8 +279,8 @@ knob.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){setK(k+.2);if(k>=1)
 ## 12. FAQ that presses in when open
 
 ```css
-.faq details{border-radius:26px;box-shadow:var(--raise-sm);transition:box-shadow .25s}
-.faq details[open]{box-shadow:var(--inset-sm)}
+.faq details{border-radius:26px;background:var(--bg);box-shadow:var(--island-sm);transition:box-shadow .25s}   /* <details class="alt"> */
+.faq details[open]{box-shadow:var(--island-sm),var(--inset-sm)}
 .faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;padding:22px 26px;font:600 19px/1.3 var(--f-body)}
 .faq summary::after{content:"+";color:var(--accent)}
 .faq details[open] summary::after{content:"–"}

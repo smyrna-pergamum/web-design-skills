@@ -46,7 +46,7 @@
     },
     {
       "name": "neumorphic-club-fintech",
-      "description": "Premium fintech, card and membership sites in dark neumorphism: one soft material with raised and pressed relief, a cursor-driven light source, engraved scroll-reveal text, a tilting embossed card, pressable coins and a slide-to-join control.",
+      "description": "Premium fintech, card and membership sites in two-material neumorphism: a dark relief page with light relief cards, panels and coins, a cursor-driven light source, engraved scroll-reveal text, a tilting embossed card and a slide-to-join control.",
       "source": "./",
       "strict": false,
       "skills": [
