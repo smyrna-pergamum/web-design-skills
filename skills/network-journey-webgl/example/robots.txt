@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://smyrna-pergamum.github.io/web-design-skills/skills/network-journey-webgl/example/sitemap.xml
