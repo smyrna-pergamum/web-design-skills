@@ -79,6 +79,15 @@
       "skills": [
         "./skills/network-journey-webgl"
       ]
+    },
+    {
+      "name": "aperture-topology-story",
+      "description": "Developer-tool, data and OSINT product sites: a glowing SVG node-topology hero on a dark grid, then a pinned scroll story where a circular aperture opens from the central node onto a light paper workspace and cards act out the product's workflow, plus an architecture switcher, catalog table and terminal.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/aperture-topology-story"
+      ]
     }
   ]
 }
