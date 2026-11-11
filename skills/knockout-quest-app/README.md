@@ -35,7 +35,8 @@ knockout-quest-app/
 
 ## Features of the example page
 
-- Paper-white knockout intro (`mix-blend-mode:screen`) that zooms into the "I" of FIT with scroll.
+- Paper-white knockout intro (a canvas with the word cut out) that zooms into the "I" of FIT with scroll, sharp at
+  every scale.
 - Dark hero with a 3D-tilting CSS phone, floating reward chips and magnetic buttons.
 - Sticky tour: the phone stays while four real screenshots, tab colours, copy and a giant outlined tab name change.
 - XP widget in the header: +5 XP per explored section, toasts, levels, confetti.
@@ -46,7 +47,7 @@ knockout-quest-app/
   equaliser bars and volume; a **live radio** using the same Radio Browser API as the app (needle slides to the genre,
   a burst of Web Audio static, then a real HTTPS station; prev/next, skips dead streams).
 - The knockout zoom plays once; scrolling back up shows the finished hero.
-- Photo accordion (grayscale multiply → colour), breathing orb (in 4 s, out 6 s), bento of animated numbers,
+- Photo accordion (grayscale multiply → colour), breathing orb with the app's three patterns (Calm, Box, 4-7-8), bento of animated numbers,
   scroll-scrubbed privacy lines, FAQ.
 - Respects `prefers-reduced-motion`; responsive down to 390px with no horizontal scroll.
 

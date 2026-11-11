@@ -68,9 +68,7 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.045em;line-
 .intro-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;isolation:isolate}
 .intro-video,.intro-stage>.poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .shade{position:absolute;inset:0;background:radial-gradient(120% 90% at 70% 60%,#0b0e1300 0,#0b0e13b3 70%),linear-gradient(180deg,#0b0e1399,#0b0e1300 30%,#0b0e13 100%);opacity:0}
-.knock{position:absolute;inset:0;background:var(--paper);color:#000;mix-blend-mode:screen;display:grid;place-items:center;will-change:transform,opacity}
-.knock-word{font-family:var(--display);font-weight:900;line-height:.78;letter-spacing:-.07em;text-align:center;white-space:nowrap;user-select:none}
-.knock-word span{display:block}
+.knock{position:absolute;inset:0;width:100%;height:100%;display:block}   /* viewport-sized canvas: paper with the word cut out */
 .knock-labels{position:absolute;inset:0;color:var(--ink);pointer-events:none}
 .knock-labels .mono{position:absolute;font-weight:700}
 .kl-1{left:32px;top:96px}.kl-2{right:32px;top:96px;text-align:right}.kl-3{left:32px;bottom:30px}.kl-4{right:32px;bottom:30px;text-align:right}
@@ -234,9 +232,14 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.045em;line-
 .orb-text b{font-family:var(--display);font-size:30px;letter-spacing:-.05em}
 .orb-text span{font-family:var(--mono);font-size:13px;opacity:.85}
 .lab-ui{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
-.cycles{display:flex;gap:8px}
-.cycles i{width:12px;height:12px;border-radius:50%;border:2px solid #ffffff4d;transition:background .4s,border-color .4s}
-.cycles i.on{background:var(--lilac);border-color:var(--lilac)}
+.patterns{display:inline-flex;gap:4px;padding:4px;border-radius:99px;background:#ffffff0f;border:1px solid #ffffff1f}
+.patterns button{padding:10px 16px;border-radius:99px;font-weight:800;font-size:14px;color:#cfd5dc;transition:background .3s,color .3s}
+.patterns button:hover{background:#ffffff14;color:#fff}
+.patterns button[aria-pressed="true"]{background:linear-gradient(120deg,var(--violet),var(--lilac));color:#fff}
+.patterns small{display:block;font-family:var(--mono);font-size:10px;font-weight:500;opacity:.8}
+.breath-count{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.breath-count i{width:10px;height:10px;border-radius:50%;border:2px solid #ffffff4d;transition:background .4s,border-color .4s}
+.breath-count i.on{background:var(--lilac);border-color:var(--lilac)}
 .lab-note{color:var(--muted);margin-top:18px;font-size:14px}
 
 
@@ -518,9 +521,7 @@ html{overflow-anchor:none}
   <div class="intro-stage" id="introStage">
     <video class="intro-video" id="heroVideo" src="assets/park-run.mp4" poster="assets/park-run.jpg" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
     <div class="shade" id="shade"></div>
-    <div class="knock" id="knock" aria-hidden="true">
-      <div class="knock-word" id="knockWord"><span>F<span id="kI" style="display:inline">I</span>T</span><span>VITA</span></div>
-    </div>
+    <canvas class="knock" id="knock" aria-hidden="true"></canvas>
     <div class="knock-labels" id="knockLabels" aria-hidden="true">
       <span class="mono kl-1">FitVita · Android · v0.3.2</span>
       <span class="mono kl-2">Steps · Workouts · Yoga<br>Breathing · Water</span>
@@ -686,13 +687,18 @@ html{overflow-anchor:none}
     <div class="lab" aria-hidden="true">
       <span class="orb-ring r1"></span><span class="orb-ring r2"></span><span class="orb-ring r3"></span>
       <div class="orb" id="orb"></div>
-      <div class="orb-text"><b id="orbWord">Ready?</b><span id="orbCount">in 4 · out 6</span></div>
+      <div class="orb-text"><b id="orbWord">Ready?</b><span id="orbCount">pick a pattern</span></div>
     </div>
     <div class="lab-ui">
-      <button class="btn btn-lime" id="breathBtn">Start calm breathing</button>
-      <div class="cycles" id="cycles" aria-label="Breaths completed"><i></i><i></i></div>
+      <div class="patterns" role="group" aria-label="Breathing pattern">
+        <button aria-pressed="true" data-p="calm">Calm<small>4 · 6</small></button>
+        <button aria-pressed="false" data-p="box">Box<small>4 · 4 · 4 · 4</small></button>
+        <button aria-pressed="false" data-p="478">4-7-8<small>4 · 7 · 8</small></button>
+      </div>
+      <button class="btn btn-lime" id="breathBtn">Start breathing</button>
+      <span class="breath-count" id="breathCount" aria-live="polite"><i></i><i></i><span>0 / 2 breaths</span></span>
     </div>
-    <p class="lab-note">The app's “Calm breathing”: in for 4 s, out for 6 s. Two breaths complete the Yoga &amp; breath quest above.</p>
+    <p class="lab-note">The app's three breathing patterns: Calm (in 4 s, out 6 s), Box (in, hold, out, hold — 4 s each) and 4-7-8 (in 4, hold 7, out 8). Two breaths complete the Yoga &amp; breath quest above.</p>
   </div>
 </section>
 
@@ -891,19 +897,41 @@ function step(){
 }
 
 /* ---------- intro knockout zoom ---------- */
-const intro=$('#top'),knock=$('#knock'),word=$('#knockWord'),kI=$('#kI'),labels=$('#knockLabels'),shade=$('#shade'),hero=$('#hero');
+const intro=$('#top'),knock=$('#knock'),labels=$('#knockLabels'),shade=$('#shade'),hero=$('#hero');
+/* The knockout is drawn on a canvas the size of the viewport: paper colour, then the word cut out with
+   destination-out so the video shows through the letters. The zoom is a canvas transform around the centre of
+   the "I", so no 90x DOM layer has to be rasterised (that produced torn tiles when scrolling back). */
+const kctx=knock.getContext('2d'),LINES=['FIT','VITA'],KFONT="900 100px Unbounded, 'Arial Black', sans-serif";
+let K=null,lastS=-1;
+function layoutKnock(){
+  const dpr=Math.min(devicePixelRatio||1,2),W=intro.querySelector('.intro-stage').clientWidth,H=intro.querySelector('.intro-stage').clientHeight;
+  knock.width=Math.round(W*dpr);knock.height=Math.round(H*dpr);
+  kctx.font=KFONT;
+  const sp=-.07*100,adv=ch=>kctx.measureText(ch).width+sp;
+  const lw=t=>[...t].reduce((a,c)=>a+adv(c),0)-sp;
+  const capH=kctx.measureText('I').actualBoundingBoxAscent||72;
+  const widest=Math.max(...LINES.map(lw));
+  const fs=Math.min(100*W*.86/widest,100*H*.64/(capH+78));      /* 100px reference → final size */
+  const k=fs/100,lh=.78*fs,cap=capH*k,top=(H-(cap+lh))/2;
+  const lines=LINES.map((t,li)=>{const w=lw(t)*k;let x=(W-w)/2;const y=top+cap+li*lh;
+    return [...t].map(c=>{const g={c,x,y};x+=adv(c)*k;return g})});
+  const I=lines[0][1],iw=kctx.measureText('I').width*k;
+  K={dpr,W,H,fs,lines,ox:I.x+iw/2,oy:lines[0][0].y-cap/2};lastS=-1;
+}
+function drawKnock(s){
+  if(!K||s===lastS)return;lastS=s;
+  const c=kctx;c.setTransform(K.dpr,0,0,K.dpr,0,0);c.globalCompositeOperation='source-over';
+  c.clearRect(0,0,K.W,K.H);c.fillStyle='#f2f1ec';c.fillRect(0,0,K.W,K.H);
+  c.globalCompositeOperation='destination-out';
+  c.translate(K.ox,K.oy);c.scale(s,s);c.translate(-K.ox,-K.oy);
+  c.font=`900 ${K.fs}px Unbounded, 'Arial Black', sans-serif`;c.textBaseline='alphabetic';c.fillStyle='#000';
+  K.lines.forEach(l=>l.forEach(g=>c.fillText(g.c,g.x,g.y)));
+}
 let fitW=0,fitH=0;
 function fitWord(force){
   if(introDone)return;                    /* knockout already played; nothing to fit */
   if(!force&&innerWidth===fitW&&Math.abs(innerHeight-fitH)<140)return;   /* ignore mobile URL-bar resizes */
-  fitW=innerWidth;fitH=innerHeight;
-  knock.style.transform='none';          /* measure unscaled, or a resize mid-zoom shrinks the word */
-  word.style.fontSize='100px';
-  const w=word.getBoundingClientRect().width,h=word.getBoundingClientRect().height;
-  const fs=Math.min(100*innerWidth*.86/w,100*innerHeight*.64/h);
-  word.style.fontSize=fs+'px';
-  const k=knock.getBoundingClientRect(),i=kI.getBoundingClientRect();
-  knock.style.transformOrigin=(i.left+i.width*.5-k.left)+'px '+(i.top+i.height*.55-k.top)+'px';
+  fitW=innerWidth;fitH=innerHeight;layoutKnock();
 }
 
 /* ---------- story ---------- */
@@ -954,7 +982,7 @@ function onScroll(){
     const r=intro.getBoundingClientRect(),p=clamp(-r.top/(intro.offsetHeight-vh));
     if(p>=.8){finishIntro();return onScroll();}
     const z=clamp(p/.55);
-    knock.style.transform=`scale(${1+Math.pow(z,3.2)*90})`;
+    drawKnock(+(1+Math.pow(z,3.2)*90).toFixed(3));
     knock.style.opacity=1-clamp((p-.42)/.14);
     knock.style.visibility=p>.58?'hidden':'visible';
     labels.style.opacity=1-clamp(p/.12);
@@ -968,7 +996,7 @@ function onScroll(){
 }
 addEventListener('scroll',onScroll,{passive:true});   /* scroll already fires once per frame */
 addEventListener('resize',()=>{fitWord();onScroll()});
-(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{fitWord(true);onScroll()});
+(document.fonts?document.fonts.load(KFONT).then(()=>document.fonts.ready):Promise.resolve()).then(()=>{fitWord(true);onScroll()}).catch(()=>{});
 fitWord(true);onScroll();
 
 /* ---------- mouse tilt + magnets ---------- */
@@ -1037,20 +1065,32 @@ const rhs=$$('.rh');
 rhs.forEach(r=>{const act=()=>{rhs.forEach(x=>{x.classList.toggle('active',x===r);x.setAttribute('aria-expanded',x===r)})};
   r.addEventListener('click',act);if(FINE)r.addEventListener('pointerenter',act);r.addEventListener('focus',act)});
 
-/* ---------- breathing lab ---------- */
-const orb=$('#orb'),ow=$('#orbWord'),oc=$('#orbCount'),bb=$('#breathBtn'),cyc=$$('#cycles i');let running=false,timers=[],breaths=0;
+/* ---------- breathing lab (the app's three patterns) ---------- */
+const PATTERNS={calm:[['in',4],['out',6]],box:[['in',4],['hold',4],['out',4],['hold',4]],'478':[['in',4],['hold',7],['out',8]]};
+const WORD={in:'Breathe in',hold:'Hold',out:'Breathe out'};
+const orb=$('#orb'),ow=$('#orbWord'),oc=$('#orbCount'),bb=$('#breathBtn'),bc=$('#breathCount'),pBtns=$$('.patterns button');
+let running=false,timers=[],breaths=0,pattern='calm';
+function clearTimers(){timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[]}
 function countdown(n,label){ow.textContent=label;let k=n;oc.textContent=k+' s';const iv=setInterval(()=>{k--;if(k>0)oc.textContent=k+' s';else clearInterval(iv)},1000);timers.push(iv)}
-function cycle(){
-  orb.style.transitionDuration='4s';orb.classList.add('in');countdown(4,'Breathe in');
-  timers.push(setTimeout(()=>{orb.style.transitionDuration='6s';orb.classList.remove('in');countdown(6,'Breathe out');
-    timers.push(setTimeout(()=>{breaths++;cyc.forEach((c,i)=>c.classList.toggle('on',i<Math.min(breaths,2)));progress('yoga',Math.min(breaths,2),2);
-      if(breaths===2)addXP(10,'Breathing session');
-      if(running)cycle()},6000))},4000));
+function showCount(){$$('i',bc).forEach((c,i)=>c.classList.toggle('on',i<Math.min(breaths,2)));bc.lastElementChild.textContent=Math.min(breaths,2)+' / 2 breaths'}
+function runPhase(i){
+  const ph=PATTERNS[pattern];
+  if(i>=ph.length){breaths++;showCount();progress('yoga',Math.min(breaths,2),2);if(breaths===2)addXP(10,'Breathing session');if(running)runPhase(0);return}
+  const [kind,sec]=ph[i];
+  if(kind!=='hold'){orb.style.transitionDuration=sec+'s';orb.classList.toggle('in',kind==='in')}
+  countdown(sec,WORD[kind]);
+  timers.push(setTimeout(()=>runPhase(i+1),sec*1000));
 }
-bb.addEventListener('click',()=>{
-  running=!running;timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[];
-  if(running){bb.textContent='Stop';cycle()}else{bb.textContent='Start calm breathing';orb.style.transitionDuration='1s';orb.classList.remove('in');ow.textContent='Paused';oc.textContent='in 4 · out 6'}
-});
+function setRunning(on){
+  running=on;clearTimers();
+  if(on){bb.textContent='Stop';runPhase(0)}
+  else{bb.textContent='Start breathing';orb.style.transitionDuration='1s';orb.classList.remove('in');ow.textContent='Paused';oc.textContent=PATTERNS[pattern].map(p=>p[1]).join(' · ')}
+}
+bb.addEventListener('click',()=>setRunning(!running));
+pBtns.forEach(b=>b.addEventListener('click',()=>{
+  pattern=b.dataset.p;pBtns.forEach(x=>x.setAttribute('aria-pressed',x===b));
+  if(running)setRunning(true);else{ow.textContent=b.firstChild.textContent.trim();oc.textContent=PATTERNS[pattern].map(p=>p[1]).join(' · ')}
+}));
 
 /* ---------- bento counters ---------- */
 const cIO=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;cIO.unobserve(e.target);const el=e.target,end=+el.dataset.count;

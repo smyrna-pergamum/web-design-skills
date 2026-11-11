@@ -49,9 +49,7 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.045em;line-
   <div class="intro-stage">
     <video class="intro-video" src="assets/park-run.mp4" poster="assets/park-run.jpg" muted loop playsinline autoplay aria-hidden="true"></video>
     <div class="shade" id="shade"></div>
-    <div class="knock" id="knock" aria-hidden="true">
-      <div class="knock-word" id="knockWord"><span>F<span id="kI" style="display:inline">I</span>T</span><span>VITA</span></div>
-    </div>
+    <canvas class="knock" id="knock" aria-hidden="true"></canvas>   <!-- paper with the word cut out -->
     <div class="knock-labels" id="knockLabels" aria-hidden="true">…four mono corner labels…</div>
     <div class="hero" id="hero">…headline, buttons, phone…</div>
   </div>
@@ -60,12 +58,9 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.045em;line-
 
 ```css
 .intro{height:300vh;position:relative}
-.intro-stage{position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate}  /* blend only with the video */
+.intro-stage{position:sticky;top:0;height:100svh;overflow:hidden}
 .intro-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.knock{position:absolute;inset:0;background:var(--paper);color:#000;mix-blend-mode:screen;
-  display:grid;place-items:center;will-change:transform,opacity}
-.knock-word{font-family:var(--display);font-weight:900;line-height:.78;letter-spacing:-.07em;text-align:center;white-space:nowrap}
-.knock-word span{display:block}
+.knock{position:absolute;inset:0;width:100%;height:100%;display:block}
 .shade{position:absolute;inset:0;opacity:0;background:linear-gradient(180deg,#0b0e1399,#0b0e1300 30%,#0b0e13 100%)}
 .hero{position:absolute;inset:0;opacity:0;pointer-events:none}
 .hero.on{pointer-events:auto}
@@ -73,21 +68,37 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.045em;line-
 
 ```js
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
-let fitW=0,fitH=0;
-function fitWord(force){                  // fit the word, then aim the zoom at the centre of the stem letter
-  if(!force&&innerWidth===fitW&&Math.abs(innerHeight-fitH)<140)return;   // ignore mobile URL-bar resizes
-  fitW=innerWidth;fitH=innerHeight;
-  knock.style.transform='none';           // FIRST: measure unscaled, or a resize mid-zoom shrinks the word to ~1px
-  word.style.fontSize='100px';
-  const b=word.getBoundingClientRect();
-  word.style.fontSize=Math.min(100*innerWidth*.86/b.width,100*innerHeight*.64/b.height)+'px';
-  const k=knock.getBoundingClientRect(),i=kI.getBoundingClientRect();
-  knock.style.transformOrigin=(i.left+i.width*.5-k.left)+'px '+(i.top+i.height*.55-k.top)+'px';
+const kctx=knock.getContext('2d'),LINES=['FIT','VITA'],KFONT="900 100px Unbounded, 'Arial Black', sans-serif";
+let K=null,lastS=-1;
+function layoutKnock(){                    // fit the word at a 100px reference, remember every glyph position
+  const dpr=Math.min(devicePixelRatio||1,2),stage=intro.querySelector('.intro-stage'),W=stage.clientWidth,H=stage.clientHeight;
+  knock.width=Math.round(W*dpr);knock.height=Math.round(H*dpr);
+  kctx.font=KFONT;
+  const sp=-7,adv=ch=>kctx.measureText(ch).width+sp;            // letter-spacing -.07em
+  const lw=t=>[...t].reduce((a,c)=>a+adv(c),0)-sp;
+  const capH=kctx.measureText('I').actualBoundingBoxAscent||72;
+  const fs=Math.min(100*W*.86/Math.max(...LINES.map(lw)),100*H*.64/(capH+78));
+  const k=fs/100,lh=.78*fs,cap=capH*k,top=(H-(cap+lh))/2;
+  const lines=LINES.map((t,li)=>{const w=lw(t)*k;let x=(W-w)/2;const y=top+cap+li*lh;
+    return [...t].map(c=>{const g={c,x,y};x+=adv(c)*k;return g})});
+  const I=lines[0][1],iw=kctx.measureText('I').width*k;            // the stem letter we fly into
+  K={dpr,W,H,fs,lines,ox:I.x+iw/2,oy:lines[0][0].y-cap/2};lastS=-1;
 }
-function onScroll(){                      // called from a rAF-throttled scroll listener
+function drawKnock(s){
+  if(!K||s===lastS)return;lastS=s;
+  const c=kctx;c.setTransform(K.dpr,0,0,K.dpr,0,0);c.globalCompositeOperation='source-over';
+  c.clearRect(0,0,K.W,K.H);c.fillStyle='#f2f1ec';c.fillRect(0,0,K.W,K.H);
+  c.globalCompositeOperation='destination-out';                    // letters punch holes → video shows
+  c.translate(K.ox,K.oy);c.scale(s,s);c.translate(-K.ox,-K.oy);
+  c.font=`900 ${K.fs}px Unbounded, 'Arial Black', sans-serif`;
+  K.lines.forEach(l=>l.forEach(g=>c.fillText(g.c,g.x,g.y)));
+}
+function onScroll(){
+  if(introDone)return;                    // see "One-way knockout" in section 11
   const r=intro.getBoundingClientRect(),p=clamp(-r.top/(intro.offsetHeight-innerHeight));
+  if(p>=.8){finishIntro();return}
   const z=clamp(p/.55);
-  knock.style.transform=`scale(${1+Math.pow(z,3.2)*90})`;
+  drawKnock(+(1+Math.pow(z,3.2)*90).toFixed(3));
   knock.style.opacity=1-clamp((p-.42)/.14);
   knock.style.visibility=p>.58?'hidden':'visible';
   labels.style.opacity=1-clamp(p/.12);
@@ -96,11 +107,17 @@ function onScroll(){                      // called from a rAF-throttled scroll 
   hero.classList.toggle('on',h>.5);
 }
 addEventListener('scroll',onScroll,{passive:true});   // direct: scroll already fires once per frame
-document.fonts.ready.then(()=>{fitWord(true);onScroll()});
-addEventListener('resize',()=>{fitWord();onScroll()});
+document.fonts.load(KFONT).then(()=>{layoutKnock();onScroll()});
+let fitW=0,fitH=0;
+addEventListener('resize',()=>{if(innerWidth===fitW&&Math.abs(innerHeight-fitH)<140)return;  // ignore URL-bar resizes
+  fitW=innerWidth;fitH=innerHeight;layoutKnock();onScroll()});
 ```
 
-Pick a letter whose centre is solid ink (I, l, 1, the stem of T). With `screen`, ink = video; a counter = white.
+Why a canvas: an earlier version scaled a DOM text layer (`mix-blend-mode:screen` + `transform:scale(90)`). Browsers
+cannot rasterise a layer that large; they show torn rectangular tiles, most visibly when scrolling back. The canvas is
+always the size of the viewport, and the vector glyphs stay sharp at any scale.
+
+Pick a letter whose centre is solid ink (I, l, 1, the stem of T); a counter (the hole of an O) is paper.
 
 ## 3. Phone mockup and floating chips
 
@@ -342,18 +359,37 @@ Activate on click and focus everywhere, and on `pointerenter` only with a fine p
 
 ## 9. Breathing orb
 
+```html
+<div class="patterns" role="group" aria-label="Breathing pattern">
+  <button aria-pressed="true" data-p="calm">Calm<small>4 · 6</small></button>
+  <button aria-pressed="false" data-p="box">Box<small>4 · 4 · 4 · 4</small></button>
+  <button aria-pressed="false" data-p="478">4-7-8<small>4 · 7 · 8</small></button>
+</div>
+<button class="btn btn-lime" id="breathBtn">Start breathing</button>
+<span class="breath-count" aria-live="polite"><i></i><i></i><span>0 / 2 breaths</span></span>
+```
+
 ```css
 .orb{width:180px;height:180px;border-radius:50%;transform:scale(.8);transition:transform 4s cubic-bezier(.45,0,.55,1);
   background:radial-gradient(circle at 35% 30%,#fff9,#fff0 40%),linear-gradient(140deg,var(--violet),var(--lilac) 50%,var(--cyan));
   box-shadow:0 0 120px -10px #8b5cf6aa}
 .orb.in{transform:scale(2.1)}
+.patterns{display:inline-flex;gap:4px;padding:4px;border-radius:99px;background:#ffffff0f;border:1px solid #ffffff1f}
+.patterns button{padding:10px 16px;border-radius:99px;font-weight:800}
+.patterns button[aria-pressed="true"]{background:linear-gradient(120deg,var(--violet),var(--lilac));color:#fff}
 ```
 
 ```js
-function cycle(){
-  orb.style.transitionDuration='4s';orb.classList.add('in');countdown(4,'Breathe in');
-  timers.push(setTimeout(()=>{orb.style.transitionDuration='6s';orb.classList.remove('in');countdown(6,'Breathe out');
-    timers.push(setTimeout(()=>{breaths++;progress('yoga',Math.min(breaths,2),2);if(breaths===2)addXP(10,'Breathing session');if(running)cycle()},6000))},4000));
+const PATTERNS={calm:[['in',4],['out',6]],box:[['in',4],['hold',4],['out',4],['hold',4]],'478':[['in',4],['hold',7],['out',8]]};
+const WORD={in:'Breathe in',hold:'Hold',out:'Breathe out'};
+function runPhase(i){
+  const ph=PATTERNS[pattern];
+  if(i>=ph.length){breaths++;showCount();progress('yoga',Math.min(breaths,2),2);if(breaths===2)addXP(10,'Breathing session');
+    if(running)runPhase(0);return}
+  const [kind,sec]=ph[i];
+  if(kind!=='hold'){orb.style.transitionDuration=sec+'s';orb.classList.toggle('in',kind==='in')}   // hold = stay put
+  countdown(sec,WORD[kind]);
+  timers.push(setTimeout(()=>runPhase(i+1),sec*1000));
 }
 ```
 

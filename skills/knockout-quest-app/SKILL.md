@@ -43,8 +43,8 @@ English). Copy-ready code is in `references/components.md`; `screenshots/` shows
 1. **Floating header pill** – dark glass bar centred at the top: icon + name, 4–5 anchors, the **XP widget**
    (level badge, progress bar, `x/100 XP`), lime CTA. 3px rainbow reading-progress bar above it. Readable on both the
    white intro and dark sections, which is why it is a dark pill and not a full-width bar.
-2. **Knockout intro → hero** (300vh, sticky stage) – paper layer with the wordmark in black under `mix-blend-mode:screen`
-   over the video; four mono corner labels. Scroll: the layer scales (cubic ease, up to ~90×) around the centre of a
+2. **Knockout intro → hero** (300vh, sticky stage) – a viewport-sized `<canvas>` over the video, painted paper with the
+   wordmark cut out; four mono corner labels. Scroll: the cut-out scales (cubic ease, up to ~90×) around the centre of a
    **straight stem letter** ("I"), fades out, a shade fades in and the hero appears: eyebrow, 3-line headline with a
    gradient last word, lead, two buttons, meta dots; phone with three chips on the right. **The knockout plays once**:
    when the hero is fully in, the intro collapses to a normal 100vh hero (scroll position shifted by the removed height,
@@ -61,8 +61,10 @@ English). Copy-ready code is in `references/components.md`; `screenshots/` shows
    promise + routes feature pills).
 7. **Rhythms accordion** – three photo panels; inactive ones are grayscale, multiplied with a gradient and show a
    vertical label; the active one grows (flex 2.6), regains colour and reveals its copy. Hover on desktop, tap on touch.
-8. **Breathing lab** – concentric rings and a gradient orb that scales in for 4 s and out for 6 s with a countdown;
-   two breaths complete a quest and give XP.
+8. **Breathing lab** – concentric rings and a gradient orb that grows on "in", holds, and shrinks on "out" with a
+   countdown. A segmented control picks the app's patterns (Calm 4·6, Box 4·4·4·4, 4-7-8), next to the start button and
+   a "0 / 2 breaths" counter. Anything that looks like a control must be one — passive dots next to a button get clicked.
+   Two breaths complete a quest and give XP.
 9. **Sound studio** – three decks side by side, each tinted with its own dark gradient: a **music player** (spinning
    record with a gradient label, lime play button, seek bar, scrollable track list with real durations, sleep-timer
    chips), a **nature mixer** (10 icon tiles, one plays at a time with equaliser bars, volume slider; it may mix with the
@@ -81,17 +83,19 @@ English). Copy-ready code is in `references/components.md`; `screenshots/` shows
 
 ## 4. Signature effects
 
-* **Knockout zoom**: video → paper layer `background:#f2f1ec;color:#000;mix-blend-mode:screen` (black text = video
-  shows, paper = white). The stage needs `isolation:isolate`. Fit the word to `min(86vw, 64vh)`, measure the stem
-  letter's centre and set it as `transform-origin`, then `scale(1 + z^3.2 · 90)` for scroll progress `z`. Zooming into a
-  counter (the hole of an O) would land on white — always pick a stem.
+* **Knockout zoom on a canvas**: video → viewport-sized canvas. Each scroll step: fill the paper colour, switch to
+  `globalCompositeOperation='destination-out'`, `translate(ox,oy)·scale(s)·translate(-ox,-oy)` and `fillText` the
+  letters — the holes show the video. Lay the letters out yourself (measureText + letter spacing) and fit the word to
+  `min(86vw, 64vh)`; `(ox,oy)` is the centre of the stem letter. `s = 1 + z^3.2 · 90` for scroll progress `z`. Zooming
+  into a counter (the hole of an O) would land on paper — always pick a stem. **Do not scale a DOM text layer** to 90×
+  (e.g. `mix-blend-mode:screen` + `transform:scale`): the browser cannot rasterise a 100,000px layer and shows torn
+  tiles, especially when scrolling back. Wait for `document.fonts.load()` before the first draw.
   **Make it one-way.** Played backwards the zoom looks broken (a ghosted hero, giant white letter slabs), so at
   progress ≥ .8 add `.intro-done` (intro `height:auto`, stage `position:relative;height:100svh`, knockout `display:none`,
   hero visible), clear the inline styles the scroll loop set, and `scrollTo({top:max(0,y-removed),behavior:'instant'})`
   (`instant`, because the page uses smooth scrolling; `overflow-anchor:none` so the browser does not adjust it too).
-  **Reset the layer to `transform:none` before measuring**, or a resize in the middle of the zoom (the mobile URL bar)
-  measures the 90× word and shrinks it to 1px. Ignore height-only changes under ~140px, skip fitting once the intro is
-  done, and run the scroll handler directly (not behind a rAF flag).
+  Re-lay out the canvas on resize but ignore height-only changes under ~140px (mobile URL bar), skip it once the intro
+  is done, and run the scroll handler directly (not behind a rAF flag).
 * **XP engine**: `addXP(n, why)` → toast, level thresholds (`0,100,250,450,700`), level-up toast + canvas confetti,
   header bar and score panel re-render. Sections with `data-xp` give +5 the first time 25% is visible.
 * **Quests mirror the app**: same goals and XP (+25 each, +50 for all four, streak day at two).
