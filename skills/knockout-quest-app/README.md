@@ -43,7 +43,9 @@ knockout-quest-app/
   +50 XP bonus and a streak toast.
 - Video tiles with a REC pill, running timer, live distance, pace and steps, and a self-drawing route.
 - Sound studio: meditation player with a spinning record, track list and sleep timer; 10 nature-sound tiles with
-  equaliser bars and volume; a radio tuner whose needle slides to the genre with a burst of Web Audio static.
+  equaliser bars and volume; a **live radio** using the same Radio Browser API as the app (needle slides to the genre,
+  a burst of Web Audio static, then a real HTTPS station; prev/next, skips dead streams).
+- The knockout zoom plays once; scrolling back up shows the finished hero.
 - Photo accordion (grayscale multiply → colour), breathing orb (in 4 s, out 6 s), bento of animated numbers,
   scroll-scrubbed privacy lines, FAQ.
 - Respects `prefers-reduced-motion`; responsive down to 390px with no horizontal scroll.
@@ -84,6 +86,8 @@ node scripts/screenshots.mjs example screenshots
   (CC0); Cafe ambiance – Marble Toast (CC0); Sunday in the city – cori (public domain); Light Rain Distant Thunder –
   kvgarlic (CC0); Campfire ambience – Glaneur de sons (CC BY 3.0); Crickets choir – Serg Childed (CC BY-SA 4.0);
   Artis aquarium – Beeld en Geluid (CC BY-SA 3.0). Trimmed, faded and re-encoded; the BY-SA clips stay under BY-SA.
+- Live radio: station list from the community-run [Radio Browser](https://www.radio-browser.info/) API (only the genre
+  is sent); streams come from the stations themselves.
 - Fonts: [Unbounded](https://fonts.google.com/specimen/Unbounded), [Manrope](https://fonts.google.com/specimen/Manrope)
   and [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) (SIL Open Font License) from Google Fonts.
 

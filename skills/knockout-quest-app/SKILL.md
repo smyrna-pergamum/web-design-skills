@@ -46,7 +46,9 @@ English). Copy-ready code is in `references/components.md`; `screenshots/` shows
 2. **Knockout intro → hero** (300vh, sticky stage) – paper layer with the wordmark in black under `mix-blend-mode:screen`
    over the video; four mono corner labels. Scroll: the layer scales (cubic ease, up to ~90×) around the centre of a
    **straight stem letter** ("I"), fades out, a shade fades in and the hero appears: eyebrow, 3-line headline with a
-   gradient last word, lead, two buttons, meta dots; phone with three chips on the right.
+   gradient last word, lead, two buttons, meta dots; phone with three chips on the right. **The knockout plays once**:
+   when the hero is fully in, the intro collapses to a normal 100vh hero (scroll position shifted by the removed height,
+   so nothing moves). Scrolling back up shows the finished hero, never the zoom in reverse.
 3. **Ticker** – tilted (−2°) full-width band in the app's gradient with the app's verbs and star glyphs.
 4. **App tour** (460vh, sticky) – three columns: giant gradient step number + tab list (left), phone (centre), tag,
    headline, copy and feature pills (right). A giant outlined tab name drifts behind; the radial background takes the
@@ -63,10 +65,13 @@ English). Copy-ready code is in `references/components.md`; `screenshots/` shows
    two breaths complete a quest and give XP.
 9. **Sound studio** – three decks side by side, each tinted with its own dark gradient: a **music player** (spinning
    record with a gradient label, lime play button, seek bar, scrollable track list with real durations, sleep-timer
-   chips), a **nature mixer** (10 icon tiles, one plays at a time with equaliser bars, volume slider) and a **radio
-   tuner** (scale with a glowing needle that slides to the chosen genre, a short static burst from Web Audio, station
-   card with equaliser, genre chips). Play **real clips from the app** (short, faded, looped); anything that only exists
-   in the app (other tracks, live stations) says so with a toast instead of pretending.
+   chips), a **nature mixer** (10 icon tiles, one plays at a time with equaliser bars, volume slider; it may mix with the
+   music) and a **live radio** (scale with a glowing needle that slides to the chosen genre, a short static burst from
+   Web Audio, station card, prev / play-stop / next, genre chips). Music and nature play **real clips from the app**
+   (short, faded, looped); anything that only exists in the app (other tracks) says so with a toast. The radio uses the
+   **same public API as the app** (here Radio Browser: `GET https://<mirror>/json/stations/search?tag=…&order=clickcount
+   &reverse=true&hidebroken=true&is_https=true&limit=40`, CORS-open, no key), tries the mirrors in turn, keeps HTTPS,
+   non-HLS streams, skips to the next station when one fails, and stops music and nature while it plays.
 10. **Bento of numbers** – 6-column grid: one big gradient cell with the headline number, coloured and dark cells for the
    rest (counters animate on view), theme dots, language chips, a "radio" and a "routes" cell.
 11. **Privacy lines** – two giant lines (solid / outlined / lime words) that slide in opposite directions with scroll,
@@ -80,9 +85,13 @@ English). Copy-ready code is in `references/components.md`; `screenshots/` shows
   shows, paper = white). The stage needs `isolation:isolate`. Fit the word to `min(86vw, 64vh)`, measure the stem
   letter's centre and set it as `transform-origin`, then `scale(1 + z^3.2 · 90)` for scroll progress `z`. Zooming into a
   counter (the hole of an O) would land on white — always pick a stem.
-  **Reset the layer to `transform:none` before measuring**, or a resize in the middle of the zoom (the mobile URL bar
-  hides and shows while scrolling) measures the 90× word and shrinks it to 1px — the page looks broken when the visitor
-  scrolls back. Ignore height-only changes under ~140px, and run the scroll handler directly (not behind a rAF flag).
+  **Make it one-way.** Played backwards the zoom looks broken (a ghosted hero, giant white letter slabs), so at
+  progress ≥ .8 add `.intro-done` (intro `height:auto`, stage `position:relative;height:100svh`, knockout `display:none`,
+  hero visible), clear the inline styles the scroll loop set, and `scrollTo({top:max(0,y-removed),behavior:'instant'})`
+  (`instant`, because the page uses smooth scrolling; `overflow-anchor:none` so the browser does not adjust it too).
+  **Reset the layer to `transform:none` before measuring**, or a resize in the middle of the zoom (the mobile URL bar)
+  measures the 90× word and shrinks it to 1px. Ignore height-only changes under ~140px, skip fitting once the intro is
+  done, and run the scroll handler directly (not behind a rAF flag).
 * **XP engine**: `addXP(n, why)` → toast, level thresholds (`0,100,250,450,700`), level-up toast + canvas confetti,
   header bar and score panel re-render. Sections with `data-xp` give +5 the first time 25% is visible.
 * **Quests mirror the app**: same goals and XP (+25 each, +50 for all four, streak day at two).
@@ -123,7 +132,8 @@ English). Copy-ready code is in `references/components.md`; `screenshots/` shows
 
 - [ ] Every feature number and XP rule matches the shipping app; download link points to the current release.
 - [ ] Knockout zoom lands inside a letter stem (video, not white) at all viewport sizes; word refits on resize, and
-      scrolling back up after a mid-zoom resize shows the full word again.
+      after the zoom has played, scrolling back up shows the finished hero (no reverse zoom).
+- [ ] The radio finds and plays a live station for every genre chip and skips dead streams.
 - [ ] Every sound starts only on click, the page never plays two music sources by surprise, and each clip is credited.
 - [ ] Tour: four screens swap without flashing; tab buttons scroll to the right slot.
 - [ ] All four quests can be completed; bonus, streak toast, level-up and confetti fire once.

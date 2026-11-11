@@ -449,6 +449,56 @@ function staticBurst(){
   g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.8);
   src.buffer=buf;src.connect(bp).connect(g).connect(actx.destination);src.start();
 }
-genres.forEach((b,i)=>b.onclick=()=>{needle.style.left=(8+i*84/(genres.length-1))+'%';staticBurst();
-  stName.textContent='Tuning…';setTimeout(()=>{stName.textContent=b.textContent;stEq.classList.add('on')},900)});
+// live stations from the same open API the app uses (Radio Browser: CORS-open, no key, several mirrors)
+const RB=['de1.api.radio-browser.info','de2.api.radio-browser.info','fi1.api.radio-browser.info','at1.api.radio-browser.info'];
+async function rbSearch(tag){
+  const q=new URLSearchParams({order:'clickcount',reverse:'true',hidebroken:'true',is_https:'true',limit:'40'});
+  if(tag!=='all')q.set('tag',tag);
+  for(const h of RB){
+    try{
+      const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),8000);
+      const r=await fetch(`https://${h}/json/stations/search?${q}`,{signal:ctl.signal});clearTimeout(to);
+      if(!r.ok)continue;
+      const seen=new Set();
+      return (await r.json()).filter(s=>s.url_resolved?.startsWith('https://')&&!s.hls&&s.name?.trim()&&!seen.has(s.url_resolved)&&seen.add(s.url_resolved))
+        .map(s=>({name:s.name.trim().slice(0,60),url:s.url_resolved,country:s.country,codec:s.codec,bitrate:s.bitrate}));
+    }catch(e){}
+  }
+  throw new Error('offline');
+}
+const radio=new Audio();let stations=[],si=0,token=0;
+function playStation(i,tries=0){                       // a dead stream skips ahead, at most 5 times
+  si=(i+stations.length)%stations.length;const s=stations[si],tok=++token;
+  stName.textContent=s.name;stInfo.textContent='Connecting…';stopMusicAndNature();radio.src=s.url;
+  radio.play().then(()=>{if(tok===token){stInfo.textContent=`${s.country} · ${s.codec} ${s.bitrate} kbps · live`;radioDeck.classList.add('playing')}})
+    .catch(()=>{if(tok===token&&tries<5)playStation(si+1,tries+1)});
+}
+genres.forEach((b,i)=>b.onclick=async()=>{
+  needle.style.left=(8+i*84/(genres.length-1))+'%';staticBurst();stName.textContent='Tuning…';
+  const tok=++token;stations=await rbSearch(b.dataset.g).catch(()=>[]);
+  if(tok===token&&stations.length)playStation(0);
+});
+```
+
+### One-way knockout
+
+```css
+html{overflow-anchor:none}
+.intro-done .intro{height:auto}
+.intro-done .intro-stage{position:relative;height:100svh;min-height:620px}
+.intro-done .knock,.intro-done .knock-labels{display:none}
+.intro-done .shade{opacity:1}
+.intro-done .hero{opacity:1;transform:none;pointer-events:auto}
+```
+
+```js
+let introDone=false;
+function finishIntro(){
+  if(introDone)return;introDone=true;
+  const removed=intro.offsetHeight-innerHeight,y=scrollY;
+  document.documentElement.classList.add('intro-done');
+  hero.style.opacity=hero.style.transform=shade.style.opacity='';   // inline styles would beat the class
+  scrollTo({top:Math.max(0,y-removed),behavior:'instant'});
+}
+// in onScroll(): if(!introDone){ …p…; if(p>=.8){finishIntro();return onScroll()} …zoom… }
 ```

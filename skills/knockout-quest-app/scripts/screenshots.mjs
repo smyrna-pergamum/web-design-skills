@@ -107,12 +107,16 @@ await shot('19-mobile-outside', top('#outside') + '+380', 1400);
 await shot('20-mobile-sound', top('#music') + '-90', 1400);
 await shot('21-mobile-get', top('#get'), 1400);
 
-// regression: a resize in the middle of the zoom must not shrink the word when scrolling back
+// regression: the knockout plays once. After scrolling past it and back, the top shows the finished hero
+// (no reverse zoom, no ghosted hero, no shrunken word), even with a resize on the way.
+await load();
 await evalJs('scrollTo(0, innerHeight*.9)'); await sleep(400);
 await viewport(390, 760, true); await sleep(300); await viewport(400, 844, true); await sleep(300);
+await evalJs('scrollTo(0, document.querySelector("#app").offsetTop)'); await sleep(600);
 await evalJs('scrollTo(0,0)'); await sleep(600);
-const fs = await evalJs('parseFloat(document.querySelector("#knockWord").style.fontSize)');
-console.log('knockout font after scroll-back', fs); if (fs < 50) errs.push('knockout word shrank: ' + fs);
+const st = JSON.parse(await evalJs('JSON.stringify({done:document.documentElement.classList.contains("intro-done"),hero:getComputedStyle(document.querySelector("#hero")).opacity,knock:getComputedStyle(document.querySelector("#knock")).display})'));
+console.log('scroll-back state', JSON.stringify(st));
+if (!st.done || st.hero !== '1' || st.knock !== 'none') errs.push('scroll-back state wrong: ' + JSON.stringify(st));
 await shot('22-mobile-scroll-back', '0', 400);
 const sw = await evalJs('document.documentElement.scrollWidth');
 console.log('mobile scrollWidth', sw, 'errors', JSON.stringify(errs));

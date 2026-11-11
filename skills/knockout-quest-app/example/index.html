@@ -303,6 +303,14 @@ h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.045em;line-
 .station b{display:block;font-size:15px}
 .station small{color:var(--muted);font-size:12px}
 .station .eq{margin-left:auto}
+.station .st-txt{min-width:0}
+.station b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.radio-ctl{gap:10px}
+.skip-btn{width:42px;height:42px;border-radius:50%;background:#ffffff12;border:1px solid #ffffff24;display:grid;place-items:center}
+.skip-btn svg{width:16px;height:16px}
+.skip-btn:hover{background:#ffffff1f}
+.radio.playing .needle{animation:needle 2.4s ease-in-out infinite}
+@keyframes needle{50%{margin-left:-3px}}
 .genres{display:flex;flex-wrap:wrap;gap:6px}
 .genres button{padding:7px 12px;border-radius:99px;border:1px solid #ffffff2e;font-size:13px;font-weight:800;color:#dfe4ea}
 .genres button[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
@@ -390,6 +398,14 @@ footer{padding:70px 0 40px}
 
 .reveal{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
 .reveal.in{opacity:1;transform:none}
+
+/* ---------- intro finished (one-way knockout) ---------- */
+html{overflow-anchor:none}
+.intro-done .intro{height:auto}
+.intro-done .intro-stage{position:relative;height:100vh;height:100svh;min-height:620px}
+.intro-done .knock,.intro-done .knock-labels{display:none}
+.intro-done .shade{opacity:1}
+.intro-done .hero{opacity:1;transform:none;pointer-events:auto}
 
 /* ---------- reduced motion ---------- */
 .rm .intro{height:auto}
@@ -733,11 +749,17 @@ footer{padding:70px 0 40px}
         <div class="deck-head"><span class="mono">Internet radio · ~50,000 stations</span></div>
         <h3>Music for the road.</h3>
         <div class="tuner" aria-hidden="true"><div class="scale"></div><div class="needle" id="needle"></div><div class="freq"><span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108</span></div></div>
-        <div class="station" id="station"><span class="logo-sq">FM</span><div><b id="stName">All stations</b><small id="stInfo">Tap a genre to tune in</small></div><span class="eq" id="stEq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+        <div class="station" id="station" aria-live="polite"><span class="logo-sq">FM</span><div class="st-txt"><b id="stName">Top stations</b><small id="stInfo">Press play or pick a genre</small></div><span class="eq" id="stEq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+        <div class="bar-row radio-ctl">
+          <button class="skip-btn" id="radioPrev" aria-label="Previous station"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z" fill="currentColor"/></svg></button>
+          <button class="play" id="radioPlay" aria-label="Play the radio"><svg viewBox="0 0 24 24"><path id="radioIcon" d="M8 5v14l11-7z" fill="currentColor"/></svg></button>
+          <button class="skip-btn" id="radioNext" aria-label="Next station"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z" fill="currentColor"/></svg></button>
+          <span class="time" id="stCount" style="margin-left:auto"></span>
+        </div>
         <div class="genres" id="genres" role="group" aria-label="Genres">
           <button aria-pressed="true" data-g="all">All</button><button aria-pressed="false" data-g="pop">pop</button><button aria-pressed="false" data-g="rock">rock</button><button aria-pressed="false" data-g="dance">dance</button><button aria-pressed="false" data-g="chillout">chillout</button><button aria-pressed="false" data-g="lofi">lofi</button><button aria-pressed="false" data-g="jazz">jazz</button><button aria-pressed="false" data-g="classical">classical</button><button aria-pressed="false" data-g="news">news</button>
         </div>
-        <p class="small">Search by name, genre and country in the community-run Radio Browser directory. HTTPS streams only, no account. The web tuner is a demo; the app plays the live stations.</p>
+        <p class="small">Live stations from the community-run Radio Browser directory — the same open API the app uses. Only the genre is sent, HTTPS streams only, no account. The app also searches by name and country.</p>
       </article>
     </div>
     <p class="sound-credit">Previews from the app: “Meditation Impromptu 01” by Kevin MacLeod (incompetech.com, CC BY 3.0) and nature recordings from Wikimedia Commons — full credits in the footer.</p>
@@ -872,6 +894,7 @@ function step(){
 const intro=$('#top'),knock=$('#knock'),word=$('#knockWord'),kI=$('#kI'),labels=$('#knockLabels'),shade=$('#shade'),hero=$('#hero');
 let fitW=0,fitH=0;
 function fitWord(force){
+  if(introDone)return;                    /* knockout already played; nothing to fit */
   if(!force&&innerWidth===fitW&&Math.abs(innerHeight-fitH)<140)return;   /* ignore mobile URL-bar resizes */
   fitW=innerWidth;fitH=innerHeight;
   knock.style.transform='none';          /* measure unscaled, or a resize mid-zoom shrinks the word */
@@ -913,11 +936,23 @@ sBtns.forEach(b=>b.addEventListener('click',()=>{
 
 /* ---------- scroll loop ---------- */
 const prog=$('#progress'),privLines=$$('.priv-line');
+/* The knockout plays once. When the hero is fully in, the 300vh intro collapses to a normal 100vh hero and the
+   scroll position is shifted by the removed height, so the screen does not move. Scrolling back up then shows the
+   finished hero instead of replaying the zoom backwards (ghosted hero, giant white letter slabs). */
+let introDone=false;
+function finishIntro(){
+  if(introDone)return;introDone=true;
+  const removed=intro.offsetHeight-innerHeight,y=scrollY;
+  document.documentElement.classList.add('intro-done');
+  hero.style.opacity='';hero.style.transform='';shade.style.opacity='';
+  scrollTo({top:Math.max(0,y-removed),behavior:'instant'});
+}
 function onScroll(){
   const vh=innerHeight;
   prog.style.transform=`scaleX(${scrollY/(document.documentElement.scrollHeight-vh)})`;
-  if(!RM){
+  if(!RM&&!introDone){
     const r=intro.getBoundingClientRect(),p=clamp(-r.top/(intro.offsetHeight-vh));
+    if(p>=.8){finishIntro();return onScroll();}
     const z=clamp(p/.55);
     knock.style.transform=`scale(${1+Math.pow(z,3.2)*90})`;
     knock.style.opacity=1-clamp((p-.42)/.14);
@@ -1029,7 +1064,7 @@ const music=new Audio('assets/sound/meditation-impromptu-01.m4a');music.loop=tru
 const mDeck=$('#music'),mBtn=$('#musicPlay'),mIcon=$('#musicIcon'),mSeek=$('#musicSeek'),mTime=$('#musicTime');
 const PLAY='M8 5v14l11-7z',PAUSE='M7 5h4v14H7zM13 5h4v14h-4z';
 function setMusic(on){
-  if(on){music.play().then(firstListen).catch(()=>{});}else music.pause();
+  if(on){stopOthers('music');music.play().then(firstListen).catch(()=>{});}else music.pause();
   mDeck.classList.toggle('playing',on);mIcon.setAttribute('d',on?PAUSE:PLAY);mBtn.setAttribute('aria-label',(on?'Pause':'Play')+' meditation music');
 }
 mBtn.addEventListener('click',()=>setMusic(music.paused));
@@ -1047,7 +1082,7 @@ vol.addEventListener('input',()=>nat.volume=+vol.value);
 $$('.tile').forEach(t=>t.addEventListener('click',()=>{
   const on=t.getAttribute('aria-pressed')!=='true';
   $$('.tile').forEach(x=>x.setAttribute('aria-pressed','false'));
-  if(on){t.setAttribute('aria-pressed','true');nat.src=SOUNDS[t.dataset.sound];nat.play().then(firstListen).catch(()=>{});}
+  if(on){stopOthers('nat');t.setAttribute('aria-pressed','true');nat.src=SOUNDS[t.dataset.sound];nat.play().then(firstListen).catch(()=>{});}
   else nat.pause();
 }));
 
@@ -1063,14 +1098,68 @@ function staticBurst(){
     src.buffer=buf;src.connect(bp).connect(g).connect(actx.destination);src.start();
   }catch(e){}
 }
-const G={all:['All stations','Top stations near you'],pop:['Pop','Hits for a brisk walk'],rock:['Rock','Guitars for the last kilometre'],dance:['Dance','Beats for interval runs'],chillout:['Chillout','Easy tempo for a long walk'],lofi:['Lofi','Soft beats for stretching'],jazz:['Jazz','Smooth company for the evening'],classical:['Classical','Calm strings and piano'],news:['News','Stay informed on the go']};
+/* Live internet radio, same as the app: Radio Browser (radio-browser.info), a free community directory with an
+   open API and no key. Only the genre is sent; HTTPS streams only; several public mirrors are tried in turn. */
+const RB=['de1.api.radio-browser.info','de2.api.radio-browser.info','fi1.api.radio-browser.info','at1.api.radio-browser.info'];
+const radio=new Audio();radio.preload='none';
+const rDeck=$('#radio'),rBtn=$('#radioPlay'),rIcon=$('#radioIcon'),stName=$('#stName'),stInfo=$('#stInfo'),stEq=$('#stEq'),stCount=$('#stCount');
+let stations=[],si=0,genre='all',rToken=0;
+async function rbSearch(tag){
+  const q=new URLSearchParams({order:'clickcount',reverse:'true',hidebroken:'true',is_https:'true',limit:'40'});
+  if(tag!=='all')q.set('tag',tag);
+  for(const h of RB){
+    try{
+      const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),8000);
+      const r=await fetch(`https://${h}/json/stations/search?${q}`,{signal:ctl.signal});clearTimeout(to);
+      if(!r.ok)continue;
+      const seen=new Set();
+      return (await r.json()).filter(s=>s.url_resolved&&s.url_resolved.startsWith('https://')&&!s.hls&&s.name&&s.name.trim()&&!seen.has(s.url_resolved)&&seen.add(s.url_resolved))
+        .map(s=>({name:s.name.trim().slice(0,60),url:s.url_resolved,country:s.country||'',codec:s.codec||'',bitrate:s.bitrate||0}));
+    }catch(e){}
+  }
+  throw new Error('offline');
+}
+function radioUI(state){
+  const on=state==='on';rDeck.classList.toggle('playing',on);stEq.classList.toggle('on',on);
+  rIcon.setAttribute('d',on||state==='load'?PAUSE:PLAY);rBtn.setAttribute('aria-label',on?'Stop the radio':'Play the radio');
+  stCount.textContent=stations.length?(si+1)+' / '+stations.length:'';
+}
+function stopOthers(keep){
+  /* music and a nature sound may mix; the radio plays alone */
+  if(keep==='radio'&&!music.paused)setMusic(false);
+  if(keep==='radio'&&!nat.paused){nat.pause();$$('.tile').forEach(x=>x.setAttribute('aria-pressed','false'))}
+  if(keep!=='radio'&&!radio.paused){radio.pause();radio.removeAttribute('src');radio.load();radioUI('off')}
+}
+function playStation(i,tries=0){
+  if(!stations.length)return;
+  si=(i+stations.length)%stations.length;const s=stations[si],tok=++rToken;
+  stName.textContent=s.name;stInfo.textContent='Connecting…';radioUI('load');
+  stopOthers('radio');radio.src=s.url;
+  radio.play().then(()=>{if(tok!==rToken)return;
+    stInfo.textContent=[s.country,s.codec&&(s.codec+(s.bitrate?' '+s.bitrate+' kbps':''))].filter(Boolean).join(' · ')+' · live';
+    radioUI('on');firstListen();
+  }).catch(()=>{if(tok!==rToken)return;
+    if(tries<5)playStation(si+1,tries+1);else{stInfo.textContent='These streams did not answer — try another genre';radioUI('off')}
+  });
+}
+async function tune(tag,i){
+  genre=tag;rToken++;$('#needle').style.left=(8+i*(84/(gBtns.length-1)))+'%';
+  staticBurst();radio.pause();radioUI('load');stName.textContent='Tuning…';stInfo.textContent='Searching Radio Browser for “'+tag+'”';stCount.textContent='';
+  const tok=rToken;
+  try{stations=await rbSearch(tag)}catch(e){stations=[]}
+  if(tok!==rToken)return;
+  if(!stations.length){stName.textContent='No connection';stInfo.textContent='Radio Browser could not be reached — the app keeps trying other mirrors';radioUI('off');return}
+  playStation(0);
+}
 const gBtns=$$('#genres button');
-gBtns.forEach((b,i)=>b.addEventListener('click',()=>{
-  gBtns.forEach(x=>x.setAttribute('aria-pressed',x===b));
-  $('#needle').style.left=(8+i*(84/(gBtns.length-1)))+'%';
-  staticBurst();$('#stEq').classList.remove('on');$('#stName').textContent='Tuning…';$('#stInfo').textContent='Searching Radio Browser for “'+b.dataset.g+'”';
-  setTimeout(()=>{const g=G[b.dataset.g];$('#stName').textContent=g[0];$('#stInfo').textContent=g[1]+' · live in the app';$('#stEq').classList.add('on');firstListen()},900);
-}));
+gBtns.forEach((b,i)=>b.addEventListener('click',()=>{gBtns.forEach(x=>x.setAttribute('aria-pressed',x===b));tune(b.dataset.g,i)}));
+rBtn.addEventListener('click',()=>{
+  if(!radio.paused||rDeck.classList.contains('playing')){rToken++;radio.pause();stInfo.textContent='Stopped';radioUI('off');return}
+  if(stations.length)playStation(si);else tune(genre,gBtns.findIndex(b=>b.dataset.g===genre));
+});
+$('#radioPrev').addEventListener('click',()=>playStation(si-1));
+$('#radioNext').addEventListener('click',()=>playStation(si+1));
+radio.addEventListener('error',()=>{if(rDeck.classList.contains('playing')){stInfo.textContent='Stream dropped — next station';playStation(si+1)}});
 
 renderXP();
 })();
