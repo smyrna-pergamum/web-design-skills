@@ -8,7 +8,7 @@
    cp -r templates/skill-template skills/<new-name>
    ```
 
-3. **Write `SKILL.md`.** Keep the frontmatter `name` equal to the folder name. The `description` decides when Claude uses
+3. **Write `SKILL.md`.** Keep the frontmatter `name` equal to the folder name. The `description` decides when an agent uses
    the skill: say what the style looks like and which requests should trigger it. Fill every section of the template;
    delete hints you don't need.
 4. **Build the reference site** in `example/index.html`: one self-contained file (inline CSS/JS, Google Fonts only), with

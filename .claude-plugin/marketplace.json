@@ -4,8 +4,8 @@
     "name": "smyrna-pergamum"
   },
   "metadata": {
-    "description": "A library of AI web design skills: each one teaches Claude a complete visual style, with a reference site, screenshots and copy-ready components.",
-    "version": "1.0.0"
+    "description": "A library of web design skills for AI coding agents: each one teaches a complete visual style, with a reference site, screenshots and copy-ready components.",
+    "version": "1.1.0"
   },
   "plugins": [
     {
@@ -87,6 +87,15 @@
       "strict": false,
       "skills": [
         "./skills/aperture-topology-story"
+      ]
+    },
+    {
+      "name": "flight-path-roadmap",
+      "description": "Gamified travel-themed homepages: a plane cursor with contrails, a scroll-driven flight through numbered gates with HUD, miles, unlock toasts and a landing scene, a boarding-pass hero form, ticket pricing tiers, a split-flap departure board and a scholarship impact section.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/flight-path-roadmap"
       ]
     }
   ]

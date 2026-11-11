@@ -1,8 +1,13 @@
 # Web Design Skills
 
-A library of AI web design skills for Claude (Claude Code, Agent Skills). Each skill teaches the model one complete visual
-style: the rules, the section patterns, the interactions and a finish checklist, plus a working reference site,
+A library of web design skills for **AI coding agents**: Claude (Claude Code, Claude apps), ChatGPT / OpenAI Codex,
+Cursor, GitHub Copilot, Gemini CLI and any other agent that can read Markdown. Each skill teaches the agent one complete
+visual style: the rules, the section patterns, the interactions and a finish checklist, plus a working reference site,
 screenshots and copy-ready components.
+
+Skills use the open **Agent Skills** format: a folder with a `SKILL.md` (YAML front matter + Markdown instructions) and
+optional `references/`, `scripts/` and assets. Agents with native skill support load them automatically when a request
+matches; every other agent can use the same files as plain instructions.
 
 **Gallery:** https://smyrna-pergamum.github.io/web-design-skills/
 
@@ -19,21 +24,54 @@ screenshots and copy-ready components.
 | <img src="skills/gravity-lens-space/screenshots/01-hero-blackhole.png" width="260" alt="Gravity lens space website"> | [**gravity-lens-space**](skills/gravity-lens-space) | Cinematic space and launch sites: light editorial page with mouse-reactive dark windows — WebGL black-hole lens, hover video previews, floating astronaut over giant words, time-dilation calculator, cursor-reactive headlines. EN/TR example. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/gravity-lens-space/example/) |
 | <img src="skills/network-journey-webgl/screenshots/01-hero.png" width="260" alt="Immersive 3D network website"> | [**network-journey-webgl**](skills/network-journey-webgl) | Immersive scroll-driven 3D product sites (igloo.inc tradition) built to production standards: one Three.js world behind HTML chapters, HUD and pinned tags, particle morphs, quality tiers, strict CSP, Playwright + axe. Real LANORA site, SvelteKit. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/network-journey-webgl/example/) |
 | <img src="skills/aperture-topology-story/screenshots/01-hero.png" width="260" alt="Dark grid website with a glowing node topology hero"> | [**aperture-topology-story**](skills/aperture-topology-story) | Developer-tool, data and OSINT product sites: dark engineering grid, glowing SVG node topology with travelling packets, then a pinned scroll story where an aperture opens from the central node onto a light paper workspace and cards act out the workflow. Architecture switcher, catalog table, terminal. Real OSINT-Book site, EN/TR. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/aperture-topology-story/example/) |
+| <img src="skills/flight-path-roadmap/screenshots/01-hero.png" width="260" alt="Travel-themed homepage with a plane cursor and boarding pass"> | [**flight-path-roadmap**](skills/flight-path-roadmap) | Gamified travel-style homepages for study-abroad, relocation and travel brands: the cursor becomes a plane with contrails, scrolling flies it through numbered gates (HUD, miles, unlock toasts, landing with confetti), boarding-pass hero form over a video loop, ticket pricing with "price on request", split-flap board, scholarship section. Fictional Atlasio, EN. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/flight-path-roadmap/example/) |
 
 ## Install
 
-### As a Claude Code plugin marketplace
+Pick the agent you use. Every option below uses the same folder from `skills/`; nothing is Claude-only.
+
+### Claude Code (plugin marketplace)
 
 ```bash
 /plugin marketplace add smyrna-pergamum/web-design-skills
 /plugin install paper-notebook-landing@web-design-skills
 ```
 
-Each skill is its own plugin, so you install only the styles you want.
+Each skill is its own plugin, so you install only the styles you want. Or copy a folder into `~/.claude/skills/`
+(all projects) or `.claude/skills/` (one project).
 
-### By copying a folder
+### Claude apps (claude.ai, desktop)
 
-Copy any folder from `skills/` into `~/.claude/skills/` (all projects) or `.claude/skills/` inside one project.
+Zip one skill folder (the zip must contain the folder with its `SKILL.md`) and upload it under **Settings → Capabilities
+→ Skills**.
+
+### Codex, Cursor, GitHub Copilot, Gemini CLI and other Agent Skills tools
+
+Copy the skill folder into the skills directory your tool reads. Typical project-level locations:
+
+| Agent | Project folder |
+|---|---|
+| OpenAI Codex (CLI / IDE) | `.agents/skills/` or `.codex/skills/` |
+| Cursor | `.cursor/skills/` |
+| GitHub Copilot | `.github/skills/` |
+| Gemini CLI | `.gemini/skills/` |
+
+Locations and user-level folders change between versions, so check your tool's documentation if a skill is not picked
+up. To fetch one skill without cloning the whole repository:
+
+```bash
+npx degit smyrna-pergamum/web-design-skills/skills/flight-path-roadmap .agents/skills/flight-path-roadmap
+```
+
+### ChatGPT and agents without skill support
+
+Give the agent the files directly:
+
+1. Attach or paste `SKILL.md` and `references/components.md` of the style you want (optionally `example/index.html`).
+2. Ask: *"Follow the attached SKILL.md exactly and build …"*.
+
+For repository-based agents (Aider, Cline, Windsurf, Zed and others) you can also add a line to your project's
+`AGENTS.md` or rules file: *"For web design work, follow `skills/<name>/SKILL.md` and its `references/`."*
 
 ## Use
 
@@ -41,15 +79,18 @@ Ask for the style by what it looks like, or name the skill:
 
 > Redesign https://example.com with the paper-notebook-landing skill. Keep all real content.
 
+> Build our study-abroad agency's homepage with the flight-path-roadmap skill. Our process has six steps: …
+
 ## Repository layout
 
 ```
 web-design-skills/
-├── .claude-plugin/marketplace.json   # one plugin entry per skill
+├── .claude-plugin/marketplace.json   # Claude Code marketplace: one plugin entry per skill
+├── AGENTS.md                         # instructions for any agent working inside this repository
 ├── index.html                        # gallery page (GitHub Pages)
 ├── skills/
 │   └── <skill-name>/
-│       ├── SKILL.md                  # the skill itself (required)
+│       ├── SKILL.md                  # the skill itself (required, Agent Skills format)
 │       ├── README.md                 # human-facing overview
 │       ├── references/               # detailed component code
 │       ├── example/index.html        # reference site
@@ -74,7 +115,10 @@ Fonts are loaded from Google Fonts under their own licenses.
 
 ### Türkçe özet
 
-Web Design Skills, Claude için web tasarım skill'lerinden oluşan bir kütüphane. Her skill bir görsel tarzı baştan sona öğretir: kurallar, bölüm
-kalıpları, etkileşimler, kontrol listesi, örnek site ve ekran görüntüleri. Kurulum:
-`/plugin marketplace add smyrna-pergamum/web-design-skills`, ardından istediğiniz skill için `/plugin install <ad>@web-design-skills`.
+Web Design Skills, yapay zekâ kodlama ajanları (Claude, ChatGPT / Codex, Cursor, GitHub Copilot, Gemini CLI ve
+Markdown okuyabilen diğerleri) için web tasarım skill'lerinden oluşan bir kütüphane. Her skill bir görsel tarzı baştan
+sona öğretir: kurallar, bölüm kalıpları, etkileşimler, kontrol listesi, örnek site ve ekran görüntüleri. Skill'ler açık
+Agent Skills formatında (`SKILL.md`). Claude Code: `/plugin marketplace add smyrna-pergamum/web-design-skills`, ardından
+`/plugin install <ad>@web-design-skills`. Diğer ajanlar: klasörü aracın skills dizinine kopyalayın ya da `SKILL.md`
+dosyasını sohbete ekleyin.
 Yeni tasarım eklemek için [CONTRIBUTING.md](CONTRIBUTING.md) dosyasına bakın.

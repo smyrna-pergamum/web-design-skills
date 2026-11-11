@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlasio Flight Path</title>
+<meta name="description" content="Atlasio (fictional): your route to a German university, told as a scroll-driven flight with a plane cursor, boarding pass and gamified roadmap.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B1530; --night:#060C1F; --ink:#0E1A3A; --line:rgba(255,255,255,.12);
+  --orange:#FF6B2C; --orange-2:#FF9A5C; --cream:#FFF5EA; --paper:#FFFBF6;
+  --text:#EAF0FF; --muted:#9AA8C8; --dark-text:#14203F; --dark-muted:#5B6787;
+  --sky:#7FB7FF; --ok:#3DDC97;
+  --display:"Bricolage Grotesque", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, monospace;
+  --r:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--night);color:var(--text);font-family:var(--display);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+.mono{font-family:var(--mono);letter-spacing:.04em}
+.wrap{width:min(1240px,100% - 32px);margin-inline:auto}
+
+/* ============ CURSOR PLANE ============ */
+@media (pointer:fine){
+  body.plane-cursor, body.plane-cursor a, body.plane-cursor button, body.plane-cursor label{cursor:none}
+}
+#trail{position:fixed;inset:0;pointer-events:none;z-index:90}
+#cursor{position:fixed;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;pointer-events:none;z-index:91;display:none;transition:opacity .2s}
+#cursor .p{width:100%;height:100%;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+#cursor .ring{position:absolute;inset:-10px;border:2px solid var(--orange);border-radius:50%;opacity:0;transform:scale(.6);transition:.25s}
+#cursor.hover .ring{opacity:1;transform:scale(1)}
+#cursor.hover .p{transform:scale(1.25)}
+#cursor.hide{opacity:0}
+body.plane-cursor #cursor{display:block}
+
+/* ============ NAV ============ */
+nav.top{position:fixed;inset:0 0 auto 0;z-index:50;padding:14px 0;transition:background .3s, backdrop-filter .3s}
+nav.top.scrolled{background:rgba(6,12,31,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;gap:28px}
+.logo{font-weight:800;font-size:26px;letter-spacing:-.02em;display:flex;align-items:baseline;gap:1px}
+.logo b{color:var(--orange)}
+.logo small{font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:8px;font-weight:400}
+nav .links{display:flex;gap:22px;font-size:15px;color:var(--muted);margin-left:auto;white-space:nowrap}
+.logo small{white-space:nowrap}
+@media (max-width:1100px){.logo small{display:none}}
+nav .links a:hover{color:#fff}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:999px;font-weight:600;border:0;background:var(--orange);color:#fff;transition:transform .2s, box-shadow .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px -10px var(--orange)}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--text)}
+.btn.ghost:hover{border-color:#fff;box-shadow:none}
+.btn.sm{padding:10px 18px;font-size:14px}
+.lang{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;gap:6px}
+.lang span{padding:4px 7px;border-radius:6px}
+.lang .on{background:var(--orange);color:#fff}
+@media (max-width:900px){nav .links,.lang{display:none} nav .btn{margin-left:auto}}
+
+/* ============ HERO ============ */
+.hero{position:relative;min-height:100svh;display:grid;align-items:center;padding:120px 0 80px;overflow:hidden;
+  background:radial-gradient(1200px 700px at 80% 10%, #1A2C66 0%, transparent 60%), radial-gradient(900px 600px at 0% 100%, #2a1a3a 0%, transparent 60%), var(--night)}
+#stars{display:none}
+.bg-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.hero-shade{position:absolute;inset:0;z-index:0;background:
+  linear-gradient(90deg, rgba(6,12,31,.94) 0%, rgba(6,12,31,.72) 45%, rgba(6,12,31,.28) 100%),
+  linear-gradient(180deg, rgba(6,12,31,.55) 0%, transparent 25%, transparent 70%, var(--night) 100%)}
+.pass-wrap{filter:drop-shadow(0 40px 50px rgba(0,0,0,.55))}
+@media (min-width:521px){
+  .pass{--m:radial-gradient(circle 12px at calc(100% - 121px) 0, transparent 97%, #000 100%) top/100% 51% no-repeat, radial-gradient(circle 12px at calc(100% - 121px) 100%, transparent 97%, #000 100%) bottom/100% 51% no-repeat;
+    -webkit-mask:var(--m);mask:var(--m);box-shadow:none}
+  .pass .stub::before,.pass .stub::after{display:none}
+}
+.hero-arc{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--orange-2);display:inline-flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 4px rgba(255,107,44,.25);animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.35}}
+h1{font-size:clamp(44px,6.6vw,96px);line-height:.95;letter-spacing:-.035em;font-weight:800;margin:20px 0 22px}
+h1 em{font-style:normal;color:var(--orange);position:relative;white-space:nowrap}
+h1 em svg{position:absolute;left:0;bottom:-.12em;width:100%;height:.35em;overflow:visible}
+.lead{font-size:clamp(17px,1.5vw,20px);line-height:1.55;color:var(--muted);max-width:540px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.micro{margin-top:16px;font-size:13px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap}
+.micro span::before{content:"✓ ";color:var(--ok)}
+
+/* boarding pass */
+.pass{position:relative;background:var(--paper);color:var(--dark-text);border-radius:var(--r);display:grid;grid-template-columns:1fr 120px;box-shadow:0 40px 80px -30px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.05);transform:rotate(2deg);transition:transform .5s cubic-bezier(.2,1.4,.4,1)}
+.pass:hover,.pass:focus-within{transform:rotate(0) translateY(-4px)}
+.pass .main{padding:24px 24px 22px}
+.pass .stub{border-left:2px dashed #D9CFC2;padding:24px 14px;display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;position:relative}
+.pass .stub::before,.pass .stub::after{content:"";position:absolute;left:-13px;width:24px;height:24px;border-radius:50%;background:var(--night)}
+.pass .stub::before{top:-12px}.pass .stub::after{bottom:-12px}
+.pass-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.pass-head .logo{font-size:20px;color:var(--dark-text)}
+.pass-head .mono{font-size:11px;color:var(--dark-muted)}
+.route{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:10px;margin-bottom:18px}
+.route .code{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.route .to{text-align:right}
+.route .mid{padding-bottom:10px;color:var(--orange)}
+.route select{appearance:none;border:0;background:transparent;font-size:12px;color:var(--dark-muted);font-family:var(--mono);padding:2px 0;border-bottom:1px dashed #cbbfae;max-width:100%}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+.f label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--dark-muted);text-transform:uppercase;margin-bottom:4px}
+.f input,.f select{width:100%;border:0;border-bottom:1.5px solid #E2D8CB;background:transparent;padding:6px 0;font-weight:600;font-size:16px;color:var(--dark-text);outline:none;cursor:text}
+.f select{cursor:pointer}
+.f input:focus,.f select:focus{border-color:var(--orange)}
+.f.full{grid-column:1/-1}
+.pass .btn{width:100%;justify-content:center;margin-top:18px}
+.barcode{width:100%;height:120px;background:repeating-linear-gradient(90deg,var(--dark-text) 0 2px,transparent 2px 4px,var(--dark-text) 4px 5px,transparent 5px 9px,var(--dark-text) 9px 12px,transparent 12px 14px);border-radius:4px;opacity:.85}
+.stub .seat{font-size:28px;font-weight:800}
+.stub .mono{font-size:10px;color:var(--dark-muted)}
+.stamp{position:absolute;right:140px;top:46%;transform:rotate(-14deg) scale(2.4);opacity:0;pointer-events:none;border:3px solid var(--ok);color:var(--ok);font-family:var(--mono);font-weight:600;font-size:15px;padding:6px 12px;border-radius:10px;letter-spacing:.1em;transition:all .45s cubic-bezier(.2,1.6,.4,1);background:rgba(255,251,246,.6)}
+.pass.checked .stamp{opacity:1;transform:rotate(-14deg) scale(1)}
+.scroll-hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:10px;text-transform:uppercase}
+.scroll-hint i{width:22px;height:36px;border:1.5px solid var(--muted);border-radius:12px;position:relative}
+.scroll-hint i::after{content:"";position:absolute;left:50%;top:7px;width:4px;height:7px;margin-left:-2px;border-radius:2px;background:var(--orange);animation:wheel 1.6s infinite}
+@keyframes wheel{to{transform:translateY(12px);opacity:0}}
+@media (max-width:980px){.hero .wrap{grid-template-columns:1fr}.pass{transform:none;max-width:520px}.scroll-hint{display:none}}
+@media (max-width:520px){.pass{grid-template-columns:1fr}.pass .stub{display:none}.stamp{right:20px}.route .code{font-size:38px}}
+
+/* trust strip */
+.strip{border-block:1px solid var(--line);background:#081129;overflow:hidden;white-space:nowrap}
+.strip .track{display:inline-flex;gap:48px;padding:16px 0;animation:marq 40s linear infinite;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.strip b{color:#fff;font-weight:600}
+.strip .track span::before{content:"✈ ";color:var(--orange)}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* ============ FLIGHT ROADMAP ============ */
+#flight{position:relative;height:1000vh}
+.sticky{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:linear-gradient(#0A1430,#14244F 70%,#1E2E5C)}
+.sunrise{position:absolute;inset:0;background:linear-gradient(#2B3E7A 0%,#E8836A 62%,#FFC58F 100%);opacity:0;pointer-events:none}
+.farclouds{position:absolute;inset:0;pointer-events:none;will-change:transform}
+.farclouds i{position:absolute;border-radius:50%;background:rgba(255,255,255,.07);filter:blur(18px)}
+#world{position:absolute;left:0;top:0;will-change:transform;overflow:visible}
+.st-label{font-family:var(--display);font-weight:600;fill:#fff}
+.st-sub{font-family:var(--mono);fill:#9AA8C8}
+.st-node circle.halo{transition:r .4s}
+.hud{position:absolute;top:72px;left:0;right:0;z-index:5;pointer-events:none}
+.hud .wrap{display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;background:rgba(6,12,31,.55);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;padding:12px 18px}
+.hud .flightno{font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.5}
+.hud .flightno b{color:#fff;font-size:14px}
+.prog{display:flex;align-items:center;gap:0}
+.prog .dot{flex:0 0 auto;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--night);transition:.35s}
+.prog .bar{flex:1;height:2px;background:var(--line);position:relative;overflow:hidden}
+.prog .bar i{position:absolute;inset:0;background:var(--orange);transform-origin:left;transform:scaleX(0)}
+.prog .dot.on{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 0 0 5px rgba(255,107,44,.2)}
+.miles{text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.miles b{display:block;font-size:22px;color:#fff;font-weight:600;letter-spacing:.06em}
+@media (max-width:700px){.hud .wrap{grid-template-columns:1fr auto}.hud .flightno{display:none}.prog .dot{width:20px;height:20px;font-size:8px}}
+
+.card{position:absolute;left:max(16px,calc((100vw - 1240px)/2));bottom:28px;z-index:5;width:min(460px,calc(100vw - 32px));background:rgba(255,251,246,.97);color:var(--dark-text);border-radius:var(--r);padding:22px 22px 18px;box-shadow:0 30px 60px -20px rgba(0,0,0,.6);transition:transform .45s cubic-bezier(.2,1.3,.4,1),opacity .3s}
+.card.swap{transform:translateY(14px) rotate(-1deg);opacity:0}
+.card .gate{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--dark-muted);letter-spacing:.12em}
+.card .gate b{color:var(--orange)}
+.card h3{font-size:30px;letter-spacing:-.02em;line-height:1.05;margin:8px 0 4px}
+.card .tags{font-family:var(--mono);font-size:12px;color:var(--dark-muted);margin-bottom:10px}
+.card p{font-size:15px;line-height:1.5;color:#33405F}
+.missions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.missions span{font-size:13px;padding:6px 10px;border-radius:999px;background:#F1E8DC;color:var(--dark-text);display:inline-flex;gap:6px;align-items:center}
+.missions span::before{content:"";width:14px;height:14px;border-radius:50%;border:1.5px solid #C9BBA8;transition:.3s}
+.missions span.done{background:#E2F8EE}
+.missions span.done::before{background:var(--ok);border-color:var(--ok);box-shadow:inset 0 0 0 3px #E2F8EE}
+.card .xp{margin-top:14px;display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;color:var(--dark-muted)}
+.card .xp b{color:var(--orange)}
+@media (max-width:700px){.card{padding:16px;bottom:16px}.card h3{font-size:24px}.card p{font-size:14px}}
+
+.toast{position:absolute;right:max(16px,calc((100vw - 1240px)/2));top:150px;z-index:6;background:var(--night);border:1px solid var(--orange);border-radius:14px;padding:12px 16px;display:flex;gap:12px;align-items:center;transform:translateX(130%);transition:transform .5s cubic-bezier(.2,1.4,.4,1);max-width:calc(100vw - 32px)}
+.toast.show{transform:none}
+.toast .medal{width:38px;height:38px;border-radius:50%;background:var(--orange);display:grid;place-items:center;font-family:var(--mono);font-weight:600;font-size:13px}
+.toast small{display:block;font-family:var(--mono);font-size:10px;color:var(--orange-2);letter-spacing:.14em}
+.toast b{font-size:15px}
+@media (max-width:700px){.toast{top:150px}}
+
+.landing{position:absolute;inset:0;z-index:7;display:grid;place-items:center;text-align:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .5s}
+.landing.show{opacity:1;pointer-events:auto}
+.landing .box{background:rgba(6,12,31,.82);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:28px;padding:40px clamp(20px,5vw,56px);max-width:620px}
+.landing h2{font-size:clamp(34px,5vw,60px);letter-spacing:-.03em;line-height:1;margin:14px 0}
+.landing p{color:var(--muted);font-size:17px;line-height:1.5;margin-bottom:24px}
+.landing .badges{display:flex;justify-content:center;gap:6px;margin-bottom:22px;flex-wrap:wrap}
+.landing .badges i{width:30px;height:30px;border-radius:50%;background:var(--orange);display:grid;place-items:center;font-style:normal;font-family:var(--mono);font-size:10px}
+#confetti{position:absolute;inset:0;pointer-events:none;z-index:8}
+.flight-intro{position:absolute;inset:0;display:grid;place-items:center;text-align:center;z-index:4;pointer-events:none;transition:opacity .4s}
+.flight-intro h2{font-size:clamp(34px,5vw,64px);letter-spacing:-.03em;line-height:1.02}
+.flight-intro p{color:var(--muted);margin-top:12px;font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+
+/* ============ LIGHT SECTIONS ============ */
+.light{background:var(--cream);color:var(--dark-text)}
+section.block{padding:clamp(80px,10vw,140px) 0}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--orange)}
+h2.big{font-size:clamp(36px,5vw,68px);letter-spacing:-.035em;line-height:1;font-weight:800;margin:14px 0 18px;max-width:900px}
+.sub{font-size:18px;line-height:1.55;color:var(--dark-muted);max-width:620px}
+.dark .sub{color:var(--muted)}
+
+/* classes */
+.classes{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px;align-items:stretch}
+.ticket{position:relative;border-radius:var(--r);padding:32px;display:flex;flex-direction:column;gap:18px;transition:transform .35s cubic-bezier(.2,1.4,.4,1)}
+.ticket:hover{transform:translateY(-6px) rotate(-.5deg)}
+.ticket.eco{background:#fff;border:1.5px solid #EADFD1}
+.ticket.biz{background:var(--navy);color:var(--text)}
+.ticket .cls{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;letter-spacing:.14em}
+.ticket .cls b{color:var(--orange)}
+.ticket h3{font-size:34px;letter-spacing:-.02em;line-height:1.05}
+.ticket .price{font-size:54px;font-weight:800;letter-spacing:-.04em;line-height:1}
+.ticket .price small{font-size:15px;font-weight:400;letter-spacing:0;color:var(--dark-muted)}
+.ticket.biz .price small{color:var(--muted)}
+.ticket ul{list-style:none;display:grid;gap:10px;font-size:16px}
+.ticket li{display:flex;gap:10px}
+.ticket li::before{content:"✈";color:var(--orange);font-size:13px;margin-top:3px}
+.ticket .perf{border-top:2px dashed #E3D7C7;margin:4px -32px;position:relative}
+.ticket.biz .perf{border-color:rgba(255,255,255,.15)}
+.ticket .perf::before,.ticket .perf::after{content:"";position:absolute;top:-13px;width:24px;height:24px;border-radius:50%;background:var(--cream)}
+.ticket .perf::before{left:-12px}.ticket .perf::after{right:-12px}
+.ticket .btn{align-self:flex-start;margin-top:auto}
+@media (max-width:1080px){.classes{grid-template-columns:1fr;max-width:620px}}
+
+/* departure board */
+.dark{background:var(--night);color:var(--text)}
+.board{margin-top:48px;background:#05091A;border:1px solid var(--line);border-radius:18px;padding:18px;overflow-x:auto}
+.board table{width:100%;border-collapse:separate;border-spacing:0 8px;min-width:640px}
+.board th{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:#F5C451;text-align:left;font-weight:400;padding:0 10px}
+.board td{padding:0 10px}
+.flap{display:inline-flex;gap:3px}
+.flap span{display:inline-grid;place-items:center;width:28px;height:40px;background:#111833;border-radius:4px;font-family:var(--mono);font-size:20px;font-weight:600;color:#F7F3E8;position:relative;box-shadow:inset 0 -1px 0 rgba(0,0,0,.6)}
+.flap span::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:#05091A}
+.status{font-family:var(--mono);font-size:13px;padding:6px 10px;border-radius:6px;background:rgba(61,220,151,.12);color:var(--ok)}
+.status.blink{animation:blink 1.4s infinite}
+.board .note{font-size:12px;color:var(--muted);margin-top:10px;font-family:var(--mono)}
+
+/* services marquee */
+.service-row{overflow:hidden;margin-top:48px;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.service-track{display:flex;gap:16px;width:max-content;animation:marq 60s linear infinite}
+.service-row:hover .service-track{animation-play-state:paused}
+.svc{width:260px;background:#fff;border:1.5px solid #EADFD1;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:transform .3s}
+.svc:hover{transform:translateY(-4px);border-color:var(--orange)}
+.svc .cat{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--orange);text-transform:uppercase}
+.svc h4{font-size:18px;line-height:1.25;flex:1}
+.svc .pr{font-family:var(--mono);font-size:14px;color:var(--dark-muted)}
+.svc .pr b{color:var(--dark-text);font-size:18px}
+
+/* altitude = language */
+.alt{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center}
+.altimeter{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:end;height:340px;padding:20px;border-radius:var(--r);background:linear-gradient(#0D1A3E,#1A2A5A);position:relative;overflow:hidden}
+.altimeter .col{position:relative;border-radius:12px 12px 4px 4px;background:rgba(255,255,255,.08);height:var(--h);display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:12px 4px;transition:background .3s;cursor:pointer}
+.altimeter .col:hover,.altimeter .col.on{background:var(--orange)}
+.altimeter .col b{font-size:28px;font-weight:800}
+.altimeter .col small{font-family:var(--mono);font-size:10px;opacity:.8}
+.altimeter .col .mini{position:absolute;top:-30px;width:28px;opacity:0;transition:.3s}
+.altimeter .col:hover .mini,.altimeter .col.on .mini{opacity:1;transform:translateY(-4px)}
+.alt-info{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:16px;min-height:2.6em}
+@media (max-width:860px){.alt{grid-template-columns:1fr}}
+
+/* visa stamps */
+.stamps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:56px}
+.vstamp{background:#fff;border-radius:var(--r);padding:28px;position:relative;border:1.5px solid #EADFD1;transition:transform .4s cubic-bezier(.2,1.4,.4,1)}
+.vstamp:nth-child(1){transform:rotate(-2deg)}.vstamp:nth-child(2){transform:rotate(1.5deg)}.vstamp:nth-child(3){transform:rotate(-1deg)}
+.vstamp:hover{transform:rotate(0) translateY(-6px)}
+.vstamp .seal{width:84px;height:84px;border-radius:50%;border:3px double var(--c);color:var(--c);display:grid;place-items:center;text-align:center;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;transform:rotate(-12deg);margin-bottom:18px;line-height:1.3}
+.vstamp h3{font-size:24px;letter-spacing:-.02em;margin-bottom:8px}
+.vstamp p{color:var(--dark-muted);line-height:1.5}
+.vstamp .k{display:inline-block;margin-top:14px;font-family:var(--mono);font-size:13px;color:var(--dark-text);background:#F1E8DC;padding:6px 10px;border-radius:8px}
+@media (max-width:860px){.stamps{grid-template-columns:1fr}}
+
+/* honest compare */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:48px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+.vs div{padding:28px}
+.vs .them{background:#0A1230;color:var(--muted)}
+.vs .us{background:linear-gradient(135deg,#FF6B2C,#FF8E4A);color:#fff}
+.vs h4{font-family:var(--mono);font-size:12px;letter-spacing:.16em;margin-bottom:16px;text-transform:uppercase}
+.vs ul{list-style:none;display:grid;gap:12px;font-size:17px}
+.vs .them li::before{content:"— ";opacity:.5}
+.vs .us li::before{content:"✓ ";font-weight:800}
+@media (max-width:760px){.vs{grid-template-columns:1fr}}
+
+/* impact / scholarship */
+.impact{position:relative;overflow:hidden;padding:clamp(100px,12vw,170px) 0;background:var(--night);color:var(--text)}
+.impact .bg-video{z-index:0}
+.impact .shade{position:absolute;inset:0;z-index:0;background:
+  linear-gradient(90deg, rgba(6,12,31,.94) 0%, rgba(6,12,31,.7) 42%, rgba(6,12,31,.1) 100%),
+  linear-gradient(180deg, var(--night) 0%, transparent 15%, transparent 85%, var(--night) 100%)}
+.impact .wrap{position:relative;z-index:1}
+.impact h2.big span{color:var(--orange)}
+.impact .sub{color:#C3CDE6}
+.isteps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px;max-width:980px}
+.istep{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:22px}
+.istep .n{font-family:var(--mono);font-size:12px;color:var(--orange-2);letter-spacing:.14em}
+.istep h4{font-size:21px;margin:10px 0 6px;letter-spacing:-.01em}
+.istep p{font-size:15px;line-height:1.5;color:#C3CDE6}
+.iform{display:flex;gap:10px;margin-top:36px;max-width:560px;flex-wrap:wrap}
+.iform input{flex:1 1 240px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:14px 20px;color:#fff;outline:none;cursor:text}
+.iform input::placeholder{color:#9AA8C8}
+.iform input:focus{border-color:var(--orange)}
+.iform.sent input{display:none}
+.inote{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:14px}
+@media (max-width:860px){.isteps{grid-template-columns:1fr}}
+
+/* premium ticket */
+.ticket.first{background:linear-gradient(160deg,#1B1530 0%,#0B1530 60%,#2A1E12 100%);color:var(--text);border:1.5px solid rgba(233,196,106,.45);box-shadow:0 30px 60px -30px rgba(233,196,106,.45)}
+.ticket.first .cls b,.ticket.first li::before{color:#E9C46A}
+.ticket.first .price{font-size:40px;color:#E9C46A}
+.ticket.first .price small{color:var(--muted)}
+.ticket.first .perf{border-color:rgba(233,196,106,.3)}
+.ticket.first .btn{background:#E9C46A;color:#1B1530}
+.ticket.first .btn:hover{box-shadow:0 12px 30px -10px #E9C46A}
+.ticket .badge{position:absolute;top:-13px;right:24px;background:#E9C46A;color:#1B1530;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;padding:6px 12px;border-radius:999px}
+
+/* final cta */
+.final{position:relative;text-align:center;padding:clamp(100px,14vw,180px) 0;overflow:hidden;background:radial-gradient(800px 400px at 50% 100%, #3A2140, transparent 70%), var(--night)}
+.final h2{font-size:clamp(44px,7vw,110px);letter-spacing:-.04em;line-height:.95;font-weight:800}
+.final h2 span{color:var(--orange)}
+.final p{color:var(--muted);font-size:18px;margin:20px auto 34px;max-width:560px}
+.takeoff{position:relative}
+.takeoff svg{position:absolute;left:-46px;top:50%;width:32px;margin-top:-16px;transition:transform .8s cubic-bezier(.6,0,.4,1),opacity .8s}
+.takeoff:hover svg{transform:translate(260px,-120px) rotate(-30deg);opacity:0}
+.runway{margin:60px auto 0;width:min(700px,90%);height:6px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 40px,transparent 40px 70px);border-radius:3px;opacity:.5}
+footer{background:#040817;color:var(--muted);padding:40px 0;font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s, transform .8s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .strip .track,.service-track{animation:none}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="trail" aria-hidden="true"></canvas>
+<div id="cursor" aria-hidden="true">
+  <div class="ring"></div>
+  <svg class="p" viewBox="-44 -44 88 88"><g id="cplane"><path d="M38 0 C38 -3 34 -4 28 -4 L6 -4 L-8 -30 L-16 -30 L-8 -4 L-24 -4 L-32 -15 L-38 -15 L-34 0 L-38 15 L-32 15 L-24 4 L-8 4 L-16 30 L-8 30 L6 4 L28 4 C34 4 38 3 38 0Z" fill="#FF6B2C" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/></g></svg>
+</div>
+
+<nav class="top" id="nav">
+  <div class="wrap">
+    <a href="#top" class="logo">Atlas<b>io</b><small>STUDY · GERMANY</small></a>
+    <div class="links">
+      <a href="#flight">Your route</a>
+      <a href="#plans">Plans</a>
+      <a href="#services">Services</a>
+      <a href="#visas">Visas</a>
+      <a href="#scholarship">Scholarship</a>
+    </div>
+    <a href="#boarding" class="btn sm">Check in free</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <video class="bg-video" src="assets/hero-wing.mp4" poster="assets/hero-wing.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <svg class="hero-arc" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M-40 820 C 300 520, 700 180, 1500 120" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.5" stroke-dasharray="4 10"/>
+  </svg>
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Gate open · Winter semester 2027/28</span>
+      <h1>Your ticket to a <em>German
+        <svg viewBox="0 0 300 30" preserveAspectRatio="none"><path d="M4 22 C 80 4, 200 4, 296 18" fill="none" stroke="#FF6B2C" stroke-width="5" stroke-linecap="round"/></svg></em> university.</h1>
+      <p class="lead">From choosing a programme to your first day on campus: Atlasio turns your path to Germany into a route you can see, tick off step by step – and never fly alone.</p>
+      <div class="cta-row">
+        <a href="#boarding" class="btn">Start your free journey →</a>
+        <a href="#flight" class="btn ghost">See the route</a>
+      </div>
+      <div class="micro"><span>1 journey free</span><span>No card needed</span><span>Guidance in your language</span></div>
+    </div>
+
+    <div class="pass-wrap">
+    <form class="pass" id="boarding" autocomplete="off">
+      <div class="main">
+        <div class="pass-head"><span class="logo">Atlas<b>io</b></span><span class="mono">BOARDING PASS · ATL 2027</span></div>
+        <div class="route">
+          <div>
+            <div class="code" id="fromCode">IST</div>
+            <select id="from" aria-label="Departure city">
+              <option value="IST">Istanbul</option><option value="ESB">Ankara</option><option value="ADB">İzmir</option>
+              <option value="CAI">Cairo</option><option value="IKA">Tehran</option><option value="DEL">Delhi</option><option value="LOS">Lagos</option><option value="BAK">Baku</option>
+            </select>
+          </div>
+          <div class="mid"><svg width="44" height="20" viewBox="0 0 44 20"><path d="M2 10h30" stroke="currentColor" stroke-width="2" stroke-dasharray="3 4"/><path d="M42 10 34 4v12z" fill="currentColor"/></svg></div>
+          <div class="to">
+            <div class="code" id="toCode">BER</div>
+            <select id="to" aria-label="Destination city">
+              <option value="BER">Berlin</option><option value="MUC">Munich</option><option value="HAM">Hamburg</option>
+              <option value="CGN">Cologne</option><option value="FRA">Frankfurt</option><option value="AAH">Aachen</option><option value="STR">Stuttgart</option>
+            </select>
+          </div>
+        </div>
+        <div class="fields">
+          <div class="f full"><label for="pname">Passenger</label><input id="pname" placeholder="Your first name" maxlength="22"></div>
+          <div class="f"><label for="field">Programme</label>
+            <select id="field"><option>Informatics</option><option>Mechanical Eng.</option><option>Medicine</option><option>Business</option><option>Architecture</option><option>Electrical Eng.</option><option>Psychology</option></select></div>
+          <div class="f"><label for="deg">Degree</label>
+            <select id="deg"><option>Bachelor</option><option>Master</option><option>Foundation year</option></select></div>
+        </div>
+        <button class="btn" type="submit">Check in & take off ✈</button>
+      </div>
+      <div class="stub">
+        <div><div class="mono">SEAT</div><div class="seat">8A</div></div>
+        <div class="barcode"></div>
+        <div class="mono">GATE<br><b style="font-size:16px;color:var(--orange)">01</b></div>
+      </div>
+      <div class="stamp">CHECKED IN ✓</div>
+    </form>
+    </div>
+  </div>
+  <div class="scroll-hint"><i></i>Scroll to take off</div>
+</header>
+
+<div class="strip"><div class="track" id="stripTrack">
+  <span><b>3,000+</b> programmes</span><span><b>200+</b> universities</span><span><b>8</b> gates to campus</span><span>uni-assist · VPD · visa portal tracked</span><span>Blocked account, visa, housing – one place</span><span>Example figures for a fictional brand</span>
+</div></div>
+
+<!-- ============ FLIGHT ROADMAP ============ -->
+<section id="flight" aria-label="Your route to Germany in 8 steps">
+  <div class="sticky" id="sticky">
+    <div class="sunrise" id="sunrise"></div>
+    <div class="farclouds" id="far"></div>
+    <svg id="world" aria-hidden="true"></svg>
+
+    <div class="flight-intro" id="intro">
+      <div><h2>8 gates.<br>1 destination: your campus.</h2><p>Scroll – you are flying</p></div>
+    </div>
+
+    <div class="hud">
+      <div class="wrap">
+        <div class="flightno"><b id="hudRoute">IST → BER</b><br>Passenger: <span data-name>Guest</span></div>
+        <div class="prog" id="prog"></div>
+        <div class="miles">ATLASIO MILES<b id="miles">0000</b></div>
+      </div>
+    </div>
+
+    <div class="card" id="card" aria-live="polite">
+      <div class="gate"><span>GATE <b id="cGate">00</b> / 08</span><span id="cState">RUNWAY</span></div>
+      <h3 id="cTitle">Ready for take-off</h3>
+      <div class="tags" id="cTags">Boarding complete</div>
+      <p id="cText">Every step of your application is a gate. Reach all eight and you land at your university.</p>
+      <div class="missions" id="cMissions"></div>
+      <div class="xp"><span>Reward</span><b id="cXp">+0 miles</b></div>
+    </div>
+
+    <div class="toast" id="toast"><div class="medal" id="tMedal">01</div><div><small>GATE UNLOCKED</small><b id="tText">Choose a university</b></div></div>
+
+    <canvas id="confetti"></canvas>
+    <div class="landing" id="landing">
+      <div class="box">
+        <span class="eyebrow">Landed · <span id="landCity">Berlin</span></span>
+        <h2>Welcome to Germany, <span data-name style="color:var(--orange)">Guest</span>!</h2>
+        <div class="badges" id="landBadges"></div>
+        <p>8 of 8 gates – that is your path with Atlasio. Start your real journey now: free, with a checklist, deadlines and an AI assistant.</p>
+        <a href="#plans" class="btn">Start my journey →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLASSES ============ -->
+<section class="light block" id="plans">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Choose your class</span>
+      <h2 class="big">Fly solo, with a co-pilot – or first class.</h2>
+      <p class="sub">The platform is yours – free. When it gets tricky, an Atlasio advisor comes on board. And if you want everything handled, fly Premium.</p>
+    </div>
+    <div class="classes">
+      <div class="ticket eco reveal">
+        <div class="cls"><span>ECONOMY · SELF-SERVICE</span><b>ATL-FREE</b></div>
+        <h3>Track your own journey</h3>
+        <div class="price">€0 <small>for 1 active journey</small></div>
+        <div class="perf"></div>
+        <ul>
+          <li>A personal checklist for your goal</li>
+          <li>Documents & deadlines in one place</li>
+          <li>AI assistant for your questions</li>
+          <li>3,000+ programmes with admission filters</li>
+        </ul>
+        <a href="#boarding" class="btn">Check in free →</a>
+      </div>
+      <div class="ticket biz reveal">
+        <div class="cls"><span>BUSINESS · WITH AN ADVISOR</span><b>ATL-PLUS</b></div>
+        <h3>Continue with an Atlasio advisor</h3>
+        <div class="price">from €20 <small>single service · or full package</small></div>
+        <div class="perf"></div>
+        <ul>
+          <li>Profile review & target university list (3–5)</li>
+          <li>uni-assist tracking & weekly reports</li>
+          <li>Visa appointment & interview practice</li>
+          <li>Airport pick-up & your first week in Germany</li>
+        </ul>
+        <a href="#services" class="btn">Book a consultation →</a>
+      </div>
+      <div class="ticket first reveal">
+        <span class="badge">PREMIUM</span>
+        <div class="cls"><span>FIRST CLASS · ALL-INCLUSIVE</span><b>ATL-FIRST</b></div>
+        <h3>Premium: we fly with you – door to door</h3>
+        <div class="price">Price on request <small>tailored to your profile</small></div>
+        <div class="perf"></div>
+        <ul>
+          <li>One personal advisor from day 1 to campus</li>
+          <li>Full application package incl. translation & apostille</li>
+          <li>Visa, financial planning & family guidance</li>
+          <li>Housing, pick-up & orientation programme</li>
+        </ul>
+        <a href="#plans" class="btn">Ask for a price →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DEPARTURE BOARD ============ -->
+<section class="dark block">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Departure board</span>
+      <h2 class="big">On time. Transparent. No agency fog.</h2>
+    </div>
+    <div class="board reveal">
+      <table>
+        <thead><tr><th>FLIGHT</th><th>VALUE</th><th>DESTINATION</th><th>STATUS</th></tr></thead>
+        <tbody id="boardBody"></tbody>
+      </table>
+      <div class="note">Example figures: Atlasio is a fictional brand.</div>
+    </div>
+    <div class="vs reveal">
+      <div class="them"><h4>Classic agency</h4><ul><li>You send documents – and wait</li><li>Status only when you ask</li><li>One package price for everything</li><li>Ends at the admission letter</li></ul></div>
+      <div class="us"><h4>Atlasio</h4><ul><li>You see every step live on your route</li><li>Deadlines & documents tracked for you</li><li>Free platform, advice à la carte</li><li>Support through registration, bank & campus</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BORDSERVICE ============ -->
+<section class="light block" id="services">
+  <div class="wrap reveal">
+    <span class="kicker">On-board service · Marketplace</span>
+    <h2 class="big">Everything your journey needs – price on the tag.</h2>
+    <p class="sub">Certified translation, language courses, visa advice, housing and more – from vetted partner agencies. Example prices.</p>
+  </div>
+  <div class="service-row"><div class="service-track" id="services"></div></div>
+</section>
+
+<!-- ============ LANGUAGE = ALTITUDE ============ -->
+<section class="dark block">
+  <div class="wrap alt">
+    <div class="reveal">
+      <span class="kicker">Learn German</span>
+      <h2 class="big">Your language level is your altitude.</h2>
+      <p class="sub">German from A1 to B2: video courses, live classes, a speaking club and intensive formats. The higher you climb, the more programmes open up.</p>
+      <div class="alt-info mono" id="altInfo">↑ Tap a level</div>
+    </div>
+    <div class="altimeter reveal" id="altimeter"></div>
+  </div>
+</section>
+
+<!-- ============ VISA ============ -->
+<section class="light block" id="visas">
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Visa routes</span>
+      <h2 class="big">Which stamp belongs in your passport?</h2>
+      <p class="sub">Requirements, processing times and the documents German consulates ask for. Check the official amounts before you publish.</p>
+    </div>
+    <div class="stamps">
+      <div class="vstamp reveal" style="--c:#FF6B2C"><div class="seal">VISA<br>TYPE D<br>STUDY</div><h3>Student visa</h3><p>A national visa for your studies, including proof of health insurance.</p><span class="k">Blocked account</span></div>
+      <div class="vstamp reveal" style="--c:#2D6CDF"><div class="seal">LANGUAGE<br>COURSE<br>VISA</div><h3>Language course visa</h3><p>For intensive German courses before your degree and the switch to a student residence permit.</p><span class="k">Before your degree</span></div>
+      <div class="vstamp reveal" style="--c:#1F9D6B"><div class="seal">JOB<br>SEEKER<br>BLUE CARD</div><h3>Work & job search</h3><p>For graduates who stay: job-seeker visa, EU Blue Card thresholds and Opportunity Card points.</p><span class="k">After graduation</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ IMPACT / STIPENDIUM ============ -->
+<section class="impact" id="scholarship">
+  <video class="bg-video" src="assets/impact-window.mp4" poster="assets/impact-window.jpg" autoplay muted loop playsinline preload="none" aria-hidden="true"></video>
+  <div class="shade" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="reveal">
+      <span class="kicker">Impact · Atlasio Scholarship</span>
+      <h2 class="big">Talent should never be grounded by a <span>ticket price</span>.</h2>
+      <p class="sub">Some students have the grades, the drive and the plan – but not the budget. The Atlasio Scholarship opens the way to Germany for students who would otherwise stay on the ground.</p>
+    </div>
+    <div class="isteps">
+      <div class="istep reveal"><span class="n">STEP 01</span><h4>Create your journey</h4><p>A free profile with your subject and target university – the base of your application.</p></div>
+      <div class="istep reveal"><span class="n">STEP 02</span><h4>Show your motivation</h4><p>Tell us why Germany and what you want to change. Upload your documents right there.</p></div>
+      <div class="istep reveal"><span class="n">STEP 03</span><h4>Selection & departure</h4><p>A jury selects the scholars – they fly with full Atlasio support.</p></div>
+    </div>
+    <form class="iform reveal" id="iform">
+      <input type="email" placeholder="Your email" aria-label="Email for the scholarship" required>
+      <button class="btn" type="submit">Keep me posted →</button>
+    </form>
+    <div class="inote">Criteria, amounts and deadlines are published when applications open. Demo form: nothing is sent.</div>
+  </div>
+</section>
+
+<!-- ============ FINAL ============ -->
+<section class="final">
+  <div class="wrap">
+    <span class="eyebrow">Final call</span>
+    <h2 style="margin-top:18px">Ready for take-off,<br><span data-name>Guest</span>?</h2>
+    <p>One journey is free. Your plan is ready in minutes – and from today you see every step to campus.</p>
+    <a href="#boarding" class="btn takeoff"><svg viewBox="-44 -44 88 88"><use href="#cplane"/></svg>Start your free journey →</a>
+    <div class="runway"></div>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>Atlasio is a fictional brand · Example content</span><span>flight-path-roadmap · web-design-skills</span></div></footer>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fine = matchMedia('(pointer: fine)').matches;
+const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}} };
+
+/* ---------- data ---------- */
+const CITY = {IST:'Istanbul',ESB:'Ankara',ADB:'İzmir',CAI:'Cairo',IKA:'Tehran',DEL:'Delhi',LOS:'Lagos',BAK:'Baku',BER:'Berlin',MUC:'Munich',HAM:'Hamburg',CGN:'Cologne',FRA:'Frankfurt',AAH:'Aachen',STR:'Stuttgart'};
+const STATIONS = [
+ {t:'Choose a university',tags:'Programme · Subject · Admission',p:'Find the programme that fits you among 3,000+ – filtered by degree, foundation year and grade requirements.',m:['Pick a subject','Check admission','Shortlist (3–5)']},
+ {t:'Application & documents',tags:'uni-assist · VPD · Portals',p:'We tell you exactly which documents you need and how to translate and apostille them.',m:['Checklist','Translation','uni-assist']},
+ {t:'Funding & insurance',tags:'Blocked account · Scholarship · Insurance',p:'Blocked account, scholarships and health insurance – with a budget plan before it gets serious.',m:['Plan budget','Blocked account','Insurance']},
+ {t:'Visa & preparation',tags:'Visa portal · Appointment',p:'Visa appointment, interview practice and complete financial documents. No surprises at the consulate.',m:['Book appointment','Practise interview','Documents complete']},
+ {t:'Housing',tags:'Dorm · Shared flat · Private',p:'Dorm, shared flat or private: start early and never miss a student-housing deadline.',m:['Apply for dorm','Flat search']},
+ {t:'Enrolment',tags:'Registration · Student ID',p:'Enrol, pay the semester fee, collect your student ID – officially a student.',m:['Enrolment','Semester fee']},
+ {t:'Arrival',tags:'Registration · Bank · Residence',p:'Airport pick-up, city registration, bank account and residence permit – your first week, sorted.',m:['City registration','Bank account','Residence permit']},
+ {t:'Student life',tags:'Orientation · Courses · Transport',p:'Orientation week, courses, semester ticket – and a network that is already there.',m:['Orientation week','Pick courses']},
+];
+const SERVICES = [
+ ['Translation','Certified translation of diploma & transcript','€25','per page'],
+ ['Language course','Intensive German A1–B2 (8 weeks)','€450','per course'],
+ ['Education advice','Shortlist of universities & programmes','€120','one-off'],
+ ['Airport pick-up','Frankfurt, Munich, Düsseldorf, Cologne/Bonn','€60','per pick-up'],
+ ['Housing','Help finding student housing','€200','one-off'],
+ ['Visa advice','National student visa application','€150','per application'],
+ ['Language course','TestDaF exam preparation','€180','per course'],
+ ['Education advice','Full application package (up to 5 universities)','€350','one-off'],
+ ['Translation','Certified translation of a birth certificate','€20','per document'],
+];
+
+/* ---------- personalisation ---------- */
+const state = { name: store.get('atl_name') || '', from: store.get('atl_from') || 'IST', to: store.get('atl_to') || 'BER' };
+function paint(){
+  document.querySelectorAll('[data-name]').forEach(e => e.textContent = state.name || 'Guest');
+  $('#fromCode').textContent = state.from; $('#toCode').textContent = state.to;
+  $('#hudRoute').textContent = state.from + ' → ' + state.to;
+  $('#landCity').textContent = CITY[state.to];
+  if (window.__labels) { __labels.from.textContent = CITY[state.from]; __labels.to.textContent = CITY[state.to]; }
+}
+$('#pname').value = state.name; $('#from').value = state.from; $('#to').value = state.to;
+$('#pname').addEventListener('input', e => { state.name = e.target.value.trim(); paint(); });
+$('#from').addEventListener('change', e => { state.from = e.target.value; paint(); });
+$('#to').addEventListener('change', e => { state.to = e.target.value; paint(); });
+$('#boarding').addEventListener('submit', e => {
+  e.preventDefault();
+  store.set('atl_name', state.name); store.set('atl_from', state.from); store.set('atl_to', state.to);
+  $('#boarding').classList.add('checked');
+  setTimeout(() => $('#flight').scrollIntoView({behavior: reduce ? 'auto' : 'smooth'}), 900);
+});
+
+/* ---------- nav ---------- */
+addEventListener('scroll', () => $('#nav').classList.toggle('scrolled', scrollY > 30), {passive:true});
+$('#stripTrack').innerHTML += $('#stripTrack').innerHTML;
+
+/* ---------- stars ---------- */
+(function stars(){
+  const c = $('#stars'), x = c.getContext('2d'); let pts = [];
+  function size(){ const r = c.getBoundingClientRect(); c.width = r.width*devicePixelRatio; c.height = r.height*devicePixelRatio;
+    pts = Array.from({length: Math.round(r.width*r.height/5000)}, () => ({x:Math.random()*c.width, y:Math.random()*c.height, r:Math.random()*1.3*devicePixelRatio+.3, t:Math.random()*6})); }
+  size(); addEventListener('resize', size);
+  (function draw(t){ x.clearRect(0,0,c.width,c.height);
+    for (const p of pts){ x.globalAlpha = reduce ? .6 : .35 + .35*Math.sin(t/900 + p.t); x.fillStyle = '#fff'; x.beginPath(); x.arc(p.x,p.y,p.r,0,7); x.fill(); }
+    if (!reduce) requestAnimationFrame(draw); })(0);
+})();
+
+/* ---------- cursor plane + contrail ---------- */
+if (fine && !reduce){
+  document.body.classList.add('plane-cursor');
+  const cur = $('#cursor'), plane = cur.querySelector('.p'), cv = $('#trail'), cx = cv.getContext('2d');
+  let mx = innerWidth/2, my = innerHeight/2, px = mx, py = my, ang = 0, trail = [];
+  const fit = () => { cv.width = innerWidth*devicePixelRatio; cv.height = innerHeight*devicePixelRatio; };
+  fit(); addEventListener('resize', fit);
+  addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.classList.remove('hide'); }, {passive:true});
+  document.addEventListener('mouseleave', () => cur.classList.add('hide'));
+  document.addEventListener('mouseover', e => {
+    const t = e.target;
+    cur.classList.toggle('hover', !!t.closest('a,button,.col,.svc,.ticket'));
+    cur.classList.toggle('hide', !!t.closest('input,select'));
+  });
+  (function loop(){
+    const dx = mx - px, dy = my - py; px += dx*.22; py += dy*.22;
+    const sp = Math.hypot(dx,dy);
+    if (sp > 1.5){ const target = Math.atan2(dy,dx); let d = target - ang; d = Math.atan2(Math.sin(d), Math.cos(d)); ang += d*.18; }
+    cur.style.transform = `translate(${px}px,${py}px) rotate(${ang}rad)`;
+    const now = performance.now();
+    if (sp > 1) trail.push({x:px - Math.cos(ang)*18, y:py - Math.sin(ang)*18, a:ang, t:now});
+    trail = trail.filter(p => now - p.t < 650);
+    cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); cx.clearRect(0,0,innerWidth,innerHeight);
+    for (const off of [-11, 11]){
+      cx.beginPath();
+      trail.forEach((p,i) => { const ox = -Math.sin(p.a)*off, oy = Math.cos(p.a)*off; i ? cx.lineTo(p.x+ox,p.y+oy) : cx.moveTo(p.x+ox,p.y+oy); });
+      const g = trail.length ? cx.createLinearGradient(trail[0].x,trail[0].y,px,py) : null;
+      if (g){ g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(1,'rgba(255,255,255,.55)'); cx.strokeStyle = g; }
+      cx.lineWidth = 2; cx.lineCap = 'round'; cx.stroke();
+    }
+    requestAnimationFrame(loop);
+  })();
+}
+
+/* ---------- FLIGHT WORLD ---------- */
+const NS = 'http://www.w3.org/2000/svg', W = 4500, H = 1000;
+const svg = $('#world'); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+const el = (tag, attrs, parent = svg) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; };
+const WP = [[180,560],[640,330],[1100,210],[1560,370],[2020,190],[2480,340],[2940,170],[3400,310],[3860,220],[4320,560]];
+function catmull(p){ let d = `M${p[0][0]} ${p[0][1]}`; for (let i=0;i<p.length-1;i++){ const p0=p[i-1]||p[i],p1=p[i],p2=p[i+1],p3=p[i+2]||p2;
+  d += ` C${p1[0]+(p2[0]-p0[0])/6} ${p1[1]+(p2[1]-p0[1])/6} ${p2[0]-(p3[0]-p1[0])/6} ${p2[1]-(p3[1]-p1[1])/6} ${p2[0]} ${p2[1]}`; } return d; }
+const D = catmull(WP);
+
+// clouds in world
+for (let i=0;i<34;i++){ const g = el('g',{opacity:(.05+Math.random()*.1).toFixed(2)}); const cx0 = Math.random()*W, cy0 = 60+Math.random()*560, s = 40+Math.random()*70;
+  for (let j=0;j<4;j++) el('ellipse',{cx:cx0+j*s*.7, cy:cy0+(j%2?-s*.2:0), rx:s, ry:s*.55, fill:'#fff'}, g); }
+// ground: home + destination
+el('rect',{x:0,y:600,width:W,height:400,fill:'#0A132C',opacity:.0});
+const home = el('g',{fill:'#0A1330'}); [[40,520,60,80],[110,490,40,110],[160,540,70,60],[240,470,26,130],[280,530,90,70],[380,510,50,90]].forEach(r=>el('rect',{x:r[0],y:r[1],width:r[2],height:r[3],rx:3},home));
+el('rect',{x:0,y:600,width:700,height:12,fill:'#0A1330'});
+el('path',{d:'M120 606h460',stroke:'rgba(255,255,255,.35)','stroke-width':3,'stroke-dasharray':'26 18'});
+const dest = el('g',{fill:'#101C42'});
+[[3980,500,70,100],[4060,470,40,130],[4110,430,120,170],[4240,520,60,80],[4310,480,90,120],[4410,510,90,90]].forEach(r=>el('rect',{x:r[0],y:r[1],width:r[2],height:r[3],rx:3},dest));
+el('path',{d:'M4110 430 L4170 380 L4230 430Z'},dest); // uni roof
+for (let i=0;i<5;i++) el('rect',{x:4122+i*22,y:445,width:10,height:150,fill:'#1A2A5A'},dest);
+el('rect',{x:3800,y:600,width:700,height:12,fill:'#101C42'});
+el('rect',{x:3920,y:612,width:380,height:4,fill:'#000'}); el('rect',{x:3920,y:616,width:380,height:4,fill:'#DD0000'}); el('rect',{x:3920,y:620,width:380,height:4,fill:'#FFCE00'});
+const lFrom = el('text',{x:150,y:660,'font-size':28,class:'st-label'}); const lTo = el('text',{x:4000,y:670,'font-size':28,class:'st-label'});
+window.__labels = {from:lFrom,to:lTo};
+
+// paths
+el('path',{d:D,fill:'none',stroke:'rgba(255,255,255,.28)','stroke-width':3,'stroke-dasharray':'6 14','stroke-linecap':'round'});
+const done = el('path',{d:D,fill:'none',stroke:'#FF6B2C','stroke-width':5,'stroke-linecap':'round'});
+const L = done.getTotalLength(); done.style.strokeDasharray = L; done.style.strokeDashoffset = L;
+
+// station fractions
+const N = 1600, samples = []; for (let i=0;i<=N;i++){ const p = done.getPointAtLength(L*i/N); samples.push([p.x,p.y]); }
+const FR = WP.slice(1,9).map(([x,y]) => { let best=0,bd=1e9; samples.forEach((s,i)=>{const d=(s[0]-x)**2+(s[1]-y)**2; if(d<bd){bd=d;best=i;}}); return best/N; });
+const nodes = WP.slice(1,9).map(([x,y],i) => {
+  const g = el('g',{class:'st-node'});
+  const halo = el('circle',{cx:x,cy:y,r:18,fill:'rgba(255,107,44,.18)',class:'halo'},g);
+  const c = el('circle',{cx:x,cy:y,r:16,fill:'#0B1530',stroke:'rgba(255,255,255,.5)','stroke-width':2.5},g);
+  const n = el('text',{x:x,y:y+6,'text-anchor':'middle','font-size':15,fill:'#fff','font-family':'JetBrains Mono'},g); n.textContent = String(i+1).padStart(2,'0');
+  const up = i%2===0, ty = up ? y-44 : y+60;
+  const t = el('text',{x:x,y:ty,'text-anchor':'middle','font-size':28,class:'st-label'},g); t.textContent = STATIONS[i].t;
+  const s = el('text',{x:x,y:ty+(up?-34:30),'text-anchor':'middle','font-size':16,class:'st-sub'},g); s.textContent = STATIONS[i].tags;
+  if (up) s.setAttribute('y', ty-34);
+  return {halo,c};
+});
+// plane
+const pl = el('g',{});
+el('ellipse',{cx:-60,cy:0,rx:60,ry:5,fill:'rgba(255,255,255,.18)'},pl);
+el('path',{d:'M38 0 C38 -3 34 -4 28 -4 L6 -4 L-8 -30 L-16 -30 L-8 -4 L-24 -4 L-32 -15 L-38 -15 L-34 0 L-38 15 L-32 15 L-24 4 L-8 4 L-16 30 L-8 30 L6 4 L28 4 C34 4 38 3 38 0Z',fill:'#fff',stroke:'#FF6B2C','stroke-width':2,transform:'scale(1.7)'},pl);
+
+// far clouds layer
+const far = $('#far'); for (let i=0;i<26;i++){ const c = document.createElement('i'); const w = 120+Math.random()*260;
+  Object.assign(c.style,{left:(Math.random()*260)+'%',top:(5+Math.random()*60)+'%',width:w+'px',height:w*.45+'px'}); far.appendChild(c); }
+
+// HUD progress
+const prog = $('#prog'); const dots = [], bars = [];
+STATIONS.forEach((s,i) => { if (i){ const b = document.createElement('div'); b.className='bar'; b.innerHTML='<i></i>'; prog.appendChild(b); bars.push(b.firstChild); }
+  const d = document.createElement('div'); d.className='dot'; d.textContent = String(i+1).padStart(2,'0'); prog.appendChild(d); dots.push(d); });
+$('#landBadges').innerHTML = STATIONS.map((s,i)=>`<i title="${s.t}">${String(i+1).padStart(2,'0')}</i>`).join('');
+
+let scale = 1, vw = innerWidth, vh = innerHeight;
+function layout(){ vw = innerWidth; vh = $('#sticky').clientHeight; scale = vh / H; svg.setAttribute('width', W*scale); svg.setAttribute('height', vh); }
+layout(); addEventListener('resize', () => { layout(); last = -1; });
+
+let target = 0, cur = 0, last = -1, active = -2, landed = false;
+function readScroll(){ const s = $('#flight'); const r = s.getBoundingClientRect(); target = Math.min(1, Math.max(0, -r.top / (s.offsetHeight - vh))); }
+addEventListener('scroll', readScroll, {passive:true}); readScroll();
+
+function setCard(i){
+  const card = $('#card');
+  card.classList.add('swap');
+  setTimeout(() => {
+    if (i < 0){ $('#cGate').textContent='00'; $('#cState').textContent='RUNWAY'; $('#cTitle').textContent='Ready for take-off';
+      $('#cTags').textContent = 'Boarding complete'; $('#cText').textContent='Every step of your application is a gate. Reach all eight and you land at your university.';
+      $('#cMissions').innerHTML=''; $('#cXp').textContent='+0 miles'; }
+    else { const s = STATIONS[i]; $('#cGate').textContent = String(i+1).padStart(2,'0'); $('#cState').textContent = i===7 ? 'FINAL APPROACH' : 'REACHED ✓';
+      $('#cTitle').textContent = s.t; $('#cTags').textContent = s.tags; $('#cText').textContent = s.p;
+      $('#cMissions').innerHTML = s.m.map(m=>`<span>${m}</span>`).join(''); $('#cXp').textContent = `+${(i+1)*250} miles`;
+      [...$('#cMissions').children].forEach((m,k)=>setTimeout(()=>m.classList.add('done'), 250+k*220)); }
+    card.classList.remove('swap');
+  }, 220);
+}
+let toastT;
+function toast(i){ const t = $('#toast'); $('#tMedal').textContent = String(i+1).padStart(2,'0'); $('#tText').textContent = STATIONS[i].t;
+  t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove('show'), 1800); }
+
+function frame(){
+  cur += (target - cur) * (reduce ? 1 : .1);
+  if (Math.abs(cur - last) > 0.00005){
+    last = cur;
+    const p = cur, len = L*p, pt = done.getPointAtLength(len), pt2 = done.getPointAtLength(Math.min(L, len+2)), pt0 = done.getPointAtLength(Math.max(0, len-2));
+    const a = Math.atan2(pt2.y-pt0.y, pt2.x-pt0.x)*180/Math.PI;
+    pl.setAttribute('transform', `translate(${pt.x} ${pt.y}) rotate(${a})`);
+    done.style.strokeDashoffset = L - len;
+    let camX = pt.x*scale - vw*.4; camX = Math.max(0, Math.min(camX, W*scale - vw));
+    svg.style.transform = `translateX(${-camX}px)`;
+    far.style.transform = `translateX(${-camX*.25}px)`;
+    $('#sunrise').style.opacity = Math.max(0, (p-.55)/.45)*.9;
+    $('#intro').style.opacity = Math.max(0, 1 - p*14);
+    $('#miles').textContent = String(Math.round(p*8000)).padStart(4,'0');
+    let idx = -1; FR.forEach((f,i)=>{ if (p >= f - .004) idx = i; });
+    dots.forEach((d,i)=>d.classList.toggle('on', i<=idx));
+    bars.forEach((b,i)=>{ const a0 = FR[i], a1 = FR[i+1]; b.style.transform = `scaleX(${Math.max(0,Math.min(1,(p-a0)/(a1-a0)))})`; });
+    nodes.forEach((n,i)=>{ const on = i<=idx; n.c.setAttribute('fill', on ? '#FF6B2C' : '#0B1530'); n.c.setAttribute('stroke', on ? '#fff' : 'rgba(255,255,255,.5)'); n.halo.setAttribute('r', on ? 34 : 18); });
+    if (idx !== active){ if (idx > active && idx >= 0) toast(idx); active = idx; setCard(idx); }
+    const L2 = p > .975; $('#card').style.opacity = L2 ? 0 : 1;
+    if (L2 !== landed){ landed = L2; $('#landing').classList.toggle('show', L2); if (L2) confetti(); }
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+function confetti(){
+  if (reduce) return;
+  const c = $('#confetti'), x = c.getContext('2d'); c.width = c.clientWidth; c.height = c.clientHeight;
+  const cols = ['#FF6B2C','#FFCE00','#DD0000','#fff','#7FB7FF','#3DDC97'];
+  const ps = Array.from({length:160}, () => ({x:c.width/2, y:c.height*.45, vx:(Math.random()-.5)*16, vy:-Math.random()*14-4, r:Math.random()*6+3, c:cols[Math.random()*6|0], rot:Math.random()*6, vr:(Math.random()-.5)*.3}));
+  let t = 0; (function f(){ x.clearRect(0,0,c.width,c.height); ps.forEach(p=>{ p.vy+=.35; p.x+=p.vx; p.y+=p.vy; p.vx*=.99; p.rot+=p.vr;
+    x.save(); x.translate(p.x,p.y); x.rotate(p.rot); x.fillStyle=p.c; x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2); x.restore(); });
+    if (++t < 160) requestAnimationFrame(f); else x.clearRect(0,0,c.width,c.height); })();
+}
+
+/* ---------- departure board ---------- */
+const ROWS = [['ATL 001','3000+','PROGRAMMES','ON TIME'],['ATL 002','200+','UNIVERSITIES','ON TIME'],['ATL 003','8','GATES TO CAMPUS','BOARDING'],['ATL 004','24/7','AI ASSISTANT','LANDED']];
+const flap = (s) => `<span class="flap">${[...s].map(ch=>`<span data-c="${ch}">${ch===' '?'&nbsp;':ch}</span>`).join('')}</span>`;
+$('#boardBody').innerHTML = ROWS.map(r=>`<tr><td class="mono" style="color:var(--muted)">${r[0]}</td><td>${flap(r[1].padEnd(5,' '))}</td><td class="mono" style="font-size:15px">${r[2]}</td><td><span class="status ${r[3]==='BOARDING'?'blink':''}">${r[3]}</span></td></tr>`).join('');
+const CH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+';
+function runFlaps(){ document.querySelectorAll('.flap span').forEach((s,i)=>{ const fin = s.dataset.c; if (fin===' ') return; let n = 8 + (i%5)*3;
+  const iv = setInterval(()=>{ s.textContent = CH[Math.random()*CH.length|0]; if (--n<=0){ clearInterval(iv); s.textContent = fin; } }, 55); }); }
+
+/* ---------- services ---------- */
+const svcHTML = SERVICES.map(s=>`<div class="svc"><span class="cat">${s[0]}</span><h4>${s[1]}</h4><div class="pr"><b>${s[2]}</b> · ${s[3]}</div></div>`).join('');
+$('#services').innerHTML = svcHTML + svcHTML;
+
+/* ---------- altimeter ---------- */
+const LV = [['A1','3,000 ft','Basics – first conversations, daily life'],['A2','8,000 ft','Handle daily life, prepare for offices'],['B1','18,000 ft','Foundation year & many language-visa routes'],['B2','36,000 ft','Cruising altitude: the base for many German-taught programmes']];
+$('#altimeter').innerHTML = LV.map((l,i)=>`<div class="col" style="--h:${30+i*22}%" data-i="${i}"><svg class="mini" viewBox="-44 -44 88 88"><g transform="rotate(-90)"><use href="#cplane"/></g></svg><b>${l[0]}</b><small>${l[1]}</small></div>`).join('');
+document.querySelectorAll('.altimeter .col').forEach(c=>{ const show = () => { document.querySelectorAll('.altimeter .col').forEach(x=>x.classList.remove('on')); c.classList.add('on'); const l = LV[c.dataset.i]; $('#altInfo').textContent = `${l[0]} · ${l[1]} — ${l[2]}`; };
+  c.addEventListener('mouseenter', show); c.addEventListener('click', show); });
+
+/* ---------- scholarship form (prototype: nothing is sent) ---------- */
+$('#iform').addEventListener('submit', e => { e.preventDefault(); const f = e.currentTarget; f.classList.add('sent');
+  f.querySelector('button').textContent = (state.name ? state.name + ', you' : 'You') + "'re on the list ✓"; });
+
+/* ---------- videos: lazy play, respect reduced motion ---------- */
+document.querySelectorAll('video.bg-video').forEach(v => {
+  if (reduce){ v.removeAttribute('autoplay'); v.pause(); return; }
+  new IntersectionObserver(([e]) => { if (e.isIntersecting){ v.play().catch(()=>{}); } else v.pause(); }, {threshold:.05}).observe(v);
+});
+
+/* ---------- reveal ---------- */
+let flapped = false;
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); if (e.target.classList.contains('board') && !flapped){ flapped = true; runFlaps(); } io.unobserve(e.target); } }), {threshold:.15});
+document.querySelectorAll('.reveal').forEach(e => io.observe(e));
+
+paint();
+})();
+</script>
+</body>
+</html>
