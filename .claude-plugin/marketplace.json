@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "A library of web design skills for AI coding agents: each one teaches a complete visual style, with a reference site, screenshots and copy-ready components.",
-    "version": "1.2.0"
+    "version": "1.3.0"
   },
   "plugins": [
     {
@@ -105,6 +105,15 @@
       "strict": false,
       "skills": [
         "./skills/orbit-poster-editorial"
+      ]
+    },
+    {
+      "name": "knockout-quest-app",
+      "description": "Experimental, gamified mobile-app landing pages: a video inside a giant knockout wordmark that scrolling zooms into, a 3D phone with a sticky tour of real screenshots, playable daily quests with a live XP bar, level-ups and confetti, video tiles with a fitness HUD and a sound studio with music, nature sounds and a radio tuner.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/knockout-quest-app"
       ]
     }
   ]
