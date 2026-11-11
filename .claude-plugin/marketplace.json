@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "A library of web design skills for AI coding agents: each one teaches a complete visual style, with a reference site, screenshots and copy-ready components.",
-    "version": "1.4.0"
+    "version": "1.5.0"
   },
   "plugins": [
     {
@@ -123,6 +123,15 @@
       "strict": false,
       "skills": [
         "./skills/glyph-bench-sheets"
+      ]
+    },
+    {
+      "name": "broadsheet-daily-news",
+      "description": "Classic broadsheet newspaper websites: a serif masthead, double rules, a lead story, ruled columns, an opinion sidebar and a numbered reading list, with section filters, search, an accessible reader dialog, shareable story links and saved stories in one HTML file with no backend.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/broadsheet-daily-news"
       ]
     }
   ]

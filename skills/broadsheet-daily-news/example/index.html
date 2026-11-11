@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Today's Gazette: an independent look at the news, culture and everyday life. A broadsheet newspaper website template.">
+<title>Today's Gazette, a little closer to the world</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,600&family=Libre+Franklin:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens ---------- */
+:root{
+  --ink:#191919;--ink-2:#444;--muted:#666;--faint:#8a8780;--line:#d5d3ce;--line-strong:#222;
+  --paper:#fffefa;--paper-2:#f0f1eb;--paper-3:#e9e6df;--brief-line:#e4e4dc;
+  --accent:#285c53;--accent-soft:#dde9df;--on-ink:#fffefa;--scrim:rgba(20,20,20,.62);
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;--sans:"Libre Franklin",Arial,Helvetica,sans-serif;
+  --article-size:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px;overflow-x:clip}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-optical-sizing:auto;overflow-x:clip;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+img{display:block;width:100%;object-fit:cover}
+p{line-height:1.5}
+::selection{background:var(--accent-soft)}
+.shell{max-width:1296px;margin:auto;padding:0 38px}
+.visually-hidden{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- header ---------- */
+.topline{display:flex;align-items:center;justify-content:space-between;font:10px var(--sans);letter-spacing:.05em;height:50px}
+.tools{display:flex;gap:10px;align-items:center}
+.icon-btn{border:0;background:none;padding:8px;min-height:40px;display:inline-flex;align-items:center;gap:7px;font:500 11px var(--sans)}
+.icon-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+.edition{display:flex;gap:17px;font-size:9px}
+.edition .active{font-weight:700}
+.top-actions{display:flex;gap:8px}
+.btn{font:700 10px var(--sans);letter-spacing:.06em;padding:11px 17px;border:1px solid var(--ink);background:transparent;transition:background-color .15s,color .15s}
+.btn:hover{background:var(--paper-3)}
+.btn.dark{background:var(--ink);color:var(--on-ink)}
+.btn.dark:hover{background:var(--accent);border-color:var(--accent)}
+.btn:active{transform:translateY(1px)}
+.count{display:inline-grid;place-items:center;min-width:17px;height:17px;margin-left:6px;padding:0 4px;border-radius:9px;background:var(--accent);color:var(--on-ink);font-size:9px;letter-spacing:0}
+.count:empty{display:none}
+.masthead{position:relative;text-align:center;padding:7px 0 23px;display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:15px}
+.dateblock{text-align:left;font:11px/1.7 var(--sans);padding-bottom:8px}
+.dateblock strong{display:block;font-size:12px}
+.brand{font:800 clamp(40px,5.6vw,76px)/1 var(--serif);letter-spacing:-.045em;font-variation-settings:"opsz" 72}
+.tagline{font:italic 13px var(--serif);letter-spacing:.3px;margin-top:12px}
+.issue{text-align:right;font:10px/1.8 var(--sans);padding-bottom:8px}
+.issue span{display:block;color:var(--muted)}
+.nav{display:flex;justify-content:center;align-items:center;gap:29px;min-height:44px;border-top:1px solid var(--line-strong);border-bottom:3px double var(--line-strong);font:500 12px var(--sans);overflow:auto;scrollbar-width:none}
+.nav button{white-space:nowrap;background:none;border:0;padding:14px 0 11px;position:relative}
+.nav button.active{font-weight:700}
+.nav button.active:after{content:'';height:2px;background:var(--accent);bottom:5px;left:0;right:0;position:absolute}
+.trend{display:flex;gap:22px;align-items:center;font:10px var(--sans);min-height:42px;border-bottom:1px solid var(--line);overflow:auto;white-space:nowrap;scrollbar-width:none}
+.trend strong{font-size:9px;letter-spacing:1px;color:var(--accent)}
+.trend button{background:none;border:0;font:inherit;padding:7px 0}
+.trend button:before{content:'·';margin-right:18px;color:var(--faint)}
+.search-panel{padding:17px 0;border-bottom:1px solid var(--line)}
+.search-panel form{display:flex;gap:9px}
+.search-panel input{flex:1;min-width:0;border:1px solid var(--line);padding:12px;font:15px var(--sans);background:transparent}
+.search-hint{font:11px var(--sans);color:var(--muted);margin:10px 0 0}
+kbd{font:10px var(--sans);border:1px solid var(--line);border-bottom-width:2px;padding:1px 5px;border-radius:3px}
+.icon-btn:hover,.nav button:hover,.section-heading button:hover,.trend button:hover{color:var(--accent)}
+
+/* ---------- front page ---------- */
+.section-meta{display:flex;justify-content:space-between;align-items:center;margin:24px 0 19px;font:10px var(--sans)}
+.section-meta .kicker{font-weight:700;letter-spacing:1.5px}
+.section-meta .note{color:var(--muted);font-size:10px}
+.front-grid{display:grid;grid-template-columns:minmax(0,3.15fr) minmax(220px,1fr);gap:25px}
+.main-column{padding-right:25px;border-right:1px solid var(--line)}
+.lead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.48fr);gap:25px}
+.eyebrow{font:700 9px var(--sans);letter-spacing:1.3px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.headline{font-size:36px;line-height:1.06;letter-spacing:-.03em;margin:0 0 15px;font-weight:700;text-wrap:balance}
+.headline a:hover,.story-title a:hover,.rank-item a:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.deck{font-size:15px;line-height:1.55;color:var(--ink-2);margin:0 0 15px}
+.meta{display:block;font:9px var(--sans);letter-spacing:.45px;color:var(--muted);text-transform:uppercase;margin-top:13px}
+.lead figure{margin:0}
+.lead img,.feature-card img,.result-card img{filter:saturate(.74);transition:filter .3s}
+.lead figure:hover img,.feature-card:hover img,.result-card:hover img{filter:saturate(1)}
+.lead img{height:340px}
+figcaption{font:9px/1.4 var(--sans);color:var(--muted);margin-top:7px;text-align:right}
+.related{font-size:15px;line-height:1.3;margin-top:18px;border-top:1px solid var(--line);padding-top:13px;font-weight:600}
+.related .meta{font-weight:400;margin-top:7px}
+.secondary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:24px;border-top:1px solid var(--line-strong);padding-top:19px}
+.secondary-grid article{padding:0 17px;border-right:1px solid var(--line)}
+.secondary-grid article:first-child{padding-left:0}
+.secondary-grid article:last-child{padding-right:0;border:0}
+.story-title{font-size:21px;line-height:1.16;letter-spacing:-.01em;margin:0 0 9px;font-weight:700;text-wrap:balance}
+.secondary-grid p{font-size:14px;color:var(--muted);margin:0}
+.small-label{font:9px var(--sans);text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:0 0 9px}
+.sidebar-label{font:700 11px var(--sans);margin:0 0 18px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.opinion{padding:0 0 18px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.author{font:10px var(--sans);color:var(--muted);margin-bottom:7px}
+.opinion .story-title{font-size:23px;font-style:italic;font-weight:600}
+.opinion-foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.avatar{background:var(--paper-3);width:38px;height:38px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font:italic 15px var(--serif);color:var(--ink-2)}
+.opinion .meta{margin-top:8px;font-size:8px}
+.brief{padding:15px;background:var(--paper-2);border:1px solid var(--brief-line)}
+.brief .eyebrow{margin:0 0 8px}
+.brief h3{font-size:22px;margin:0 0 9px;line-height:1.1}
+.brief p{font-size:13px;color:var(--ink-2);margin:0 0 12px}
+.brief button{font:700 10px var(--sans);border:0;background:none;padding:6px 0;color:var(--accent)}
+.section-rule{border-top:3px double var(--line-strong);margin-top:32px;padding-top:15px}
+.section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:19px}
+.section-heading h2{font-size:26px;margin:0;letter-spacing:-.02em}
+.section-heading button{font:10px var(--sans);border:0;background:none;padding:6px 0;color:var(--ink-2)}
+.weekend{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr) minmax(0,1fr);gap:23px}
+.feature-card{position:relative;min-width:0}
+.feature-card:not(:last-child){padding-right:23px;border-right:1px solid var(--line)}
+.feature-card img{height:205px;margin-bottom:14px}
+.feature-card.large img{height:260px}
+.feature-card .story-title{font-size:24px}
+.feature-card.large .story-title{font-size:30px}
+.feature-card p{font-size:15px;color:var(--muted);margin:8px 0}
+.section-tag{font:700 9px var(--sans);letter-spacing:1px;margin-bottom:10px;color:var(--accent)}
+.reading-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.8fr);gap:30px;padding:24px 0 28px;border-top:1px solid var(--line-strong);margin-top:30px}
+.reading-intro h2{font-size:30px;line-height:1.1;letter-spacing:-.02em;margin:0 0 10px}
+.reading-intro p{color:var(--muted);font-size:15px;max-width:220px;margin:0}
+.ranked{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;margin:0;padding:0;list-style:none;counter-reset:rank}
+.rank-item{display:flex;gap:15px;padding:0 0 14px;margin-bottom:14px;border-bottom:1px solid var(--line);align-items:flex-start;counter-increment:rank}
+.rank-item:nth-last-child(-n+2){margin-bottom:0}
+.rank-item:before{content:counter(rank,decimal-leading-zero);font:italic 34px/1 var(--serif);color:var(--faint);width:26px;flex-shrink:0}
+.rank-item h3{font-size:17px;line-height:1.25;margin:0}
+.newsletter{border-top:1px solid var(--ink);border-bottom:3px double var(--ink);display:flex;align-items:center;justify-content:space-between;gap:28px;padding:28px 0;margin-top:8px}
+.newsletter h2{font-size:30px;letter-spacing:-.02em;margin:0 0 7px}
+.newsletter p{font-size:14px;color:var(--muted);margin:0}
+.newsletter form{display:flex;gap:8px;max-width:440px;flex:1}
+.newsletter input{background:none;border:1px solid var(--faint);padding:12px 13px;font:13px var(--sans);min-width:0;flex:1}
+.newsletter .btn{white-space:nowrap}
+.footer{padding:25px 0 22px}
+.footer-top{display:flex;justify-content:space-between;align-items:center;gap:20px}
+.footer-logo{font:800 28px var(--serif);letter-spacing:-.04em}
+.footer-top button{background:none;border:0;font:10px var(--sans);padding:8px 0}
+.footer-bottom{display:flex;justify-content:space-between;gap:15px;font:9px/1.6 var(--sans);color:var(--muted);margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.footer-bottom p{margin:0}
+.footer-bottom span{text-align:right}
+
+/* ---------- section and search results ---------- */
+#filtered-view{padding-bottom:20px}
+.results-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:25px;margin-top:22px}
+.results-grid.empty{grid-template-columns:1fr}
+.result-card{border-bottom:1px solid var(--line);padding-bottom:22px}
+.result-card img{height:190px;margin-bottom:15px}
+.result-card p{font-size:15px;color:var(--muted)}
+mark{background:var(--accent-soft);color:inherit;padding:0 2px}
+.empty-state{padding:70px 0;font-size:22px;text-align:center}
+.empty-state p{font-size:15px;color:var(--muted)}
+[hidden]{display:none!important}
+
+/* ---------- article dialog ---------- */
+dialog{padding:0;border:1px solid var(--faint);background:var(--paper);color:var(--ink);max-width:760px;width:calc(100% - 32px);max-height:90vh;overscroll-behavior:contain}
+dialog::backdrop{background:var(--scrim)}
+.modal-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:10px 16px 10px 22px;position:sticky;top:0;background:var(--paper);z-index:1}
+.modal-toolbar .brand-mini{font:800 18px var(--serif);letter-spacing:-.03em}
+.modal-actions{display:flex;align-items:center;gap:2px;flex-wrap:wrap;justify-content:flex-end}
+.progress{position:absolute;left:0;bottom:-1px;height:2px;width:100%;background:var(--accent);transform-origin:left;transform:scaleX(0)}
+.article-body{padding:30px 45px 40px}
+.article-body h2{font-size:42px;letter-spacing:-.03em;line-height:1.06;margin:0 0 18px;text-wrap:balance}
+.article-body .article-deck{font-size:20px;line-height:1.4;color:var(--muted);font-style:italic}
+.article-body img{max-height:330px;margin:25px 0 0;object-fit:cover}
+.article-body figure{margin:0 0 25px}
+.article-body p{font-size:var(--article-size);line-height:1.7}
+.article-body .first:first-letter{float:left;font-size:4.2em;line-height:.8;padding:.06em .08em 0 0;font-weight:700}
+.article-body .disclosure{font:11px/1.5 var(--sans);padding:13px;background:var(--paper-2);color:var(--muted);margin-top:24px}
+.article-body .byline{font:10px var(--sans);padding-bottom:17px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.45px}
+
+.toast{position:fixed;bottom:25px;left:50%;transform:translateX(-50%);z-index:5;background:var(--ink);color:var(--on-ink);padding:14px 21px;font:12px/1.5 var(--sans);box-shadow:0 4px 22px rgba(0,0,0,.13);max-width:calc(100% - 32px);width:max-content}
+.skip{position:absolute;left:20px;top:-100px;z-index:10;background:var(--paper);padding:12px;font:14px var(--sans)}
+.skip:focus{top:10px}
+
+/* ---------- responsive ---------- */
+@media(min-width:1400px){.shell{padding:0 25px}.lead img{height:365px}.headline{font-size:39px}}
+@media(max-width:1050px){.shell{padding:0 25px}.brand{font-size:56px}.nav{gap:21px}.front-grid{grid-template-columns:minmax(0,2.7fr) minmax(195px,1fr);gap:18px}.main-column{padding-right:18px}.lead{grid-template-columns:1fr;gap:20px}.lead-copy{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.lead-copy .eyebrow,.lead-copy .headline{grid-column:1/-1}.lead-copy .related{margin:0;padding:0 0 0 18px;border-top:0;border-left:1px solid var(--line)}.lead-copy>.meta{grid-column:1/-1}.lead img{height:300px}.headline{font-size:35px}.deck{margin:0}.secondary-grid{margin-top:21px}.secondary-grid article{padding:0 12px}.story-title{font-size:19px}.opinion .story-title{font-size:22px}.weekend{gap:18px;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr)}.feature-card:not(:last-child){padding-right:18px}.feature-card img{height:175px}.feature-card.large img{height:215px}.feature-card .story-title{font-size:21px}.feature-card.large .story-title{font-size:26px}.edition{display:none}.newsletter h2{font-size:26px}}
+@media(max-width:760px){.shell{padding:0 18px}.topline{height:48px}.top-actions .btn{padding:8px 11px;font-size:9px}.top-actions .outline{display:none}.masthead{display:block;padding:5px 0 16px}.brand{font-size:50px}.tagline{font-size:12px;margin-top:8px}.dateblock{padding:0;margin:14px 0 0;display:flex;gap:9px;justify-content:center;font-size:10px}.dateblock strong{font-size:10px}.dateblock span{display:none}.issue{display:none}.nav{gap:24px;justify-content:flex-start;min-height:40px;font-size:11px}.nav.menu-open{flex-wrap:wrap;gap:0;overflow:visible;justify-content:flex-start}.nav.menu-open button{width:33.33%;text-align:left}.trend{gap:16px;min-height:40px;font-size:9px}.trend strong{font-size:8px}.section-meta{margin:20px 0 16px}.section-meta .note{font-size:8px}.front-grid{display:block}.main-column{border:0;padding:0}.lead{display:flex;flex-direction:column;gap:18px}.lead-copy{display:block}.lead-copy .related{padding:13px 0 0;border:0;border-top:1px solid var(--line);margin-top:15px}.headline{font-size:36px;max-width:560px}.deck{font-size:16px}.lead img{height:300px}.secondary-grid{margin-top:23px;padding-top:18px;gap:0}.secondary-grid article{padding:0 12px}.secondary-grid .story-title{font-size:18px}.secondary-grid p{display:none}.secondary-grid .meta{font-size:8px;letter-spacing:0}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:0 22px;margin-top:27px;border-top:3px double var(--line-strong);padding-top:16px}.sidebar-label{grid-column:1/-1;margin-bottom:16px}.opinion{padding-bottom:15px}.opinion .story-title{font-size:21px}.sidebar .opinion:nth-of-type(3){display:none}.brief{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 20px}.brief .eyebrow{grid-column:1/-1}.brief h3{font-size:23px}.brief p{margin:0;grid-column:1}.brief button{grid-column:2;grid-row:2/4}.section-rule{margin-top:25px}.section-heading h2{font-size:24px}.weekend{grid-template-columns:1fr 1fr;gap:22px 18px}.feature-card.large{grid-column:1/-1;border:0;padding:0;display:grid;grid-template-columns:1.2fr 1fr;gap:0 18px}.feature-card.large>a{grid-row:1/6}.feature-card.large img{height:240px;margin:0}.feature-card.large .section-tag{margin:3px 0 10px}.feature-card.large .story-title{font-size:27px}.feature-card.large p{font-size:14px;margin-top:8px}.feature-card.large .meta{margin-top:8px}.feature-card:nth-child(2){border-right:1px solid var(--line);padding-right:18px}.feature-card:last-child{padding:0}.feature-card img{height:170px}.feature-card .story-title{font-size:22px}.reading-row{grid-template-columns:1fr;gap:22px;margin-top:24px}.reading-intro{display:flex;justify-content:space-between;gap:15px}.reading-intro h2{font-size:26px;margin:0}.reading-intro p{font-size:13px;max-width:200px}.ranked{gap:0 20px}.rank-item{gap:9px}.rank-item h3{font-size:16px}.rank-item:before{font-size:28px;width:22px}.newsletter{display:block;padding:22px 0}.newsletter h2{font-size:27px}.newsletter form{max-width:100%;margin-top:18px}.footer-bottom{display:block}.footer-bottom span{display:block;text-align:left;margin-top:8px}.results-grid{grid-template-columns:1fr 1fr}.result-card img{height:170px}.article-body{padding:25px}.article-body h2{font-size:33px}.modal-toolbar{padding:8px 10px 8px 16px}.modal-toolbar .brand-mini{display:none}.modal-actions{justify-content:space-between;width:100%}}
+@media(max-width:400px){.brand{font-size:44px}.lead img{height:250px}.secondary-grid{grid-template-columns:1fr}.secondary-grid article{border:0;padding:0 0 15px!important;margin-bottom:15px;border-bottom:1px solid var(--line)}.secondary-grid article:last-child{margin:0;padding:0!important;border:0}.secondary-grid .story-title{font-size:22px}.feature-card.large{display:block}.feature-card.large img{height:215px;margin-bottom:14px}.feature-card img{height:135px}.feature-card .story-title{font-size:21px}.reading-intro{display:block}.reading-intro p{max-width:none;margin-top:10px}.results-grid{grid-template-columns:1fr}.ranked{grid-template-columns:1fr}.rank-item:nth-last-child(2){margin-bottom:14px}.brief{display:block}.brief button{margin-top:12px}.newsletter form{display:block}.newsletter input{width:100%}.newsletter .btn{margin-top:10px;width:100%}.section-meta .note{display:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+@media print{.topline,.nav,.trend,.newsletter,.modal-toolbar,.toast,.footer-top button,.search-panel,#newsletter-note{display:none!important}.shell{max-width:none;padding:0}dialog[open]{position:static;max-width:100%;max-height:none;width:100%;border:0}body:has(dialog[open])>.shell{display:none}img{break-inside:avoid;filter:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="shell">
+<header>
+  <div class="topline">
+    <div class="tools">
+      <button class="icon-btn" id="menu-btn" aria-label="Open the sections menu" aria-expanded="false" aria-controls="nav"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 5h16M2 10h16M2 15h16"/></svg></button>
+      <button class="icon-btn" id="search-btn" aria-label="Search the news" aria-expanded="false" aria-controls="search-panel"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 5 5"/></svg></button>
+    </div>
+    <div class="edition"><span class="active">INTERNATIONAL EDITION</span><span>AN INDEPENDENT VIEW</span></div>
+    <div class="top-actions">
+      <button class="btn outline" id="saved-btn">SAVED<span class="count" id="saved-count"></span></button>
+      <button class="btn dark" id="subscribe-btn">GET THE NEWSLETTER</button>
+    </div>
+  </div>
+  <div class="masthead">
+    <div class="dateblock"><strong id="today">Wednesday, 11 November 2026</strong><span>For making sense of today's world.</span></div>
+    <div><a class="brand" href="#" id="home-logo">Today's Gazette</a><div class="tagline">A little closer to the world.</div></div>
+    <div class="issue">DIGITAL EDITION<span>News, opinion and life</span></div>
+  </div>
+  <nav class="nav" id="nav" aria-label="Sections">
+    <button class="active" data-category="All" aria-pressed="true">Front page</button>
+    <button data-category="World" aria-pressed="false">World</button>
+    <button data-category="News" aria-pressed="false">News</button>
+    <button data-category="Business" aria-pressed="false">Business</button>
+    <button data-category="Technology" aria-pressed="false">Technology</button>
+    <button data-category="Culture" aria-pressed="false">Culture &amp; Arts</button>
+    <button data-category="Life" aria-pressed="false">Life</button>
+    <button data-category="Travel" aria-pressed="false">Travel</button>
+    <button data-category="Opinion" aria-pressed="false">Opinion</button>
+  </nav>
+  <div id="search-panel" class="search-panel" hidden>
+    <form id="search-form" role="search">
+      <label class="visually-hidden" for="search-input">Search the news</label>
+      <input id="search-input" type="search" placeholder="Search a topic or a headline…" autocomplete="off">
+      <button class="btn dark" type="submit">SEARCH</button>
+      <button class="btn" type="button" id="search-close">CLOSE</button>
+    </form>
+    <p class="search-hint">Searches the titles, sections, authors and summaries of the sample stories. Press <kbd>/</kbd> anywhere to search.</p>
+  </div>
+  <div class="trend"><strong>TODAY'S TOPICS</strong><button data-query="city">The future of cities</button><button data-query="artificial">Artificial intelligence</button><button data-query="library">A culture route</button><button data-query="slow">Slow travel</button></div>
+</header>
+
+<main id="main">
+<div class="section-meta"><span class="kicker" id="view-label" aria-live="polite">EDITOR'S CHOICE</span><span class="note">Sample edition. All stories are placeholder content.</span></div>
+
+<div id="home-view">
+  <div class="front-grid">
+    <div class="main-column">
+      <section class="lead" aria-label="Lead story">
+        <div class="lead-copy">
+          <div class="eyebrow">NEWS / CITIES &amp; PEOPLE</div>
+          <h1 class="headline"><a href="#story/cities" data-story="cities">Cities are changing. What about the way we live together?</a></h1>
+          <p class="deck">Greener streets, walkable neighbourhoods and spaces open to everyone. People are back at the centre of the new city.</p>
+          <span class="meta">DENIZ AKSOY · 8 MIN READ</span>
+          <div class="related"><a href="#story/neighbourhood" data-story="neighbourhood">Who keeps a neighbourhood's memory?</a><span class="meta">A CLOSER LOOK · 4 MIN READ</span></div>
+        </div>
+        <figure><a href="#story/cities" data-story="cities" tabindex="-1" aria-hidden="true"><img src="assets/city.jpg" width="1400" height="933" alt="A wide city avenue lined with tall buildings and trees" fetchpriority="high"></a><figcaption>A city's rhythm lives in its streets. Photo: Unsplash</figcaption></figure>
+      </section>
+      <section class="secondary-grid" aria-label="Top stories">
+        <article><div class="small-label">WORLD</div><h2 class="story-title"><a href="#story/world" data-story="world">A new generation looks for a shared future</a></h2><p>How do bonds made across borders change everyday life?</p><span class="meta">6 MIN READ</span></article>
+        <article><div class="small-label">TECHNOLOGY</div><h2 class="story-title"><a href="#story/ai" data-story="ai">What is left for people in the age of AI?</a></h2><p>On creativity, curiosity and the art of asking the right questions.</p><span class="meta">5 MIN READ</span></article>
+        <article><div class="small-label">BUSINESS</div><h2 class="story-title"><a href="#story/business" data-story="business">The big change in small business</a></h2><p>Neighbourhood shops are making a new place for themselves online.</p><span class="meta">4 MIN READ</span></article>
+      </section>
+    </div>
+    <aside class="sidebar" aria-label="Opinion">
+      <h2 class="sidebar-label">Opinion &amp; Perspective</h2>
+      <article class="opinion"><div class="author">SELIN YILMAZ</div><h3 class="story-title"><a href="#story/slow" data-story="slow">Slowing down is not falling behind the world.</a></h3><div class="opinion-foot"><span class="meta">EVERYDAY LIFE · 4 MIN</span><span class="avatar" aria-hidden="true">SY</span></div></article>
+      <article class="opinion"><div class="author">EMRE KAYA</div><h3 class="story-title"><a href="#story/curiosity" data-story="curiosity">Can we learn to be curious again?</a></h3><div class="opinion-foot"><span class="meta">EDUCATION · 5 MIN</span><span class="avatar" aria-hidden="true">EK</span></div></article>
+      <article class="opinion"><div class="author">AYLIN DEMIR</div><h3 class="story-title"><a href="#story/public" data-story="public">A bench, a tree and public life.</a></h3><span class="meta">CITY NOTES · 3 MIN</span></article>
+      <div class="brief"><div class="eyebrow">MORNING NOTES</div><h3>Start the day one step ahead.</h3><p>Hand-picked stories in one short newsletter.</p><button id="brief-btn">Explore the newsletter →</button></div>
+    </aside>
+  </div>
+
+  <section class="section-rule" aria-labelledby="life-heading">
+    <div class="section-heading"><h2 id="life-heading">From everyday life</h2><button data-filter="Life">All stories →</button></div>
+    <div class="weekend">
+      <article class="feature-card large"><a href="#story/culture" data-story="culture" tabindex="-1" aria-hidden="true"><img src="assets/library.jpg" width="1000" height="586" alt="Shelves full of old books in a library" loading="lazy"></a><div class="section-tag">CULTURE / LONG READ</div><h3 class="story-title"><a href="#story/culture" data-story="culture">The door a book opens sometimes leads to a whole city.</a></h3><p>Libraries keep more than books. They keep the chance of being together.</p><span class="meta">ECE ARSLAN · 7 MIN READ</span></article>
+      <article class="feature-card"><a href="#story/travel" data-story="travel" tabindex="-1" aria-hidden="true"><img src="assets/lake.jpg" width="1000" height="667" alt="The bow of a wooden boat on a calm lake between mountains" loading="lazy"></a><div class="section-tag">TRAVEL</div><h3 class="story-title"><a href="#story/travel" data-story="travel">Leave the route. That is where the journey starts.</a></h3><p>Fewer stops, more stories: a small invitation to slow travel.</p><span class="meta">6 MIN READ</span></article>
+      <article class="feature-card"><a href="#story/design" data-story="design" tabindex="-1" aria-hidden="true"><img src="assets/architecture.jpg" width="1000" height="667" alt="White, geometric contemporary architecture against the sky" loading="lazy"></a><div class="section-tag">LIFE / DESIGN</div><h3 class="story-title"><a href="#story/design" data-story="design">Can less make for a better life?</a></h3><p>The quiet power of good design and the small details of everyday life.</p><span class="meta">5 MIN READ</span></article>
+    </div>
+  </section>
+
+  <section class="reading-row" aria-labelledby="reading-heading">
+    <div class="reading-intro"><h2 id="reading-heading">For your reading list.</h2><p>Stories that deserve more than a coffee break.</p></div>
+    <ol class="ranked">
+      <li class="rank-item"><h3><a href="#story/ai" data-story="ai">What is left for people in the age of AI?</a></h3></li>
+      <li class="rank-item"><h3><a href="#story/travel" data-story="travel">Leave the route. That is where the journey starts.</a></h3></li>
+      <li class="rank-item"><h3><a href="#story/culture" data-story="culture">The door a book opens sometimes leads to a whole city.</a></h3></li>
+      <li class="rank-item"><h3><a href="#story/slow" data-story="slow">Slowing down is not falling behind the world.</a></h3></li>
+    </ol>
+  </section>
+</div>
+
+<section id="filtered-view" aria-label="Story list" hidden><p id="result-count" class="search-hint" aria-live="polite"></p><div id="results" class="results-grid"></div></section>
+
+<section class="newsletter" id="newsletter" aria-labelledby="newsletter-heading">
+  <div><div class="eyebrow">THE TODAY'S GAZETTE NEWSLETTER</div><h2 id="newsletter-heading">Good stories, through the noise.</h2><p>Every morning, a start worth reading.</p></div>
+  <form id="newsletter-form"><label class="visually-hidden" for="email">Your email address</label><input id="email" name="email" type="email" placeholder="Your email address" autocomplete="email" required aria-describedby="newsletter-note"><button class="btn dark" type="submit">JOIN →</button></form>
+</section>
+<p id="newsletter-note" class="search-hint">Demo form: no email is sent; the address is only kept in this browser.</p>
+</main>
+
+<footer class="footer">
+  <div class="footer-top"><a href="#" class="footer-logo" id="footer-home">Today's Gazette</a><button id="back-top">Back to top ↑</button></div>
+  <div class="footer-bottom"><p>© <span id="year">2026</span> Today's Gazette. An independent newspaper website template.</p><span>Stories and author names are examples. Photos: Unsplash.<br>This template is not connected to any publisher.</span></div>
+</footer>
+</div>
+
+<dialog id="article-dialog" aria-labelledby="article-title">
+  <div class="modal-toolbar">
+    <span class="brand-mini">Today's Gazette</span>
+    <div class="modal-actions">
+      <button class="icon-btn" id="text-smaller" aria-label="Smaller text">A−</button>
+      <button class="icon-btn" id="text-larger" aria-label="Larger text">A+</button>
+      <button class="icon-btn" id="copy-link">Copy link</button>
+      <button class="icon-btn" id="save-story" aria-pressed="false">Save +</button>
+      <button class="icon-btn" id="close-dialog" aria-label="Close the story">Close ×</button>
+    </div>
+    <span class="progress" id="progress" aria-hidden="true"></span>
+  </div>
+  <article id="article-content" class="article-body"></article>
+</dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+/* EDITING THE TEMPLATE: the brand name lives in the HTML, colours and fonts under :root,
+   stories in the stories list below, photos in assets/. No backend, CMS or real newsletter service. */
+const photos = { city: 'assets/city.jpg', culture: 'assets/library.jpg', travel: 'assets/lake.jpg', architecture: 'assets/architecture.jpg' };
+const stories = [
+  { id: 'cities', category: 'News', title: 'Cities are changing. What about the way we live together?', deck: 'Greener streets, walkable neighbourhoods and spaces open to everyone. People are back at the centre of the new city.', author: 'Deniz Aksoy', minutes: 8, image: 'city',
+    paragraphs: ['Can we describe a city by its buildings alone? Neighbours who meet at the same bakery every morning, families greeting each other on the way to school, people pausing to rest in a square: together they draw the city\'s invisible map.',
+      'Thinking of a neighbourhood at human scale means starting from everyday needs. A park nearby, a road that is safe to cross and a library everyone can use are small but decisive parts of that picture.',
+      'The future of living together is shaped as much by small encounters as by big plans. Sometimes a change begins with something as simple as listening to each other around the same table.'] },
+  { id: 'neighbourhood', category: 'News', title: 'Who keeps a neighbourhood\'s memory?', deck: 'From street names to old shops, a place\'s story lives on with the people who remember it.', author: 'Deniz Aksoy', minutes: 4, image: 'city' },
+  { id: 'world', category: 'World', title: 'A new generation looks for a shared future', deck: 'How do bonds made across borders change everyday life?', author: 'Mert Aydin', minutes: 6, image: 'city' },
+  { id: 'ai', category: 'Technology', title: 'What is left for people in the age of AI?', deck: 'On creativity, curiosity and the art of asking the right questions.', author: 'Duru Celik', minutes: 5, image: 'architecture', tags: 'artificial intelligence',
+    paragraphs: ['When a new tool enters our lives, we first ask what it lets us do faster. Sometimes the more valuable question is what we want to spend our time on.',
+      'Weighing an idea, bringing different views together and understanding why a question matters sit at the heart of learning. Curiosity is less a result than a starting point.',
+      'This sample story makes room for your technology coverage. Grow it with your own reporting, sources and interviews.'] },
+  { id: 'business', category: 'Business', title: 'The big change in small business', deck: 'Neighbourhood shops are making a new place for themselves online.', author: 'Can Oz', minutes: 4, image: 'city' },
+  { id: 'slow', category: 'Opinion', title: 'Slowing down is not falling behind the world.', deck: 'Paying more attention to what we do instead of trying to keep up with more.', author: 'Selin Yilmaz', minutes: 4, image: 'travel' },
+  { id: 'curiosity', category: 'Opinion', title: 'Can we learn to be curious again?', deck: 'Following a question is sometimes the best way to learn.', author: 'Emre Kaya', minutes: 5, image: 'culture' },
+  { id: 'public', category: 'Opinion', title: 'A bench, a tree and public life.', deck: 'The small possibilities shared spaces open up in everyday life.', author: 'Aylin Demir', minutes: 3, image: 'city', tags: 'city' },
+  { id: 'culture', category: 'Culture', title: 'The door a book opens sometimes leads to a whole city.', deck: 'Libraries keep more than books. They keep the chance of being together.', author: 'Ece Arslan', minutes: 7, image: 'culture', tags: 'library',
+    paragraphs: ['When we walk into a library, we hear the silence first. Then the sound of pages, a chair moving and the marks the daylight leaves on the tables.',
+      'The people gathered here do not have to read the same book. Sharing the same room can be the first line of a shared story. An afternoon among the shelves can make us look again at the place we live.',
+      'Your culture section can carry book reviews, interviews and city guides. Replace this sample text with your own editorial content.'] },
+  { id: 'travel', category: 'Travel', title: 'Leave the route. That is where the journey starts.', deck: 'Fewer stops, more stories: a small invitation to slow travel.', author: 'Ada Yalin', minutes: 6, image: 'travel' },
+  { id: 'design', category: 'Life', title: 'Can less make for a better life?', deck: 'The quiet power of good design and the small details of everyday life.', author: 'Bora Eren', minutes: 5, image: 'architecture' }
+];
+const FALLBACK = ['Every story starts with a detail of everyday life waiting to be noticed. This sample text shows the typography and reading experience of your story page.',
+  'Add your own report, interview or column here. Short paragraphs and clear writing keep the text easy to read on desktop and on phones.',
+  'Change the headline, the summary, the author and the photo to make this template your own publication.'];
+
+const $ = (s) => document.querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const dialog = $('#article-dialog');
+let currentStory = null, returnFocus = null, toastTimer, saved = [], articleSize = 18;
+try { const v = JSON.parse(localStorage.getItem('gazette-saved') || '[]'); if (Array.isArray(v)) saved = v.filter((x) => typeof x === 'string'); } catch (e) {}
+try { const n = +localStorage.getItem('gazette-text-size'); if (n >= 15 && n <= 24) articleSize = n; } catch (e) {}
+
+function notify(message) { clearTimeout(toastTimer); $('#toast').textContent = message; $('#toast').hidden = false; toastTimer = setTimeout(() => ($('#toast').hidden = true), 4200); }
+function escapeHTML(t) { return String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function highlight(text, q) {
+  const safe = escapeHTML(text); if (!q) return safe;
+  const i = text.toLowerCase().indexOf(q); if (i < 0) return safe;
+  return escapeHTML(text.slice(0, i)) + '<mark>' + escapeHTML(text.slice(i, i + q.length)) + '</mark>' + escapeHTML(text.slice(i + q.length));
+}
+function updateSavedCount() { $('#saved-count').textContent = saved.length || ''; }
+function setNav(category) {
+  document.querySelectorAll('#nav [data-category]').forEach((b) => { const active = b.dataset.category === category; b.classList.toggle('active', active); b.setAttribute('aria-pressed', String(active)); });
+}
+function closeMenu() { $('#nav').classList.remove('menu-open'); $('#menu-btn').setAttribute('aria-expanded', 'false'); }
+function showHome() {
+  setNav('All'); $('#home-view').hidden = false; $('#filtered-view').hidden = true;
+  $('#view-label').textContent = 'EDITOR\'S CHOICE'; $('#search-input').value = ''; closeMenu();
+}
+function renderResults(items, label, q = '') {
+  $('#home-view').hidden = true; $('#filtered-view').hidden = false; $('#view-label').textContent = label;
+  $('#result-count').textContent = items.length + (items.length === 1 ? ' story' : ' stories');
+  const results = $('#results');
+  results.classList.toggle('empty', !items.length);
+  results.innerHTML = items.length ? items.map((s) => `<article class="result-card"><a href="#story/${s.id}" data-story="${s.id}" tabindex="-1" aria-hidden="true"><img src="${photos[s.image]}" alt="" loading="lazy"></a><div class="eyebrow">${escapeHTML(s.category)}</div><h2 class="story-title"><a href="#story/${s.id}" data-story="${s.id}">${highlight(s.title, q)}</a></h2><p>${highlight(s.deck, q)}</p><span class="meta">${escapeHTML(s.author)} · ${s.minutes} MIN READ</span></article>`).join('')
+    : '<div class="empty-state">No stories here yet.<p>Try another search or go back to the front page.</p><button class="btn" id="empty-home">BACK TO THE FRONT PAGE</button></div>';
+}
+function filterCategory(category) {
+  if (category === 'All') { showHome(); return; }
+  setNav(category); renderResults(stories.filter((s) => s.category === category), category.toUpperCase()); closeMenu();
+}
+function search(query) {
+  const q = query.trim().toLowerCase(); if (!q) { showHome(); return; }
+  setNav(null);
+  renderResults(stories.filter((s) => [s.title, s.deck, s.category, s.author, s.tags || ''].join(' ').toLowerCase().includes(q)), 'SEARCH: ' + query.trim(), q);
+  $('#search-input').value = query;
+}
+function updateSaveButton() {
+  const active = saved.includes(currentStory?.id);
+  $('#save-story').textContent = active ? 'Saved ✓' : 'Save +'; $('#save-story').setAttribute('aria-pressed', String(active));
+}
+function setArticleSize(n) {
+  articleSize = Math.min(24, Math.max(15, n)); dialog.style.setProperty('--article-size', articleSize + 'px');
+  try { localStorage.setItem('gazette-text-size', articleSize); } catch (e) {}
+}
+function openStory(id, fromHash) {
+  const s = stories.find((x) => x.id === id); if (!s) return;
+  currentStory = s; if (!dialog.open) returnFocus = document.activeElement;
+  const paragraphs = s.paragraphs || FALLBACK;
+  $('#article-content').innerHTML = `<div class="eyebrow">${escapeHTML(s.category)}</div><h2 id="article-title">${escapeHTML(s.title)}</h2><p class="article-deck">${escapeHTML(s.deck)}</p><div class="byline">${escapeHTML(s.author)} · ${s.minutes} min read</div><figure><img src="${photos[s.image]}" alt=""></figure>${paragraphs.map((p, i) => '<p' + (i ? '' : ' class="first"') + '>' + escapeHTML(p) + '</p>').join('')}<p class="disclosure">This story is sample content written to show the design. It is not news.</p>`;
+  updateSaveButton(); setArticleSize(articleSize);
+  if (!dialog.open) dialog.showModal();
+  document.body.style.overflow = 'hidden'; dialog.scrollTop = 0; updateProgress(); $('#close-dialog').focus();
+  if (!fromHash && location.hash !== '#story/' + id) history.pushState(null, '', '#story/' + id);
+}
+function closeStory(fromHash) {
+  if (!dialog.open) return;
+  dialog.close(); document.body.style.overflow = '';
+  if (!fromHash && location.hash.startsWith('#story/')) history.pushState(null, '', location.pathname + location.search);
+  if (returnFocus?.isConnected) returnFocus.focus();
+}
+function updateProgress() {
+  const max = dialog.scrollHeight - dialog.clientHeight;
+  $('#progress').style.transform = 'scaleX(' + (max > 0 ? dialog.scrollTop / max : 1) + ')';
+}
+function route() {
+  const m = location.hash.match(/^#story\/([\w-]+)$/);
+  if (m) openStory(m[1], true); else closeStory(true);
+}
+
+document.addEventListener('click', (e) => {
+  const story = e.target.closest('[data-story]'); if (story) { e.preventDefault(); openStory(story.dataset.story); return; }
+  const cat = e.target.closest('[data-category]'); if (cat) filterCategory(cat.dataset.category);
+  const filter = e.target.closest('[data-filter]'); if (filter) { filterCategory(filter.dataset.filter); $('#main').scrollIntoView({ behavior: reduce ? 'instant' : 'smooth' }); }
+  const query = e.target.closest('[data-query]'); if (query) search(query.dataset.query);
+  if (e.target.id === 'empty-home') showHome();
+});
+$('#menu-btn').onclick = () => { const open = $('#nav').classList.toggle('menu-open'); $('#menu-btn').setAttribute('aria-expanded', String(open)); if (innerWidth > 760) $('#nav button').focus(); };
+function toggleSearch(open) { $('#search-panel').hidden = !open; $('#search-btn').setAttribute('aria-expanded', String(open)); if (open) $('#search-input').focus(); else $('#search-btn').focus(); }
+$('#search-btn').onclick = () => toggleSearch($('#search-panel').hidden);
+$('#search-close').onclick = () => toggleSearch(false);
+$('#search-form').onsubmit = (e) => { e.preventDefault(); search($('#search-input').value); };
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && !dialog.open && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); toggleSearch(true); }
+});
+function jumpNewsletter() { $('#newsletter').scrollIntoView({ behavior: reduce ? 'instant' : 'smooth' }); $('#email').focus({ preventScroll: true }); }
+$('#subscribe-btn').onclick = jumpNewsletter; $('#brief-btn').onclick = jumpNewsletter;
+$('#newsletter-form').onsubmit = (e) => {
+  e.preventDefault();
+  try { localStorage.setItem('gazette-newsletter-demo', $('#email').value); notify('Demo sign-up saved in this browser. No real subscription was made.'); e.target.reset(); }
+  catch (error) { notify('This browser does not allow saving. The demo form sends no email.'); }
+};
+$('#save-story').onclick = () => {
+  const index = saved.indexOf(currentStory.id);
+  if (index >= 0) saved.splice(index, 1); else saved.push(currentStory.id);
+  try { localStorage.setItem('gazette-saved', JSON.stringify(saved)); notify(index >= 0 ? 'Removed from your reading list.' : 'Added to the reading list in this browser.'); }
+  catch (error) { notify('Saved for this visit. The browser does not allow lasting storage.'); }
+  updateSaveButton(); updateSavedCount();
+};
+$('#saved-btn').onclick = () => { setNav(null); renderResults(stories.filter((s) => saved.includes(s.id)), 'SAVED STORIES'); };
+$('#text-smaller').onclick = () => setArticleSize(articleSize - 1);
+$('#text-larger').onclick = () => setArticleSize(articleSize + 1);
+$('#copy-link').onclick = async () => {
+  const url = location.href.split('#')[0] + '#story/' + currentStory.id;
+  try { await navigator.clipboard.writeText(url); notify('Link copied.'); } catch (e) { notify(url); }
+};
+dialog.addEventListener('scroll', updateProgress, { passive: true });
+$('#close-dialog').onclick = () => closeStory();
+dialog.addEventListener('cancel', (e) => { e.preventDefault(); closeStory(); });
+dialog.addEventListener('click', (e) => {
+  if (e.target !== dialog) return;
+  const r = dialog.getBoundingClientRect();
+  if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) closeStory();
+});
+addEventListener('popstate', route);
+[$('#home-logo'), $('#footer-home')].forEach((el) => (el.onclick = (e) => { e.preventDefault(); showHome(); scrollTo({ top: 0, behavior: 'auto' }); }));
+$('#back-top').onclick = () => scrollTo({ top: 0, behavior: reduce ? 'instant' : 'smooth' });
+const now = new Date();
+$('#today').textContent = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+$('#year').textContent = now.getFullYear();
+updateSavedCount(); route();
+</script>
+</body>
+</html>
