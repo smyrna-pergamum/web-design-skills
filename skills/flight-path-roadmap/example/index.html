@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Atlasio Flight Path</title>
-<meta name="description" content="Atlasio (fictional): your route to a German university, told as a scroll-driven flight with a plane cursor, boarding pass and gamified roadmap.">
+<meta name="description" content="Atlasio (fictional travel brand): plan your whole trip as a scroll-driven flight with a plane cursor, boarding pass and gamified roadmap.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -274,7 +274,7 @@ h2.big{font-size:clamp(36px,5vw,68px);letter-spacing:-.035em;line-height:1;font-
 .vs .us li::before{content:"✓ ";font-weight:800}
 @media (max-width:760px){.vs{grid-template-columns:1fr}}
 
-/* impact / scholarship */
+/* impact / travel fund */
 .impact{position:relative;overflow:hidden;padding:clamp(100px,12vw,170px) 0;background:var(--night);color:var(--text)}
 .impact .bg-video{z-index:0}
 .impact .shade{position:absolute;inset:0;z-index:0;background:
@@ -338,13 +338,13 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
 <nav class="top" id="nav">
   <div class="wrap">
-    <a href="#top" class="logo">Atlas<b>io</b><small>STUDY · GERMANY</small></a>
+    <a href="#top" class="logo">Atlas<b>io</b><small>TRAVEL · PLANNED</small></a>
     <div class="links">
       <a href="#flight">Your route</a>
       <a href="#plans">Plans</a>
-      <a href="#services">Services</a>
+      <a href="#services">Extras</a>
       <a href="#visas">Visas</a>
-      <a href="#scholarship">Scholarship</a>
+      <a href="#fund">Travel fund</a>
     </div>
     <a href="#boarding" class="btn sm">Check in free</a>
   </div>
@@ -360,15 +360,15 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   </svg>
   <div class="wrap">
     <div>
-      <span class="eyebrow">Gate open · Winter semester 2027/28</span>
-      <h1>Your ticket to a <em>German
-        <svg viewBox="0 0 300 30" preserveAspectRatio="none"><path d="M4 22 C 80 4, 200 4, 296 18" fill="none" stroke="#FF6B2C" stroke-width="5" stroke-linecap="round"/></svg></em> university.</h1>
-      <p class="lead">From choosing a programme to your first day on campus: Atlasio turns your path to Germany into a route you can see, tick off step by step – and never fly alone.</p>
+      <span class="eyebrow">Gate open · Summer 2027 trips</span>
+      <h1>Plan the trip. <em>Enjoy
+        <svg viewBox="0 0 300 30" preserveAspectRatio="none"><path d="M4 22 C 80 4, 200 4, 296 18" fill="none" stroke="#FF6B2C" stroke-width="5" stroke-linecap="round"/></svg></em> the journey.</h1>
+      <p class="lead">From the first idea to the last sunset: Atlasio turns your whole trip – flights, stays, documents, extras – into one route you can see, tick off step by step and enjoy.</p>
       <div class="cta-row">
-        <a href="#boarding" class="btn">Start your free journey →</a>
-        <a href="#flight" class="btn ghost">See the route</a>
+        <a href="#boarding" class="btn">Plan my trip free →</a>
+        <a href="#flight" class="btn ghost">See how it works</a>
       </div>
-      <div class="micro"><span>1 journey free</span><span>No card needed</span><span>Guidance in your language</span></div>
+      <div class="micro"><span>Free trip planner</span><span>No card needed</span><span>24/7 trip support</span></div>
     </div>
 
     <div class="pass-wrap">
@@ -379,25 +379,25 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
           <div>
             <div class="code" id="fromCode">IST</div>
             <select id="from" aria-label="Departure city">
-              <option value="IST">Istanbul</option><option value="ESB">Ankara</option><option value="ADB">İzmir</option>
-              <option value="CAI">Cairo</option><option value="IKA">Tehran</option><option value="DEL">Delhi</option><option value="LOS">Lagos</option><option value="BAK">Baku</option>
+              <option value="IST">Istanbul</option><option value="LHR">London</option><option value="FRA">Frankfurt</option><option value="AMS">Amsterdam</option>
+              <option value="DXB">Dubai</option><option value="JFK">New York</option><option value="DEL">Delhi</option><option value="SYD">Sydney</option>
             </select>
           </div>
           <div class="mid"><svg width="44" height="20" viewBox="0 0 44 20"><path d="M2 10h30" stroke="currentColor" stroke-width="2" stroke-dasharray="3 4"/><path d="M42 10 34 4v12z" fill="currentColor"/></svg></div>
           <div class="to">
-            <div class="code" id="toCode">BER</div>
+            <div class="code" id="toCode">LIS</div>
             <select id="to" aria-label="Destination city">
-              <option value="BER">Berlin</option><option value="MUC">Munich</option><option value="HAM">Hamburg</option>
-              <option value="CGN">Cologne</option><option value="FRA">Frankfurt</option><option value="AAH">Aachen</option><option value="STR">Stuttgart</option>
+              <option value="LIS">Lisbon</option><option value="BCN">Barcelona</option><option value="KEF">Reykjavík</option>
+              <option value="HND">Tokyo</option><option value="DPS">Bali</option><option value="CPT">Cape Town</option><option value="CUN">Cancún</option>
             </select>
           </div>
         </div>
         <div class="fields">
           <div class="f full"><label for="pname">Passenger</label><input id="pname" placeholder="Your first name" maxlength="22"></div>
-          <div class="f"><label for="field">Programme</label>
-            <select id="field"><option>Informatics</option><option>Mechanical Eng.</option><option>Medicine</option><option>Business</option><option>Architecture</option><option>Electrical Eng.</option><option>Psychology</option></select></div>
-          <div class="f"><label for="deg">Degree</label>
-            <select id="deg"><option>Bachelor</option><option>Master</option><option>Foundation year</option></select></div>
+          <div class="f"><label for="field">Trip style</label>
+            <select id="field"><option>City break</option><option>Beach</option><option>Adventure</option><option>Culture</option><option>Food & wine</option><option>Family</option></select></div>
+          <div class="f"><label for="deg">Travellers</label>
+            <select id="deg"><option>1 adult</option><option>2 adults</option><option>Family (3–5)</option><option>Group (6+)</option></select></div>
         </div>
         <button class="btn" type="submit">Check in & take off ✈</button>
       </div>
@@ -414,23 +414,23 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 </header>
 
 <div class="strip"><div class="track" id="stripTrack">
-  <span><b>3,000+</b> programmes</span><span><b>200+</b> universities</span><span><b>8</b> gates to campus</span><span>uni-assist · VPD · visa portal tracked</span><span>Blocked account, visa, housing – one place</span><span>Example figures for a fictional brand</span>
+  <span><b>1,200+</b> destinations</span><span>Flights + stays in one plan</span><span><b>8</b> gates to your trip</span><span>Visa & entry rules checked</span><span>Price alerts on your route</span><span>Example figures for a fictional brand</span>
 </div></div>
 
 <!-- ============ FLIGHT ROADMAP ============ -->
-<section id="flight" aria-label="Your route to Germany in 8 steps">
+<section id="flight" aria-label="Your trip in 8 steps">
   <div class="sticky" id="sticky">
     <div class="sunrise" id="sunrise"></div>
     <div class="farclouds" id="far"></div>
     <svg id="world" aria-hidden="true"></svg>
 
     <div class="flight-intro" id="intro">
-      <div><h2>8 gates.<br>1 destination: your campus.</h2><p>Scroll – you are flying</p></div>
+      <div><h2>8 gates.<br>1 destination: your trip.</h2><p>Scroll – you are flying</p></div>
     </div>
 
     <div class="hud">
       <div class="wrap">
-        <div class="flightno"><b id="hudRoute">IST → BER</b><br>Passenger: <span data-name>Guest</span></div>
+        <div class="flightno"><b id="hudRoute">IST → LIS</b><br>Passenger: <span data-name>Guest</span></div>
         <div class="prog" id="prog"></div>
         <div class="miles">ATLASIO MILES<b id="miles">0000</b></div>
       </div>
@@ -440,21 +440,21 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
       <div class="gate"><span>GATE <b id="cGate">00</b> / 08</span><span id="cState">RUNWAY</span></div>
       <h3 id="cTitle">Ready for take-off</h3>
       <div class="tags" id="cTags">Boarding complete</div>
-      <p id="cText">Every step of your application is a gate. Reach all eight and you land at your university.</p>
+      <p id="cText">Every step of planning is a gate. Reach all eight and you land at your destination – with nothing forgotten.</p>
       <div class="missions" id="cMissions"></div>
       <div class="xp"><span>Reward</span><b id="cXp">+0 miles</b></div>
     </div>
 
-    <div class="toast" id="toast"><div class="medal" id="tMedal">01</div><div><small>GATE UNLOCKED</small><b id="tText">Choose a university</b></div></div>
+    <div class="toast" id="toast"><div class="medal" id="tMedal">01</div><div><small>GATE UNLOCKED</small><b id="tText">Pick a destination</b></div></div>
 
     <canvas id="confetti"></canvas>
     <div class="landing" id="landing">
       <div class="box">
-        <span class="eyebrow">Landed · <span id="landCity">Berlin</span></span>
-        <h2>Welcome to Germany, <span data-name style="color:var(--orange)">Guest</span>!</h2>
+        <span class="eyebrow">Landed · <span id="landCity">Lisbon</span></span>
+        <h2>Welcome to <span data-city>Lisbon</span>, <span data-name style="color:var(--orange)">Guest</span>!</h2>
         <div class="badges" id="landBadges"></div>
-        <p>8 of 8 gates – that is your path with Atlasio. Start your real journey now: free, with a checklist, deadlines and an AI assistant.</p>
-        <a href="#plans" class="btn">Start my journey →</a>
+        <p>8 of 8 gates – that is a trip planned with Atlasio. Start your real plan now: free, with one checklist, price alerts and an AI travel assistant.</p>
+        <a href="#plans" class="btn">Plan my trip →</a>
       </div>
     </div>
   </div>
@@ -465,47 +465,47 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   <div class="wrap">
     <div class="reveal">
       <span class="kicker">Choose your class</span>
-      <h2 class="big">Fly solo, with a co-pilot – or first class.</h2>
-      <p class="sub">The platform is yours – free. When it gets tricky, an Atlasio advisor comes on board. And if you want everything handled, fly Premium.</p>
+      <h2 class="big">Plan it yourself, with a concierge – or first class.</h2>
+      <p class="sub">The trip planner is yours – free. Want someone to book and check it all? A trip concierge comes on board. And if you want a journey made just for you, fly Premium.</p>
     </div>
     <div class="classes">
       <div class="ticket eco reveal">
         <div class="cls"><span>ECONOMY · SELF-SERVICE</span><b>ATL-FREE</b></div>
-        <h3>Track your own journey</h3>
-        <div class="price">€0 <small>for 1 active journey</small></div>
+        <h3>Plan your own trip</h3>
+        <div class="price">€0 <small>trip planner, forever</small></div>
         <div class="perf"></div>
         <ul>
-          <li>A personal checklist for your goal</li>
-          <li>Documents & deadlines in one place</li>
-          <li>AI assistant for your questions</li>
-          <li>3,000+ programmes with admission filters</li>
+          <li>One checklist for the whole trip</li>
+          <li>Flights, stays & tickets in one itinerary</li>
+          <li>Price alerts on your route</li>
+          <li>AI travel assistant</li>
         </ul>
-        <a href="#boarding" class="btn">Check in free →</a>
+        <a href="#boarding" class="btn">Start planning →</a>
       </div>
       <div class="ticket biz reveal">
-        <div class="cls"><span>BUSINESS · WITH AN ADVISOR</span><b>ATL-PLUS</b></div>
-        <h3>Continue with an Atlasio advisor</h3>
-        <div class="price">from €20 <small>single service · or full package</small></div>
+        <div class="cls"><span>BUSINESS · TRIP CONCIERGE</span><b>ATL-PLUS</b></div>
+        <h3>We book and check it for you</h3>
+        <div class="price">from €29 <small>per trip</small></div>
         <div class="perf"></div>
         <ul>
-          <li>Profile review & target university list (3–5)</li>
-          <li>uni-assist tracking & weekly reports</li>
-          <li>Visa appointment & interview practice</li>
-          <li>Airport pick-up & your first week in Germany</li>
+          <li>Flights & stays booked by a real person</li>
+          <li>Visa, entry and insurance check</li>
+          <li>Rebooking help when plans change</li>
+          <li>Airport transfer & local SIM arranged</li>
         </ul>
-        <a href="#services" class="btn">Book a consultation →</a>
+        <a href="#services" class="btn">Get a concierge →</a>
       </div>
       <div class="ticket first reveal">
         <span class="badge">PREMIUM</span>
-        <div class="cls"><span>FIRST CLASS · ALL-INCLUSIVE</span><b>ATL-FIRST</b></div>
-        <h3>Premium: we fly with you – door to door</h3>
+        <div class="cls"><span>FIRST CLASS · TAILOR-MADE</span><b>ATL-FIRST</b></div>
+        <h3>Premium: a journey made only for you</h3>
         <div class="price">Price on request <small>tailored to your profile</small></div>
         <div class="perf"></div>
         <ul>
-          <li>One personal advisor from day 1 to campus</li>
-          <li>Full application package incl. translation & apostille</li>
-          <li>Visa, financial planning & family guidance</li>
-          <li>Housing, pick-up & orientation programme</li>
+          <li>Your own travel designer, before and during the trip</li>
+          <li>Hand-picked stays & private guides</li>
+          <li>Door-to-door transfers & lounge access</li>
+          <li>24/7 personal line while you travel</li>
         </ul>
         <a href="#plans" class="btn">Ask for a price →</a>
       </div>
@@ -518,18 +518,18 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   <div class="wrap">
     <div class="reveal">
       <span class="kicker">Departure board</span>
-      <h2 class="big">On time. Transparent. No agency fog.</h2>
+      <h2 class="big">Today’s departures. Where will you go?</h2>
     </div>
     <div class="board reveal">
       <table>
-        <thead><tr><th>FLIGHT</th><th>VALUE</th><th>DESTINATION</th><th>STATUS</th></tr></thead>
+        <thead><tr><th>FLIGHT</th><th>TIME</th><th>DESTINATION</th><th>STATUS</th></tr></thead>
         <tbody id="boardBody"></tbody>
       </table>
-      <div class="note">Example figures: Atlasio is a fictional brand.</div>
+      <div class="note">Example departures: Atlasio is a fictional brand.</div>
     </div>
     <div class="vs reveal">
-      <div class="them"><h4>Classic agency</h4><ul><li>You send documents – and wait</li><li>Status only when you ask</li><li>One package price for everything</li><li>Ends at the admission letter</li></ul></div>
-      <div class="us"><h4>Atlasio</h4><ul><li>You see every step live on your route</li><li>Deadlines & documents tracked for you</li><li>Free platform, advice à la carte</li><li>Support through registration, bank & campus</li></ul></div>
+      <div class="them"><h4>Ten browser tabs</h4><ul><li>Flights here, hotels there, visas somewhere else</li><li>Confirmations lost in your inbox</li><li>Prices change while you compare</li><li>Help ends at checkout</li></ul></div>
+      <div class="us"><h4>Atlasio</h4><ul><li>One route for the whole trip</li><li>Every booking & document in one place</li><li>Price alerts while you decide</li><li>Support until you are home again</li></ul></div>
     </div>
   </div>
 </section>
@@ -537,21 +537,21 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 <!-- ============ BORDSERVICE ============ -->
 <section class="light block" id="services">
   <div class="wrap reveal">
-    <span class="kicker">On-board service · Marketplace</span>
-    <h2 class="big">Everything your journey needs – price on the tag.</h2>
-    <p class="sub">Certified translation, language courses, visa advice, housing and more – from vetted partner agencies. Example prices.</p>
+    <span class="kicker">On-board service · Extras</span>
+    <h2 class="big">Everything your trip needs – price on the tag.</h2>
+    <p class="sub">Transfers, eSIMs, insurance, city passes, tours and more – from vetted local partners. Example prices.</p>
   </div>
-  <div class="service-row"><div class="service-track" id="services"></div></div>
+  <div class="service-row"><div class="service-track" id="svcTrack"></div></div>
 </section>
 
 <!-- ============ LANGUAGE = ALTITUDE ============ -->
 <section class="dark block">
   <div class="wrap alt">
     <div class="reveal">
-      <span class="kicker">Learn German</span>
-      <h2 class="big">Your language level is your altitude.</h2>
-      <p class="sub">German from A1 to B2: video courses, live classes, a speaking club and intensive formats. The higher you climb, the more programmes open up.</p>
-      <div class="alt-info mono" id="altInfo">↑ Tap a level</div>
+      <span class="kicker">Trip length</span>
+      <h2 class="big">How high do you want to fly?</h2>
+      <p class="sub">From a weekend escape to a month on the road: pick your trip length and Atlasio suggests routes, budgets and the right moment to book.</p>
+      <div class="alt-info mono" id="altInfo">↑ Tap a trip length</div>
     </div>
     <div class="altimeter reveal" id="altimeter"></div>
   </div>
@@ -563,33 +563,33 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
     <div class="reveal">
       <span class="kicker">Visa routes</span>
       <h2 class="big">Which stamp belongs in your passport?</h2>
-      <p class="sub">Requirements, processing times and the documents German consulates ask for. Check the official amounts before you publish.</p>
+      <p class="sub">Atlasio checks entry rules for your passport and route – then tells you which of these you need. Always confirm with the official source before you travel.</p>
     </div>
     <div class="stamps">
-      <div class="vstamp reveal" style="--c:#FF6B2C"><div class="seal">VISA<br>TYPE D<br>STUDY</div><h3>Student visa</h3><p>A national visa for your studies, including proof of health insurance.</p><span class="k">Blocked account</span></div>
-      <div class="vstamp reveal" style="--c:#2D6CDF"><div class="seal">LANGUAGE<br>COURSE<br>VISA</div><h3>Language course visa</h3><p>For intensive German courses before your degree and the switch to a student residence permit.</p><span class="k">Before your degree</span></div>
-      <div class="vstamp reveal" style="--c:#1F9D6B"><div class="seal">JOB<br>SEEKER<br>BLUE CARD</div><h3>Work & job search</h3><p>For graduates who stay: job-seeker visa, EU Blue Card thresholds and Opportunity Card points.</p><span class="k">After graduation</span></div>
+      <div class="vstamp reveal" style="--c:#FF6B2C"><div class="seal">VISA<br>FREE<br>ENTRY</div><h3>Visa-free</h3><p>Just your passport – often with a minimum validity and a return ticket. We remind you of both.</p><span class="k">Passport check</span></div>
+      <div class="vstamp reveal" style="--c:#2D6CDF"><div class="seal">E-VISA<br>ONLINE<br>ETA</div><h3>e-Visa or travel authorisation</h3><p>Apply online before you fly. We tell you when to apply and which documents to upload.</p><span class="k">Apply online</span></div>
+      <div class="vstamp reveal" style="--c:#1F9D6B"><div class="seal">EMBASSY<br>VISA<br>STAMP</div><h3>Embassy visa</h3><p>An appointment, a form and supporting documents. Your checklist and deadlines are ready in your plan.</p><span class="k">Book early</span></div>
     </div>
   </div>
 </section>
 
 <!-- ============ IMPACT / STIPENDIUM ============ -->
-<section class="impact" id="scholarship">
+<section class="impact" id="fund">
   <video class="bg-video" src="assets/impact-window.mp4" poster="assets/impact-window.jpg" autoplay muted loop playsinline preload="none" aria-hidden="true"></video>
   <div class="shade" aria-hidden="true"></div>
   <div class="wrap">
     <div class="reveal">
-      <span class="kicker">Impact · Atlasio Scholarship</span>
-      <h2 class="big">Talent should never be grounded by a <span>ticket price</span>.</h2>
-      <p class="sub">Some students have the grades, the drive and the plan – but not the budget. The Atlasio Scholarship opens the way to Germany for students who would otherwise stay on the ground.</p>
+      <span class="kicker">Impact · Atlasio First Trip Fund</span>
+      <h2 class="big">Everyone deserves a <span>window seat</span>.</h2>
+      <p class="sub">Many young people have never left their country – not for lack of curiosity, but of budget. The Atlasio First Trip Fund pays for first journeys abroad for those who would otherwise stay on the ground.</p>
     </div>
     <div class="isteps">
-      <div class="istep reveal"><span class="n">STEP 01</span><h4>Create your journey</h4><p>A free profile with your subject and target university – the base of your application.</p></div>
-      <div class="istep reveal"><span class="n">STEP 02</span><h4>Show your motivation</h4><p>Tell us why Germany and what you want to change. Upload your documents right there.</p></div>
-      <div class="istep reveal"><span class="n">STEP 03</span><h4>Selection & departure</h4><p>A jury selects the scholars – they fly with full Atlasio support.</p></div>
+      <div class="istep reveal"><span class="n">STEP 01</span><h4>Create your plan</h4><p>A free Atlasio account with the trip you dream of – where, why and with whom.</p></div>
+      <div class="istep reveal"><span class="n">STEP 02</span><h4>Tell your story</h4><p>What would this first trip mean to you? A few lines or a short video is enough.</p></div>
+      <div class="istep reveal"><span class="n">STEP 03</span><h4>Selection & take-off</h4><p>A jury picks the travellers – they fly with tickets, stay and full Atlasio support.</p></div>
     </div>
     <form class="iform reveal" id="iform">
-      <input type="email" placeholder="Your email" aria-label="Email for the scholarship" required>
+      <input type="email" placeholder="Your email" aria-label="Email for the travel fund" required>
       <button class="btn" type="submit">Keep me posted →</button>
     </form>
     <div class="inote">Criteria, amounts and deadlines are published when applications open. Demo form: nothing is sent.</div>
@@ -601,8 +601,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   <div class="wrap">
     <span class="eyebrow">Final call</span>
     <h2 style="margin-top:18px">Ready for take-off,<br><span data-name>Guest</span>?</h2>
-    <p>One journey is free. Your plan is ready in minutes – and from today you see every step to campus.</p>
-    <a href="#boarding" class="btn takeoff"><svg viewBox="-44 -44 88 88"><use href="#cplane"/></svg>Start your free journey →</a>
+    <p>Your trip plan is free. It is ready in minutes – and from today you see every step until you land.</p>
+    <a href="#boarding" class="btn takeoff"><svg viewBox="-44 -44 88 88"><use href="#cplane"/></svg>Plan my trip free →</a>
     <div class="runway"></div>
   </div>
 </section>
@@ -617,36 +617,37 @@ const fine = matchMedia('(pointer: fine)').matches;
 const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}} };
 
 /* ---------- data ---------- */
-const CITY = {IST:'Istanbul',ESB:'Ankara',ADB:'İzmir',CAI:'Cairo',IKA:'Tehran',DEL:'Delhi',LOS:'Lagos',BAK:'Baku',BER:'Berlin',MUC:'Munich',HAM:'Hamburg',CGN:'Cologne',FRA:'Frankfurt',AAH:'Aachen',STR:'Stuttgart'};
+const CITY = {IST:'Istanbul',LHR:'London',FRA:'Frankfurt',AMS:'Amsterdam',DXB:'Dubai',JFK:'New York',DEL:'Delhi',SYD:'Sydney',LIS:'Lisbon',BCN:'Barcelona',KEF:'Reykjavík',HND:'Tokyo',DPS:'Bali',CPT:'Cape Town',CUN:'Cancún'};
 const STATIONS = [
- {t:'Choose a university',tags:'Programme · Subject · Admission',p:'Find the programme that fits you among 3,000+ – filtered by degree, foundation year and grade requirements.',m:['Pick a subject','Check admission','Shortlist (3–5)']},
- {t:'Application & documents',tags:'uni-assist · VPD · Portals',p:'We tell you exactly which documents you need and how to translate and apostille them.',m:['Checklist','Translation','uni-assist']},
- {t:'Funding & insurance',tags:'Blocked account · Scholarship · Insurance',p:'Blocked account, scholarships and health insurance – with a budget plan before it gets serious.',m:['Plan budget','Blocked account','Insurance']},
- {t:'Visa & preparation',tags:'Visa portal · Appointment',p:'Visa appointment, interview practice and complete financial documents. No surprises at the consulate.',m:['Book appointment','Practise interview','Documents complete']},
- {t:'Housing',tags:'Dorm · Shared flat · Private',p:'Dorm, shared flat or private: start early and never miss a student-housing deadline.',m:['Apply for dorm','Flat search']},
- {t:'Enrolment',tags:'Registration · Student ID',p:'Enrol, pay the semester fee, collect your student ID – officially a student.',m:['Enrolment','Semester fee']},
- {t:'Arrival',tags:'Registration · Bank · Residence',p:'Airport pick-up, city registration, bank account and residence permit – your first week, sorted.',m:['City registration','Bank account','Residence permit']},
- {t:'Student life',tags:'Orientation · Courses · Transport',p:'Orientation week, courses, semester ticket – and a network that is already there.',m:['Orientation week','Pick courses']},
+ {t:'Pick a destination',tags:'Inspiration · Season · Budget',p:'Tell us your trip style, dates and budget – we suggest places that fit, with the best time to go.',m:['Set dates','Set budget','Shortlist 3']},
+ {t:'Find your flights',tags:'Routes · Fares · Price alerts',p:'Compare routes and fares in one view and get an alert when the price on your route drops.',m:['Compare fares','Price alert','Book flight']},
+ {t:'Book your stay',tags:'Hotel · Apartment · Hostel',p:'Stays near what you want to see, with free cancellation where possible – all in the same plan.',m:['Choose area','Book stay']},
+ {t:'Documents & visa',tags:'Passport · e-Visa · Entry rules',p:'We check entry rules for your passport and route, and remind you before anything expires.',m:['Passport valid','Visa checked','Copies saved']},
+ {t:'Insurance & money',tags:'Insurance · Cards · Currency',p:'Travel insurance, cards that work abroad and a daily budget – sorted before you leave.',m:['Insurance','Travel card']},
+ {t:'Pack & check in',tags:'Checklist · Baggage · Seats',p:'A packing list for your destination and weather, baggage rules and online check-in on time.',m:['Packing list','Online check-in']},
+ {t:'Arrival & transfer',tags:'Transfer · eSIM · First night',p:'Airport transfer booked, eSIM active on landing and directions to your first night.',m:['Transfer','eSIM','Directions']},
+ {t:'Explore',tags:'Tours · Food · Hidden spots',p:'Tours, tables and hidden spots for your trip style – and a plan that changes with the weather.',m:['Book a tour','Save spots']},
 ];
 const SERVICES = [
- ['Translation','Certified translation of diploma & transcript','€25','per page'],
- ['Language course','Intensive German A1–B2 (8 weeks)','€450','per course'],
- ['Education advice','Shortlist of universities & programmes','€120','one-off'],
- ['Airport pick-up','Frankfurt, Munich, Düsseldorf, Cologne/Bonn','€60','per pick-up'],
- ['Housing','Help finding student housing','€200','one-off'],
- ['Visa advice','National student visa application','€150','per application'],
- ['Language course','TestDaF exam preparation','€180','per course'],
- ['Education advice','Full application package (up to 5 universities)','€350','one-off'],
- ['Translation','Certified translation of a birth certificate','€20','per document'],
+ ['Transfer','Private airport transfer to your stay','€35','per ride'],
+ ['Connectivity','eSIM with 10 GB data, active on landing','€12','per trip'],
+ ['Insurance','Travel insurance incl. cancellation','€9','from, per trip'],
+ ['City pass','Museums & public transport in one card','€49','per person'],
+ ['Lounge','Airport lounge access before your flight','€39','per visit'],
+ ['Car rental','Compact car with full insurance','€28','from, per day'],
+ ['Tours','Small-group guided city walk','€45','per person'],
+ ['Baggage','Extra checked bag (23 kg)','€25','per flight'],
+ ['Documents','Visa & entry check for your route','€19','per trip'],
 ];
 
 /* ---------- personalisation ---------- */
-const state = { name: store.get('atl_name') || '', from: store.get('atl_from') || 'IST', to: store.get('atl_to') || 'BER' };
+const state = { name: store.get('atl_name') || '', from: store.get('atl_from') || 'IST', to: store.get('atl_to') || 'LIS' };
 function paint(){
   document.querySelectorAll('[data-name]').forEach(e => e.textContent = state.name || 'Guest');
   $('#fromCode').textContent = state.from; $('#toCode').textContent = state.to;
   $('#hudRoute').textContent = state.from + ' → ' + state.to;
   $('#landCity').textContent = CITY[state.to];
+  document.querySelectorAll('[data-city]').forEach(e => e.textContent = CITY[state.to]);
   if (window.__labels) { __labels.from.textContent = CITY[state.from]; __labels.to.textContent = CITY[state.to]; }
 }
 $('#pname').value = state.name; $('#from').value = state.from; $('#to').value = state.to;
@@ -728,10 +729,10 @@ el('rect',{x:0,y:600,width:700,height:12,fill:'#0A1330'});
 el('path',{d:'M120 606h460',stroke:'rgba(255,255,255,.35)','stroke-width':3,'stroke-dasharray':'26 18'});
 const dest = el('g',{fill:'#101C42'});
 [[3980,500,70,100],[4060,470,40,130],[4110,430,120,170],[4240,520,60,80],[4310,480,90,120],[4410,510,90,90]].forEach(r=>el('rect',{x:r[0],y:r[1],width:r[2],height:r[3],rx:3},dest));
-el('path',{d:'M4110 430 L4170 380 L4230 430Z'},dest); // uni roof
+el('path',{d:'M4110 430 L4170 380 L4230 430Z'},dest); // landmark roof
 for (let i=0;i<5;i++) el('rect',{x:4122+i*22,y:445,width:10,height:150,fill:'#1A2A5A'},dest);
 el('rect',{x:3800,y:600,width:700,height:12,fill:'#101C42'});
-el('rect',{x:3920,y:612,width:380,height:4,fill:'#000'}); el('rect',{x:3920,y:616,width:380,height:4,fill:'#DD0000'}); el('rect',{x:3920,y:620,width:380,height:4,fill:'#FFCE00'});
+el('rect',{x:3920,y:612,width:380,height:4,fill:'#FF6B2C'}); el('rect',{x:3920,y:616,width:380,height:4,fill:'#fff'}); el('rect',{x:3920,y:620,width:380,height:4,fill:'#7FB7FF'});
 const lFrom = el('text',{x:150,y:660,'font-size':28,class:'st-label'}); const lTo = el('text',{x:4000,y:670,'font-size':28,class:'st-label'});
 window.__labels = {from:lFrom,to:lTo};
 
@@ -782,7 +783,7 @@ function setCard(i){
   card.classList.add('swap');
   setTimeout(() => {
     if (i < 0){ $('#cGate').textContent='00'; $('#cState').textContent='RUNWAY'; $('#cTitle').textContent='Ready for take-off';
-      $('#cTags').textContent = 'Boarding complete'; $('#cText').textContent='Every step of your application is a gate. Reach all eight and you land at your university.';
+      $('#cTags').textContent = 'Boarding complete'; $('#cText').textContent='Every step of planning is a gate. Reach all eight and you land at your destination – with nothing forgotten.';
       $('#cMissions').innerHTML=''; $('#cXp').textContent='+0 miles'; }
     else { const s = STATIONS[i]; $('#cGate').textContent = String(i+1).padStart(2,'0'); $('#cState').textContent = i===7 ? 'FINAL APPROACH' : 'REACHED ✓';
       $('#cTitle').textContent = s.t; $('#cTags').textContent = s.tags; $('#cText').textContent = s.p;
@@ -824,7 +825,7 @@ requestAnimationFrame(frame);
 function confetti(){
   if (reduce) return;
   const c = $('#confetti'), x = c.getContext('2d'); c.width = c.clientWidth; c.height = c.clientHeight;
-  const cols = ['#FF6B2C','#FFCE00','#DD0000','#fff','#7FB7FF','#3DDC97'];
+  const cols = ['#FF6B2C','#FF9A5C','#E9C46A','#fff','#7FB7FF','#3DDC97'];
   const ps = Array.from({length:160}, () => ({x:c.width/2, y:c.height*.45, vx:(Math.random()-.5)*16, vy:-Math.random()*14-4, r:Math.random()*6+3, c:cols[Math.random()*6|0], rot:Math.random()*6, vr:(Math.random()-.5)*.3}));
   let t = 0; (function f(){ x.clearRect(0,0,c.width,c.height); ps.forEach(p=>{ p.vy+=.35; p.x+=p.vx; p.y+=p.vy; p.vx*=.99; p.rot+=p.vr;
     x.save(); x.translate(p.x,p.y); x.rotate(p.rot); x.fillStyle=p.c; x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2); x.restore(); });
@@ -832,7 +833,7 @@ function confetti(){
 }
 
 /* ---------- departure board ---------- */
-const ROWS = [['ATL 001','3000+','PROGRAMMES','ON TIME'],['ATL 002','200+','UNIVERSITIES','ON TIME'],['ATL 003','8','GATES TO CAMPUS','BOARDING'],['ATL 004','24/7','AI ASSISTANT','LANDED']];
+const ROWS = [['ATL 214','07:45','LISBON','ON TIME'],['ATL 508','09:20','REYKJAVIK','GATE 12'],['ATL 731','11:05','TOKYO','BOARDING'],['ATL 902','13:40','CAPE TOWN','ON TIME']];
 const flap = (s) => `<span class="flap">${[...s].map(ch=>`<span data-c="${ch}">${ch===' '?'&nbsp;':ch}</span>`).join('')}</span>`;
 $('#boardBody').innerHTML = ROWS.map(r=>`<tr><td class="mono" style="color:var(--muted)">${r[0]}</td><td>${flap(r[1].padEnd(5,' '))}</td><td class="mono" style="font-size:15px">${r[2]}</td><td><span class="status ${r[3]==='BOARDING'?'blink':''}">${r[3]}</span></td></tr>`).join('');
 const CH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+';
@@ -841,15 +842,15 @@ function runFlaps(){ document.querySelectorAll('.flap span').forEach((s,i)=>{ co
 
 /* ---------- services ---------- */
 const svcHTML = SERVICES.map(s=>`<div class="svc"><span class="cat">${s[0]}</span><h4>${s[1]}</h4><div class="pr"><b>${s[2]}</b> · ${s[3]}</div></div>`).join('');
-$('#services').innerHTML = svcHTML + svcHTML;
+$('#svcTrack').innerHTML = svcHTML + svcHTML;
 
 /* ---------- altimeter ---------- */
-const LV = [['A1','3,000 ft','Basics – first conversations, daily life'],['A2','8,000 ft','Handle daily life, prepare for offices'],['B1','18,000 ft','Foundation year & many language-visa routes'],['B2','36,000 ft','Cruising altitude: the base for many German-taught programmes']];
+const LV = [['48h','3,000 ft','Weekend escape – a city within a short flight'],['7d','18,000 ft','A week – one region, two or three bases'],['14d','30,000 ft','Two weeks – a long-haul trip with time to slow down'],['30d+','39,000 ft','A month or more – multi-stop routes and open dates']];
 $('#altimeter').innerHTML = LV.map((l,i)=>`<div class="col" style="--h:${30+i*22}%" data-i="${i}"><svg class="mini" viewBox="-44 -44 88 88"><g transform="rotate(-90)"><use href="#cplane"/></g></svg><b>${l[0]}</b><small>${l[1]}</small></div>`).join('');
 document.querySelectorAll('.altimeter .col').forEach(c=>{ const show = () => { document.querySelectorAll('.altimeter .col').forEach(x=>x.classList.remove('on')); c.classList.add('on'); const l = LV[c.dataset.i]; $('#altInfo').textContent = `${l[0]} · ${l[1]} — ${l[2]}`; };
   c.addEventListener('mouseenter', show); c.addEventListener('click', show); });
 
-/* ---------- scholarship form (prototype: nothing is sent) ---------- */
+/* ---------- travel fund form (prototype: nothing is sent) ---------- */
 $('#iform').addEventListener('submit', e => { e.preventDefault(); const f = e.currentTarget; f.classList.add('sent');
   f.querySelector('button').textContent = (state.name ? state.name + ', you' : 'You') + "'re on the list ✓"; });
 

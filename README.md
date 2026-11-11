@@ -24,7 +24,7 @@ matches; every other agent can use the same files as plain instructions.
 | <img src="skills/gravity-lens-space/screenshots/01-hero-blackhole.png" width="260" alt="Gravity lens space website"> | [**gravity-lens-space**](skills/gravity-lens-space) | Cinematic space and launch sites: light editorial page with mouse-reactive dark windows — WebGL black-hole lens, hover video previews, floating astronaut over giant words, time-dilation calculator, cursor-reactive headlines. EN/TR example. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/gravity-lens-space/example/) |
 | <img src="skills/network-journey-webgl/screenshots/01-hero.png" width="260" alt="Immersive 3D network website"> | [**network-journey-webgl**](skills/network-journey-webgl) | Immersive scroll-driven 3D product sites (igloo.inc tradition) built to production standards: one Three.js world behind HTML chapters, HUD and pinned tags, particle morphs, quality tiers, strict CSP, Playwright + axe. Real LANORA site, SvelteKit. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/network-journey-webgl/example/) |
 | <img src="skills/aperture-topology-story/screenshots/01-hero.png" width="260" alt="Dark grid website with a glowing node topology hero"> | [**aperture-topology-story**](skills/aperture-topology-story) | Developer-tool, data and OSINT product sites: dark engineering grid, glowing SVG node topology with travelling packets, then a pinned scroll story where an aperture opens from the central node onto a light paper workspace and cards act out the workflow. Architecture switcher, catalog table, terminal. Real OSINT-Book site, EN/TR. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/aperture-topology-story/example/) |
-| <img src="skills/flight-path-roadmap/screenshots/01-hero.png" width="260" alt="Travel-themed homepage with a plane cursor and boarding pass"> | [**flight-path-roadmap**](skills/flight-path-roadmap) | Gamified travel-style homepages for study-abroad, relocation and travel brands: the cursor becomes a plane with contrails, scrolling flies it through numbered gates (HUD, miles, unlock toasts, landing with confetti), boarding-pass hero form over a video loop, ticket pricing with "price on request", split-flap board, scholarship section. Fictional Atlasio, EN. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/flight-path-roadmap/example/) |
+| <img src="skills/flight-path-roadmap/screenshots/01-hero.png" width="260" alt="Travel-themed homepage with a plane cursor and boarding pass"> | [**flight-path-roadmap**](skills/flight-path-roadmap) | Gamified travel-style homepages for travel agencies, trip planners and tour operators: the cursor becomes a plane with contrails, scrolling flies it through numbered gates (HUD, miles, unlock toasts, landing with confetti), boarding-pass hero form over a video loop, ticket pricing with "price on request", split-flap departures board, travel extras, travel-fund impact section. Fictional travel brand Atlasio, EN. | [Live](https://smyrna-pergamum.github.io/web-design-skills/skills/flight-path-roadmap/example/) |
 
 ## Install
 
@@ -79,7 +79,7 @@ Ask for the style by what it looks like, or name the skill:
 
 > Redesign https://example.com with the paper-notebook-landing skill. Keep all real content.
 
-> Build our study-abroad agency's homepage with the flight-path-roadmap skill. Our process has six steps: …
+> Build our travel agency's homepage with the flight-path-roadmap skill. Our booking process has six steps: …
 
 ## Repository layout
 

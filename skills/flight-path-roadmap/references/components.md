@@ -140,7 +140,7 @@ $('#boarding').addEventListener('submit', e => {
 ## 5. Flight world
 
 ```html
-<section id="flight" aria-label="Your route to Germany in 8 steps">   <!-- height:1000vh -->
+<section id="flight" aria-label="Your trip in 8 steps">   <!-- height:1000vh -->
   <div class="sticky">                                                 <!-- position:sticky; top:0; height:100svh -->
     <div class="sunrise"></div><div class="farclouds"></div><svg id="world"></svg>
     …hud, card, toast, landing…

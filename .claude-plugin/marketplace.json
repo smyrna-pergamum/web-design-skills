@@ -91,7 +91,7 @@
     },
     {
       "name": "flight-path-roadmap",
-      "description": "Gamified travel-themed homepages: a plane cursor with contrails, a scroll-driven flight through numbered gates with HUD, miles, unlock toasts and a landing scene, a boarding-pass hero form, ticket pricing tiers, a split-flap departure board and a scholarship impact section.",
+      "description": "Gamified travel-themed homepages: a plane cursor with contrails, a scroll-driven flight through numbered gates with HUD, miles, unlock toasts and a landing scene, a boarding-pass hero form, ticket pricing tiers, a split-flap departures board, travel extras and a travel-fund impact section.",
       "source": "./",
       "strict": false,
       "skills": [

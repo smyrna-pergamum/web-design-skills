@@ -6,15 +6,15 @@ An AI agent skill (Agent Skills / `SKILL.md` format) for gamified, travel-themed
 plane** with a contrail, and **scrolling flies a plane along a route** through numbered gates. The visitor checks in on
 a boarding pass, unlocks gates, earns miles, lands at the destination and picks a cabin class.
 
-It ships with a complete reference build: **Atlasio**, a fictional study-in-Germany platform, in English.
+It ships with a complete reference build: **Atlasio**, a fictional travel and trip-planning brand, in English.
 
 ![Hero with plane cursor and boarding pass](screenshots/01-hero.png)
 
 | Flight: gate 3 | Landing | Cabin classes |
 |---|---|---|
 | ![](screenshots/04-flight-gate3.png) | ![](screenshots/06-landing.png) | ![](screenshots/07-plans.png) |
-| **Departure board** | **Scholarship (impact)** | **Mobile flight** |
-| ![](screenshots/08-departure-board.png) | ![](screenshots/12-scholarship.png) | ![](screenshots/16-mobile-flight.png) |
+| **Departure board** | **Travel fund (impact)** | **Mobile flight** |
+| ![](screenshots/08-departure-board.png) | ![](screenshots/12-travel-fund.png) | ![](screenshots/16-mobile-flight.png) |
 
 More in [`screenshots/`](screenshots) (desktop 1440×900, mobile 390×844).
 
@@ -34,15 +34,15 @@ flight-path-roadmap/
 
 - Plane cursor that turns toward its direction of travel and leaves two fading wing-tip contrails; grows over links,
   hides over form fields, off on touch and with reduced motion.
-- Video-loop hero with an interactive boarding pass (origin, destination, name, programme, degree) that stamps
+- Video-loop hero with an interactive boarding pass (origin, destination, name, trip style, travellers) that stamps
   "CHECKED IN" and personalises the whole page.
 - Scroll-driven flight: a pinned SVG world the camera follows, a curved route through eight gates, night sky turning
   to sunrise, HUD with progress dots and a miles counter, gate cards with missions that tick themselves, unlock toasts
   and a landing scene with confetti.
 - Three ticket-style tiers: Economy (free), Business (advisor) and First / Premium with **"Price on request"**.
-- Split-flap departure board, "classic agency vs us" comparison, marketplace marquee, language "altitude" chart,
-  passport-stamp visa cards.
-- Scholarship impact section on a second video loop with step cards and a sign-up pill.
+- Split-flap departure board, "ten browser tabs vs us" comparison, marquee of travel extras with prices, trip-length
+  "altitude" chart, passport-stamp visa cards.
+- "First Trip Fund" impact section on a second video loop with step cards and a sign-up pill.
 - Responsive down to 390px; respects `prefers-reduced-motion`.
 
 ## Install
@@ -61,7 +61,7 @@ can be pasted into agents that don't. See the [main README](../../README.md#inst
 
 Then ask, for example:
 
-> Build our relocation agency's homepage with the flight-path-roadmap skill. Our process has six steps: …
+> Build our tour operator's homepage with the flight-path-roadmap skill. Our booking process has six steps: …
 
 ## Regenerate the screenshots
 
@@ -88,4 +88,5 @@ Code and documentation: [MIT](../../LICENSE). Media: see the credits above.
 Oyunlaştırılmış, seyahat temalı ana sayfalar için bir web tasarım skill'i: fare kondens izi bırakan bir uçağa dönüşür,
 scroll ile uçak numaralı kapılardan geçen bir rotada uçar. Ziyaretçi biniş kartıyla check-in yapar, kapıların kilidini
 açar, mil toplar, hedefe iner ve bir kabin sınıfı seçer (Economy, Business, Premium "fiyat için sorun"). Video arka
-planlı hero, kalkış tabelası, burs (impact) bölümü dahil. Örnek site kurgusal "Atlasio" (İngilizce).
+planlı hero, kalkış tabelası, ekstralar, vize damgaları ve "First Trip Fund" (impact) bölümü dahil. Örnek site kurgusal
+seyahat markası "Atlasio" (İngilizce).
