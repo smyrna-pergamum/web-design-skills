@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "A library of web design skills for AI coding agents: each one teaches a complete visual style, with a reference site, screenshots and copy-ready components.",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "plugins": [
     {
@@ -96,6 +96,15 @@
       "strict": false,
       "skills": [
         "./skills/flight-path-roadmap"
+      ]
+    },
+    {
+      "name": "orbit-poster-editorial",
+      "description": "Editorial, poster-like homepages: deep ink and warm paper, giant tight type with an outlined line, a mouse-reactive CSS planet in 3D orbits with floating paper cards, a particle network, and real photos printed into posters in grayscale multiply under huge letters, with colour on hover.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/orbit-poster-editorial"
       ]
     }
   ]
