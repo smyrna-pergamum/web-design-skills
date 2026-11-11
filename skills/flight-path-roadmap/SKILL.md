@@ -1,12 +1,12 @@
 ---
 name: flight-path-roadmap
-description: Build a gamified, travel-themed landing page where the visitor's mouse becomes a paper-plane cursor with a contrail and scrolling flies a plane along a curved route through numbered "gates" — a pinned, camera-following SVG world with a night-to-sunrise sky, a HUD with progress dots and a miles counter, unlock toasts, mission chips that tick themselves, a landing scene with confetti — plus an interactive boarding-pass form in the hero that personalises the page, video-loop backgrounds, ticket-style pricing tiers (Economy / Business / First "price on request"), a split-flap departure board for stats, a marketplace marquee, an "altitude" level chart, passport-stamp cards and a scholarship / impact section. Use for study-abroad and education agencies, relocation, visa and immigration services, travel and tourism, onboarding journeys, any multi-step process that should feel like a trip, or when the user asks for a scroll-driven roadmap, a plane cursor or a gamified homepage. Produces one HTML file plus an assets folder (compressed video loops and posters), no frameworks.
+description: Build a gamified, travel-themed landing page where the visitor's mouse becomes a paper-plane cursor with a contrail and scrolling flies a plane along a curved route through numbered "gates" — a pinned, camera-following SVG world with a night-to-sunrise sky, a HUD with progress dots and a miles counter, unlock toasts, mission chips that tick themselves, a landing scene with confetti — plus an interactive boarding-pass form in the hero that personalises the page, video-loop backgrounds, ticket-style pricing tiers (Economy / Business / First "price on request"), a split-flap departure board, a marketplace marquee of extras, an "altitude" trip-length chart, passport-stamp visa cards and an impact / travel-fund section. Use for travel agencies, trip planners, airlines, tour operators and tourism boards, and also for relocation, study-abroad or onboarding journeys, any multi-step process that should feel like a trip, or when the user asks for a scroll-driven roadmap, a plane cursor or a gamified homepage. Produces one HTML file plus an assets folder (compressed video loops and posters), no frameworks.
 ---
 
 # Flight path roadmap
 
 A homepage that turns a long, boring process into a trip the visitor flies themselves. The reference build is
-`example/index.html` (Atlasio, a fictional study-in-Germany platform, English). Detailed code is in
+`example/index.html` (Atlasio, a fictional travel and trip-planning brand, English). Detailed code is in
 `references/components.md`; `screenshots/` shows every section on desktop and mobile.
 
 The metaphor carries everything: the visitor checks in (hero form), takes off (scroll), passes gates (process steps),
@@ -16,9 +16,9 @@ metaphor, but never let it hide the real information: each gate still says plain
 ## 1. Before designing
 
 1. **Map the process to 6–10 gates.** Each gate needs a short title, 2–3 mono tags, one sentence and 2–3 "missions"
-   (concrete tasks). The example uses eight: university choice → documents → funding → visa → housing → enrolment →
-   arrival → student life.
-2. **Pick origin and destination.** Short codes (IST → BER) feel like real tickets; let the visitor choose them in the
+   (concrete tasks). The example uses eight: pick a destination → flights → stay → documents & visa → insurance & money →
+   pack & check in → arrival & transfer → explore.
+2. **Pick origin and destination.** Short codes (IST → LIS) feel like real tickets; let the visitor choose them in the
    boarding pass and reuse them in the HUD and landing scene.
 3. **Gather two video loops** (royalty-free or the client's own): a wide "wing over clouds" for the hero and a
    "window seat" or human moment for the impact section. Compress them (see §5).
@@ -42,7 +42,7 @@ metaphor, but never let it hide the real information: each gate still says plain
 1. **Nav** – wordmark, 4–5 anchor links, one orange "Check in free" pill; turns frosted after 30px of scroll.
 2. **Hero** – full-height video loop behind a left-to-right navy shade. Left: live eyebrow ("Gate open · …"),
    giant headline with one orange underlined word, lead, two CTAs, three tick micro-claims. Right: **boarding pass
-   form** (origin/destination selects with big codes, name, programme, degree, barcode stub). Submitting stamps
+   form** (origin/destination selects with big codes, name, trip style, travellers, barcode stub). Submitting stamps
    "CHECKED IN" and scrolls to the flight. Scroll hint at the bottom.
 3. **Ticker strip** – one mono marquee of facts between hero and flight.
 4. **Flight** – `1000vh` section with a sticky full-screen stage: sky gradient + sunrise overlay, slow far clouds, the
@@ -51,13 +51,13 @@ metaphor, but never let it hide the real information: each gate still says plain
    the end.
 5. **Cabin classes** – three ticket cards: Economy (free), Business (advisor, "from €…"), First / Premium with a gold
    badge and **"Price on request"** + "Ask for a price".
-6. **Departure board** – split-flap table (flight, value, destination, status) that flips when it enters the view,
-   then an honest "classic agency vs us" two-column comparison.
+6. **Departure board** – split-flap table (flight, time, destination, status) that flips when it enters the view,
+   then an honest "ten browser tabs vs us" two-column comparison.
 7. **On-board service** – marketplace marquee of service cards with category, title and price per unit; pauses on hover.
-8. **Altitude** – language or skill levels as altimeter columns; hovering one shows a mini plane and a sentence.
-9. **Passport stamps** – three slightly rotated cards with double-ring seals for visa or plan types.
-10. **Impact / scholarship** – second video loop with a heavy left shade, headline with one orange phrase, three frosted
-    step cards, an email pill form, and a note that criteria and amounts are published later.
+8. **Altitude** – trip lengths (or levels of any kind) as altimeter columns; hovering one shows a mini plane and a sentence.
+9. **Passport stamps** – three slightly rotated cards with double-ring seals for visa types (visa-free, e-visa, embassy visa).
+10. **Impact / travel fund** – second video loop with a heavy left shade, headline with one orange phrase, three frosted
+    step cards, an email pill form, and a note that criteria and amounts are published later. Works the same for a scholarship or charity programme.
 11. **Final call** – huge personalised question ("Ready for take-off, Mina?"), CTA whose plane icon takes off on hover,
     dashed runway line; small footer.
 
@@ -100,10 +100,10 @@ metaphor, but never let it hide the real information: each gate still says plain
 
 ## 6. Writing the copy
 
-* Speak in travel verbs, then say the real thing: "Gate 03 · Funding & insurance — blocked account, scholarships and
-  health insurance, with a budget plan before it gets serious."
-* Headlines are short and concrete ("Your ticket to a German university."). One orange phrase per headline at most.
-* Numbers must be real or labelled as examples. Never invent testimonials or scholarship amounts.
+* Speak in travel verbs, then say the real thing: "Gate 04 · Documents & visa — we check entry rules for your passport
+  and route, and remind you before anything expires."
+* Headlines are short and concrete ("Plan the trip. Enjoy the journey."). One orange phrase per headline at most.
+* Numbers must be real or labelled as examples. Never invent testimonials, fares or fund amounts. Visa rules must point to the official source.
 
 ## 7. Finish checklist
 
