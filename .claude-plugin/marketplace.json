@@ -142,6 +142,15 @@
       "skills": [
         "./skills/rubber-hose-cartoon-app"
       ]
+    },
+    {
+      "name": "live-globe-flight-film",
+      "description": "Experimental scroll-driven film websites on a live 3D globe (CesiumJS): an entrance gate with a real loading figure and sound, then scrolling flies a real aircraft along a real route under a glowing golden trail while the sun sets, city lights come on and one wide italic capital line per chapter fades in, ending in a hand-off to the real product.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/live-globe-flight-film"
+      ]
     }
   ]
 }

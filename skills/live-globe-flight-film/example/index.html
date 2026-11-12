@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="en">
+<!-- Reference build for the live-globe-flight-film skill: the real SkyRoam website. Live at https://smyrna-pergamum.github.io/skyroam/ -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SkyRoam, a free flight game over the real world</title>
+  <meta name="description" content="One evening flight from Istanbul to Pergamon, over the real map. Then take off from your own town: 100 real aircraft, free, in your browser.">
+  <meta name="theme-color" content="#090d18">
+  <meta property="og:title" content="SkyRoam">
+  <meta property="og:description" content="The whole world is a runway. A free flight game over the real map.">
+  <meta property="og:image" content="assets/img/istanbul-1600.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,200..600;1,62..125,200..500&display=swap">
+  <style>
+:root {
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px; --space-4xl: 144px;
+  --text-xs: 0.8125rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.25rem; --text-xl: 1.5625rem; --text-2xl: 1.953rem; --text-3xl: 2.441rem;
+  --text-display-s: clamp(2.25rem, 4vw + 0.5rem, 3.75rem); --text-display: clamp(2.75rem, 5vw + 1rem, 5.25rem);
+  --text-section: clamp(2rem, 2.5vw + 1rem, 3.5rem); --text-title: clamp(1.25rem, 0.75vw + 0.875rem, 1.625rem); --text-lead: clamp(1.125rem, 0.35vw + 1rem, 1.375rem);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --ease-in: cubic-bezier(0.7, 0, 0.84, 0); --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms; --dur-short: 220ms; --dur-long: 420ms;
+  --color-error: oklch(52% 0.19 27); --color-error-soft: oklch(78% 0.13 30); --color-success: oklch(50% 0.12 150);
+  --container: 1360px; --gutter: 64px; --gap-columns: 32px; --section-gap-s: 120px; --section-gap: 144px; --section-gap-l: 176px;
+  --z-base: 1; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200; --z-sticky-nav: 300; --z-modal: 400; --z-toast: 500; --z-tooltip: 600;
+  --color-paper: oklch(17% 0.04 258); --color-paper-2: oklch(21% 0.045 258); --color-paper-3: oklch(26% 0.05 258);
+  --color-ink: oklch(95% 0.015 85); --color-ink-2: oklch(82% 0.02 250); --color-muted: oklch(68% 0.03 250);
+  --color-rule: oklch(36% 0.04 258); --color-scrim: oklch(12% 0.04 258);
+  --color-accent: oklch(81% 0.15 74); --color-accent-2: oklch(86% 0.13 78); --color-accent-ink: oklch(18% 0.04 258); --color-focus: oklch(86% 0.13 78);
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif; --font-body: "Archivo", ui-sans-serif, system-ui, sans-serif; --font-outlier: var(--font-body);
+  --radius-card: 4px; --radius-pill: 999px; --rule-hair: 1px; --shadow-card: none;
+  --tracking-display: -0.01em;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+html { scrollbar-color: var(--color-muted) var(--color-paper); scroll-padding-top: var(--space-3xl); }
+body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); font-size: var(--text-md); line-height: 1.55; -webkit-font-smoothing: antialiased; caret-color: var(--color-accent); }
+::selection { background: color-mix(in oklab, var(--color-accent) 22%, transparent); color: var(--color-ink); }
+:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+h1, h2, h3 { margin: 0; font-family: var(--font-display); font-synthesis: none; overflow-wrap: break-word; min-width: 0; text-wrap: balance; }
+p { margin: 0; text-wrap: pretty; }
+p:not([class]) { max-width: 65ch; }
+img, video { max-width: 100%; height: auto; display: block; }
+svg { display: block; }
+[hidden] { display: none !important; }
+button, input, select, textarea { font: inherit; }
+.container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); box-sizing: border-box; }
+.num, .figure, td.num { font-variant-numeric: tabular-nums; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+[data-slot] { position: relative; overflow: hidden; background: linear-gradient(160deg, var(--color-paper-2, var(--color-paper)), var(--color-paper-3, var(--color-paper))); }
+[data-slot] > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+[data-slot]:has(> img) > :not(img):not([data-keep]) { display: none !important; }
+@media (max-width: 60rem) { :root { --gutter: 24px; --section-gap-s: 80px; --section-gap: 96px; --section-gap-l: 120px; } }
+@media (max-width: 40rem) { :root { --gutter: 16px; --section-gap-s: 56px; --section-gap: 72px; --section-gap-l: 96px; --gap-columns: 16px; } }
+@media (prefers-reduced-motion: reduce) { *:not(.keep-motion), *:not(.keep-motion)::before, *:not(.keep-motion)::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } }
+
+/* Hallmark · shape: one flight, scroll-driven, five chapters over the real map · genre: atmospheric · theme: custom · job: try · idea: "the page is an evening flight from Istanbul to Pergamon: you scroll, the plane flies, the sun sets, and then you choose where to take off" · vibe: "dusk flight, golden trail, quiet wide type"
+ * paper: oklch(13% 0.035 262) · accent: oklch(82% 0.14 72) · display: Archivo at 125 width, light, roman and italic · body: Archivo · hero: the entrance gate over the live globe, a loading figure, then Enter the sky · nav: wordmark, language and Play now · footer: the instrument strip and the map credits · imagery: the product itself, the real map rendered live with CesiumJS and the game's own aircraft models · signature: scroll to fly, the sun setting as you go, the aircraft changing from 1903 to now
+ * axes: dark/grotesk-sans/warm · posture: cinematic full-bleed, scroll-driven · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E5 S5 R4 V4 · weakest: H, the heads are set in wide light caps like the reference the user asked for, so each stays at five words or fewer */
+/* Hallmark · colour reason: dusk navy from the reference's night sky; one amber from the golden trail and city lights; ivory ink */
+/* Hallmark · waive 77 · the chapter sections carry a head and two lines over the live 3D world · the mass is the full-screen map and aircraft behind the words, as in the reference the user chose */
+/* Hallmark · waive 79 · the first screen is the full-bleed live world with the gate on top · the space below the words is the view of the flight, not emptiness */
+/* Hallmark · answered: 29, the glass is the reference's look, used only on the field and the pills over the moving map · 23, the gate bar is a 1px line · 9, the chapter heads are display heads, not labels; every label (places, chapters, tools) is sentence case and untracked · 18, the world moves only while you scroll, and Reduce motion holds the camera still between chapters */
+
+:root {
+  --color-paper: oklch(13% 0.035 262); --color-paper-2: oklch(18% 0.04 262); --color-paper-3: oklch(24% 0.045 262);
+  --color-ink: oklch(95% 0.02 85); --color-ink-2: oklch(84% 0.025 80); --color-muted: oklch(72% 0.03 250);
+  --color-rule: oklch(95% 0.02 85 / 0.22);
+  --color-accent: oklch(82% 0.14 72); --color-accent-2: oklch(88% 0.12 78); --color-accent-ink: oklch(16% 0.04 262); --color-focus: oklch(88% 0.12 78);
+  --color-shade: oklch(10% 0.03 262 / 0.62); --color-shade-soft: oklch(10% 0.03 262 / 0.35);
+  --color-error-soft: oklch(80% 0.12 35);
+  --color-sun: oklch(80% 0.17 60); --color-sun-2: oklch(62% 0.16 40 / 0.6); --color-night: oklch(14% 0.05 270); --color-ember: oklch(50% 0.11 60 / 0.28);
+  --color-glass: oklch(13% 0.035 262 / 0.35); --color-glass-2: oklch(13% 0.035 262 / 0.55); --color-gate: oklch(11% 0.03 262 / 0.82); --color-row: oklch(18% 0.04 262 / 0.85);
+  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif; --font-body: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --edge: clamp(16px, 3vw, 40px);
+}
+
+html { background: var(--color-paper); }
+body { background: var(--color-paper); font-size: 1.0625rem; }
+
+.skip { position: fixed; left: var(--space-md); top: calc(-1 * var(--space-3xl)); z-index: var(--z-toast); padding: var(--space-xs) var(--space-md); background: var(--color-ink); color: var(--color-paper); }
+.skip:focus-visible { top: var(--space-md); }
+
+/* ---- the world behind everything */
+.world { position: fixed; inset: 0; z-index: 0; background: var(--color-paper) url("assets/img/istanbul-1600.jpg") center 60% / cover no-repeat; }
+.world .cesium-viewer, .world .cesium-viewer-cesiumWidgetContainer, .world .cesium-widget, .world .cesium-widget canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.world .cesium-viewer-bottom, .world .cesium-widget-credits { display: none !important; }
+.js.gl .world { background: var(--color-paper); }
+.sunset { position: fixed; inset: 0; z-index: 1; pointer-events: none; mix-blend-mode: soft-light; opacity: var(--sun, 0.6);
+  background: radial-gradient(90% 45% at 50% 42%, var(--color-sun) 0%, var(--color-sun-2) 40%, transparent 75%); }
+.dusk { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: calc(var(--night, 0) * 0.55);
+  background: linear-gradient(to bottom, var(--color-night) 0%, transparent 45%); }
+.veil { position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(120% 70% at 50% 18%, var(--color-shade) 0%, transparent 60%),
+              linear-gradient(to top, var(--color-shade) 0%, transparent 26%); }
+
+/* ---- shared controls */
+.pill { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 var(--space-xl); border: 1px solid var(--color-rule); border-radius: var(--radius-pill); background: var(--color-glass); color: var(--color-ink); font: 400 var(--text-md)/1 var(--font-body); font-stretch: 112%; letter-spacing: 0.02em; white-space: nowrap; cursor: pointer; backdrop-filter: blur(8px); transition: background-color var(--dur-short) var(--ease-out), border-color var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out); }
+.pill:hover { border-color: var(--color-accent); color: var(--color-accent-2); }
+.pill:active { transform: translateY(1px); }
+.pill:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+.pill:disabled, .pill[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+.pill[aria-busy="true"] { cursor: progress; }
+.quiet { min-height: 44px; padding: 0 var(--space-xs); background: transparent; border: 0; color: var(--color-ink-2); font: 400 var(--text-sm)/1 var(--font-body); cursor: pointer; text-decoration: none; transition: color var(--dur-short) var(--ease-out); }
+.quiet:hover { color: var(--color-accent-2); }
+.quiet:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.quiet[aria-pressed="true"] { color: var(--color-accent); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---- entrance */
+.gate { display: none; }
+.js .gate { position: fixed; inset: 0; z-index: var(--z-modal); display: grid; grid-template-rows: auto 1fr auto auto auto; justify-items: center; text-align: center; gap: var(--space-lg); padding: var(--space-xl) var(--edge) var(--space-xl);
+  background: radial-gradient(60% 50% at 50% 46%, var(--color-ember), transparent 70%), var(--color-gate);
+  transition: opacity 900ms var(--ease-in-out), visibility 0s linear 900ms; }
+.js .gate.is-gone { opacity: 0; visibility: hidden; }
+.js.gated main, .js.gated .strip, .js.gated .top, .js.gated .skip { visibility: hidden; }
+.gate__mark { font: 400 var(--text-sm)/1 var(--font-display); font-stretch: 125%; color: var(--color-ink-2); }
+.gate__head { align-self: center; font: italic 200 clamp(1.75rem, 3.6vw, 3.25rem)/1.25 var(--font-display); font-stretch: 125%; text-transform: uppercase; max-width: 20ch; }
+.gate__load { width: min(420px, 86vw); }
+.gate__pct { font: 200 clamp(3rem, 7vw, 5rem)/1 var(--font-display); font-stretch: 112%; }
+.gate__pct small { font-size: 0.32em; margin-left: 0.2em; vertical-align: 0.9em; color: var(--color-ink-2); }
+.gate__bar { position: relative; height: 1px; margin: var(--space-md) 0; background: var(--color-rule); }
+.gate__bar > span { position: absolute; inset: 0; background: var(--color-accent); transform-origin: left; transform: scaleX(0); transition: transform 300ms var(--ease-out); }
+.gate__line { font-size: var(--text-sm); color: var(--color-ink-2); }
+.gate__go { display: grid; }
+.js .gate__go { justify-items: center; gap: var(--space-xs); min-height: 104px; opacity: 0; transform: translateY(6px); transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out); }
+.js .gate.is-ready .gate__go { opacity: 1; transform: none; }
+.gate__go .pill { min-width: 240px; }
+.gate__note { font-size: var(--text-xs); color: var(--color-muted); }
+
+/* ---- top */
+.top { position: fixed; inset: 0 0 auto; z-index: var(--z-sticky-nav); display: flex; align-items: center; justify-content: space-between; padding: var(--space-md) var(--edge); padding-top: max(var(--space-md), env(safe-area-inset-top)); }
+.top__mark { font: 400 var(--text-md)/1 var(--font-display); font-stretch: 125%; color: var(--color-ink); text-decoration: none; }
+.top__mark:focus-visible, .top__play:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 4px; }
+.top__nav { display: flex; align-items: center; gap: var(--space-md); }
+.top__play { display: inline-flex; align-items: center; min-height: 44px; font: italic 300 var(--text-md)/1 var(--font-display); font-stretch: 112%; color: var(--color-accent); text-decoration: none; }
+.top__play:hover { color: var(--color-accent-2); text-decoration: underline; text-underline-offset: 0.3em; }
+
+/* ---- chapters: each is a stretch of sky; its words ride at the top while you pass */
+main { position: relative; z-index: 2; }
+.chapter { min-height: 220vh; padding: 0 var(--edge); }
+.chapter:first-child { min-height: 240vh; }
+.chapter__text { position: sticky; top: clamp(88px, 15vh, 160px); max-width: 760px; margin: 0 auto; text-align: center; padding-top: var(--space-lg); }
+.js.gl .chapter__text { opacity: var(--o, 1); transform: translateY(calc((1 - var(--o, 1)) * -10px)); }
+.chapter__where { font-size: var(--text-sm); color: var(--color-ink-2); }
+.chapter__head { margin-top: var(--space-md); font: italic 200 clamp(1.875rem, 4.2vw, 3.75rem)/1.18 var(--font-display); font-stretch: 125%; text-transform: uppercase; text-shadow: 0 2px 30px var(--color-shade); }
+.chapter__lead { margin: var(--space-lg) auto 0; max-width: 46ch; font-size: var(--text-lead); line-height: 1.5; color: var(--color-ink); text-shadow: 0 1px 18px var(--color-shade); }
+.chapter__plane { margin-top: var(--space-lg); font: italic 300 var(--text-xl)/1.2 var(--font-display); font-stretch: 112%; color: var(--color-accent); min-height: 1.2em; }
+.chapter--end { min-height: 170vh; }
+.chapter--end .chapter__text { top: clamp(80px, 12vh, 130px); }
+.chapter__small { margin: var(--space-xl) auto 0; max-width: 52ch; font-size: var(--text-sm); color: var(--color-ink-2); }
+.chapter__links { margin-top: var(--space-md); display: flex; justify-content: center; gap: var(--space-xl); }
+.chapter__links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--color-ink); text-underline-offset: 0.3em; }
+.chapter__links a:hover { color: var(--color-accent-2); }
+.chapter__links a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+/* clear view: words step aside so you can just watch */
+.clear .chapter__text, .clear .veil { opacity: 0 !important; pointer-events: none; }
+.clear .chapter--end .chapter__text { opacity: 1 !important; pointer-events: auto; }
+.chapter__text, .veil { transition: opacity var(--dur-long) var(--ease-out); }
+
+/* ---- town search */
+.takeoff { margin: var(--space-xl) auto 0; display: flex; gap: var(--space-sm); max-width: 520px; }
+.takeoff__input { flex: 1; min-width: 0; min-height: 52px; padding: 0 var(--space-lg); border: 1px solid var(--color-ink-2); border-radius: var(--radius-pill); background: var(--color-glass-2); backdrop-filter: blur(8px); color: var(--color-ink); font-size: var(--text-lg); text-align: center; }
+.takeoff__input::placeholder { color: var(--color-muted); }
+.takeoff__input:hover { border-color: var(--color-ink); }
+.takeoff__input:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.takeoff__input::-webkit-search-cancel-button { filter: invert(1); }
+.takeoff .pill { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-accent-ink); font-weight: 600; }
+.takeoff .pill:hover { background: var(--color-accent-2); color: var(--color-accent-ink); }
+.takeoff__msg { margin-top: var(--space-sm); min-height: 1.5em; font-size: var(--text-sm); color: var(--color-ink-2); }
+.takeoff__msg.is-error { color: var(--color-error-soft); }
+.takeoff__list { display: grid; gap: var(--space-2xs); max-width: 520px; margin: 0 auto; padding: 0; list-style: none; text-align: left; }
+.takeoff__list a { display: flex; align-items: baseline; gap: var(--space-sm); min-height: 48px; padding: var(--space-sm) var(--space-lg); border-radius: var(--radius-card); background: var(--color-row); color: var(--color-ink); text-decoration: none; transition: background-color var(--dur-short) var(--ease-out); }
+.takeoff__list a:hover { background: var(--color-paper-3); }
+.takeoff__list a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+.takeoff__list small { color: var(--color-muted); font-size: var(--text-sm); }
+
+/* ---- the strip */
+.strip { position: fixed; inset: auto 0 0; z-index: var(--z-sticky); display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; gap: var(--space-md); padding: var(--space-md) var(--edge); padding-bottom: max(var(--space-md), env(safe-area-inset-bottom)); }
+.strip__tools { display: flex; flex-wrap: wrap; gap: 0 var(--space-sm); }
+.strip__chapter { text-align: center; }
+.strip__label { font: italic 300 var(--text-sm)/1 var(--font-display); font-stretch: 125%; color: var(--color-ink); }
+.strip__label span:first-child { color: var(--color-accent); margin-right: 0.4em; }
+.strip__dots { display: flex; justify-content: center; gap: var(--space-xs); margin: var(--space-sm) 0 0; padding: 0; list-style: none; }
+.strip__dots li { width: 28px; height: 1px; background: var(--color-rule); }
+.strip__dots li.is-on { background: var(--color-accent); }
+.strip__hint { justify-self: end; font-size: var(--text-xs); color: var(--color-muted); padding-bottom: var(--space-sm); }
+.credits { position: fixed; right: var(--edge); bottom: 2px; z-index: var(--z-sticky); font-size: 12px; color: var(--color-muted); opacity: 0.8; max-width: 60vw; text-align: right; }
+.credits a { color: inherit; }
+.credits img { display: inline-block; height: 12px; vertical-align: middle; }
+@media (max-width: 48rem) {
+  .strip { grid-template-columns: minmax(0, 1fr); gap: var(--space-2xs); padding-bottom: max(var(--space-lg), env(safe-area-inset-bottom)); }
+  .strip__chapter { order: -1; }
+  .strip__tools { justify-content: center; flex-wrap: nowrap; }
+  .chapter__head, .gate__head { font-size: clamp(1.25rem, 6.4vw, 2rem); overflow-wrap: normal; word-break: keep-all; hyphens: none; }
+  .strip__hint { display: none; }
+  .strip__tools .quiet { font-size: var(--text-xs); }
+  .credits { max-width: 92vw; }
+  .chapter__lead { font-size: var(--text-md); }
+  .takeoff { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .gate, .gate__go, .gate__bar > span, .chapter__text, .veil { transition: none; }
+  .js.gl .chapter__text { transform: none; }
+}
+
+</style>
+  <script>document.documentElement.classList.add('js'); if (!location.hash) document.documentElement.classList.add('gated');</script>
+  <script src="https://cdn.jsdelivr.net/npm/cesium@1.123.0/Build/Cesium/Cesium.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#ch5" data-i18n="skip">Skip to take-off</a>
+
+  <!-- the world: the real map, drawn by Cesium, behind everything -->
+  <div class="world" id="world" aria-hidden="true"></div>
+  <div class="sunset" aria-hidden="true"></div>
+  <div class="dusk" aria-hidden="true"></div>
+  <div class="veil" aria-hidden="true"></div>
+
+  <!-- entrance: loading the planet, then in with sound -->
+  <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateHead">
+    <p class="gate__mark">SkyRoam</p>
+    <h1 class="gate__head" id="gateHead" data-i18n="gateHead">The whole world is a runway.</h1>
+    <div class="gate__load">
+      <p class="gate__pct num"><span id="pct">0</span><small>%</small></p>
+      <div class="gate__bar"><span id="pctBar"></span></div>
+      <p class="gate__line" id="gateLine" data-i18n="gateLoading">Loading the planet under your wings.</p>
+    </div>
+    <div class="gate__go" id="gateGo">
+      <button class="pill" type="button" id="enterSound" data-i18n="enter">Enter the sky</button>
+      <button class="quiet" type="button" id="enterQuiet" data-i18n="enterQuiet">Enter without sound</button>
+    </div>
+    <p class="gate__note" data-i18n="gateNote">Enter with sound. You can turn it off anytime.</p>
+  </div>
+
+  <header class="top">
+    <a class="top__mark" href="https://smyrna-pergamum.github.io/skyroam/">SkyRoam</a>
+    <nav class="top__nav" aria-label="Site">
+      <button class="quiet" type="button" id="langBtn" aria-label="Türkçe">TR</button>
+      <a class="top__play" href="https://smyrna-pergamum.github.io/skyroam/play.html" data-i18n="play">Play now</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="chapter" id="ch1" data-n="01" aria-labelledby="h1">
+      <div class="chapter__text">
+        <p class="chapter__where" data-i18n="w1">Istanbul, the Bosphorus</p>
+        <h2 class="chapter__head" id="h1" data-i18n="h1">Take off from your own street.</h2>
+        <p class="chapter__lead" data-i18n="l1">SkyRoam is a free flight game over the real map of the whole planet. It runs in your browser.</p>
+      </div>
+    </section>
+
+    <section class="chapter" id="ch2" data-n="02" aria-labelledby="h2">
+      <div class="chapter__text">
+        <p class="chapter__where" data-i18n="w2">Over the Sea of Marmara</p>
+        <h2 class="chapter__head" id="h2" data-i18n="h2">A century of wings.</h2>
+        <p class="chapter__lead" data-i18n="l2">One hundred real aircraft, each built from its real size and speed. Keep scrolling and watch them change.</p>
+        <p class="chapter__plane num" id="planeName" aria-live="polite">Wright Flyer, 1903</p>
+      </div>
+    </section>
+
+    <section class="chapter" id="ch3" data-n="03" aria-labelledby="h3">
+      <div class="chapter__text">
+        <p class="chapter__where" data-i18n="w3">The Dardanelles, at sunset</p>
+        <h2 class="chapter__head" id="h3" data-i18n="h3">Sit up front.</h2>
+        <p class="chapter__lead" data-i18n="l3">Glass screens in airliners, round dials in a Cessna, and a voice that tells you to pull up.</p>
+      </div>
+    </section>
+
+    <section class="chapter" id="ch4" data-n="04" aria-labelledby="h4">
+      <div class="chapter__text">
+        <p class="chapter__where" data-i18n="w4">Troy, as the lights come on</p>
+        <h2 class="chapter__head" id="h4" data-i18n="h4">Fly with two thumbs.</h2>
+        <p class="chapter__lead" data-i18n="l4">On a phone, keyboard or gamepad. No install, no account, no ads.</p>
+      </div>
+    </section>
+
+    <section class="chapter chapter--end" id="ch5" data-n="05" aria-labelledby="h5">
+      <div class="chapter__text">
+        <p class="chapter__where" data-i18n="w5">Pergamon, after dark</p>
+        <h2 class="chapter__head" id="h5" data-i18n="h5">Where will you take off?</h2>
+        <form class="takeoff" id="takeoff" action="https://smyrna-pergamum.github.io/skyroam/play.html" method="get" role="search" autocomplete="off">
+          <label class="visually-hidden" for="town" data-i18n="townLabel">Town or city to take off from</label>
+          <input class="takeoff__input" id="town" name="town" type="search" placeholder="Type any town" data-i18n-ph="townPh" aria-describedby="takeoffMsg">
+          <button class="pill" type="submit" id="takeoffBtn" data-i18n="takeoff">Take off</button>
+        </form>
+        <p class="takeoff__msg" id="takeoffMsg" role="status" aria-live="polite"></p>
+        <ul class="takeoff__list" id="townList" hidden></ul>
+        <p class="chapter__small" data-i18n="l5">The map is free and flat in Lite mode. Add your own free Cesium ion key for mountains and buildings; it never leaves your browser.</p>
+        <p class="chapter__links"><a href="https://smyrna-pergamum.github.io/skyroam/play.html" data-i18n="openGame">Open the game</a> <a href="https://github.com/smyrna-pergamum/skyroam" data-i18n="source">Source code</a></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- chrome along the bottom, like an instrument strip -->
+  <div class="strip" id="strip">
+    <div class="strip__tools">
+      <button class="quiet" type="button" id="soundBtn" aria-pressed="false" data-i18n="soundOff">Sound off</button>
+      <button class="quiet" type="button" id="motionBtn" aria-pressed="false" data-i18n="motion">Reduce motion</button>
+      <button class="quiet" type="button" id="clearBtn" aria-pressed="false" data-i18n="clear">Clear view</button>
+    </div>
+    <div class="strip__chapter" aria-hidden="true">
+      <p class="strip__label"><span id="chN">01</span> <span id="chName" data-i18n="c1">Take off</span></p>
+      <ol class="strip__dots" id="dots"><li></li><li></li><li></li><li></li><li></li></ol>
+    </div>
+    <p class="strip__hint" id="hint" data-i18n="hint">Scroll to fly forward</p>
+  </div>
+  <div class="credits" id="credits"></div>
+
+  <script type="module">
+// SkyRoam website: an evening flight from Istanbul to Pergamon, driven by scroll.
+// The map is live CesiumJS (Esri imagery by day, NASA Black Marble city lights by night),
+// the aircraft are the game's own generated models, and the sun really sets as you scroll.
+import { resolveAircraft, baseById } from './assets/js/aircraft.js';
+import { PlaneModel } from './assets/js/plane.js';
+
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = t => t * t * (3 - 2 * t);
+const D2R = Math.PI / 180;
+
+// ---------------------------------------------------------------- words
+const TR = {
+  skip: 'Havalanmaya geç', gateHead: 'Bütün dünya bir pist.', gateLoading: 'Kanatlarının altındaki gezegen yükleniyor.',
+  gateReady: 'Hazır. Hava kararmak üzere.', enter: 'Göğe gir', enterQuiet: 'Sessiz gir', gateNote: 'Sesle girersin. İstediğin an kapatabilirsin.',
+  play: 'Hemen oyna',
+  w1: 'İstanbul, Boğaz', h1: 'Kendi sokağından havalan.', l1: 'SkyRoam, bütün gezegenin gerçek haritası üzerinde ücretsiz bir uçuş oyunu. Tarayıcında çalışır.',
+  w2: 'Marmara Denizi üzerinde', h2: 'Kanatların yüzyılı.', l2: 'Yüz gerçek uçak, her biri gerçek boyutu ve hızıyla kuruldu. Kaydırmaya devam et, değişmelerini izle.',
+  w3: 'Çanakkale Boğazı, gün batarken', h3: 'Öne otur.', l3: 'Yolcu uçaklarında cam ekranlar, Cessna’da yuvarlak göstergeler ve sana “pull up” diyen bir ses.',
+  w4: 'Truva, ışıklar yanarken', h4: 'İki başparmakla uç.', l4: 'Telefon, klavye ya da oyun kolu. Kurulum yok, hesap yok, reklam yok.',
+  w5: 'Bergama, karanlık çökünce', h5: 'Nereden havalanacaksın?',
+  townLabel: 'Havalanacağın kasaba ya da şehir', townPh: 'Herhangi bir yer yaz', takeoff: 'Havalan',
+  l5: 'Lite modda harita ücretsiz ve düzdür. Dağlar ve binalar için kendi ücretsiz Cesium ion anahtarını ekle; anahtar tarayıcından çıkmaz.',
+  openGame: 'Oyunu aç', source: 'Kaynak kod',
+  soundOn: 'Ses açık', soundOff: 'Ses kapalı', motion: 'Hareketi azalt', clear: 'Sade görünüm', hint: 'Uçmak için kaydır',
+  c1: 'Kalkış', c2: 'Uçaklar', c3: 'Kokpit', c4: 'Kontroller', c5: 'Senin yerin',
+  searching: 'Aranıyor…', none: 'Bu adla bir yer bulamadım. Başka bir yazımla dene.', failed: 'Arama şu an çalışmıyor. Oyunu açıp menüden seçebilirsin.',
+  pick: 'Hangisi?', empty: 'Önce bir yer adı yaz.',
+};
+const EN = {};
+document.querySelectorAll('[data-i18n]').forEach(el => { EN[el.dataset.i18n] = el.textContent; });
+document.querySelectorAll('[data-i18n-ph]').forEach(el => { EN[el.dataset.i18nPh] = el.placeholder; });
+Object.assign(EN, {
+  gateReady: 'Ready. The sun is about to set.', soundOn: 'Sound on',
+  c1: 'Take off', c2: 'Aircraft', c3: 'Cockpit', c4: 'Controls', c5: 'Your place',
+  searching: 'Searching…', none: 'No place by that name. Try another spelling.', failed: 'Search is not answering right now. Open the game and pick a place from the menu.',
+  pick: 'Which one?', empty: 'Type a place name first.',
+});
+const LANG_KEY = 'skyroam.site.lang';
+let lang = (() => {
+  try { const s = localStorage.getItem(LANG_KEY); if (s === 'tr' || s === 'en') return s; } catch { /* storage off */ }
+  return (navigator.language || 'en').toLowerCase().startsWith('tr') ? 'tr' : 'en';
+})();
+const t = k => (lang === 'tr' ? TR : EN)[k] ?? EN[k] ?? k;
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  $('langBtn').textContent = lang === 'tr' ? 'EN' : 'TR';
+  $('langBtn').setAttribute('aria-label', lang === 'tr' ? 'English' : 'Türkçe');
+  if (ready) $('gateLine').textContent = t('gateReady');
+  $('soundBtn').textContent = t(soundOn ? 'soundOn' : 'soundOff');
+  $('chName').textContent = t(`c${chapter + 1}`);
+}
+$('langBtn').addEventListener('click', () => {
+  lang = lang === 'tr' ? 'en' : 'tr';
+  try { localStorage.setItem(LANG_KEY, lang); } catch { /* storage off */ }
+  applyLang();
+});
+
+// ---------------------------------------------------------------- the route: Istanbul to Pergamon
+// lat, lon, altitude (m). Flies south-west, into the December sunset.
+const ROUTE = [
+  [41.175, 29.085, 700], [41.085, 29.045, 800], [41.005, 28.985, 1000], [40.86, 28.62, 1500],
+  [40.66, 27.95, 2100], [40.43, 27.10, 2300], [40.20, 26.48, 1700], [40.02, 26.30, 1300],
+  [39.86, 26.20, 1200], [39.55, 26.45, 1300], [39.30, 26.75, 1100], [39.17, 27.05, 800], [39.133, 27.184, 650],
+];
+// Each chapter's share of the route (0..1), so places line up with words.
+const CH_ROUTE = [0, 0.16, 0.5, 0.7, 0.86, 1];
+// Time of day: golden hour over Istanbul, after dark over Pergamon (21 December, UTC).
+const T0 = '2026-12-21T12:55:00Z', T1 = '2026-12-21T15:05:00Z';
+// Aircraft per chapter; chapter 2 runs through the century.
+const CENTURY = ['wright-flyer', 'bleriot-xi', 'sopwith-camel', 'spirit-st-louis', 'dc-3', 'spitfire-ix', 'constellation', 'b707-320b', 'concorde', 'b747-400', 'a380-800'];
+const CH_PLANE = ['a320neo', null, 'b777-300er', 'cessna-172', 'p-51d'];
+
+// Catmull-Rom through the waypoints, then an arc-length table so speed is even.
+function crPoint(i, f) {
+  const P = k => ROUTE[clamp(k, 0, ROUTE.length - 1)];
+  const p0 = P(i - 1), p1 = P(i), p2 = P(i + 1), p3 = P(i + 2);
+  const f2 = f * f, f3 = f2 * f;
+  return [0, 1, 2].map(k => 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * f + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * f2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * f3));
+}
+const SAMPLES = [];
+{
+  const N = 1600;
+  let len = 0, prev = null;
+  for (let s = 0; s <= N; s++) {
+    const g = (s / N) * (ROUTE.length - 1);
+    const i = Math.min(ROUTE.length - 2, Math.floor(g));
+    const p = crPoint(i, g - i);
+    if (prev) {
+      const dy = (p[0] - prev[0]) * 111320, dx = (p[1] - prev[1]) * 111320 * Math.cos(p[0] * D2R);
+      len += Math.hypot(dx, dy);
+    }
+    SAMPLES.push({ p, len });
+    prev = p;
+  }
+  SAMPLES.forEach(s => { s.u = s.len / len; });
+}
+function at(u) {
+  u = clamp(u, 0, 1);
+  let lo = 0, hi = SAMPLES.length - 1;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (SAMPLES[m].u < u) lo = m; else hi = m; }
+  const a = SAMPLES[lo], b = SAMPLES[hi], f = (u - a.u) / Math.max(1e-9, b.u - a.u);
+  return [0, 1, 2].map(k => lerp(a.p[k], b.p[k], f));
+}
+function headingAt(u) {
+  const a = at(u - 0.0015), b = at(u + 0.0015);
+  return Math.atan2((b[1] - a[1]) * Math.cos(a[0] * D2R), b[0] - a[0]); // compass, radians, 0 = north
+}
+const wrap = a => Math.atan2(Math.sin(a), Math.cos(a));
+
+// ---------------------------------------------------------------- page state
+let ready = false, soundOn = false, chapter = 0;
+let reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let progress = 0, shown = 0; // scroll progress and the eased value the camera follows
+
+function readScroll() {
+  const max = document.documentElement.scrollHeight - innerHeight;
+  progress = max > 0 ? clamp(scrollY / max, 0, 1) : 0;
+}
+addEventListener('scroll', readScroll, { passive: true });
+addEventListener('resize', readScroll);
+
+const sections = [...document.querySelectorAll('.chapter')];
+function chapterUi() {
+  // fade each chapter's words in and out as its stretch passes
+  const vh = innerHeight;
+  sections.forEach((s, i) => {
+    const r = s.getBoundingClientRect();
+    const enter = clamp((vh - r.top) / (vh * 0.5), 0, 1);
+    const leave = i === sections.length - 1 ? 1 : clamp((r.bottom - vh * 0.55) / (vh * 0.45), 0, 1);
+    const off = r.top >= vh || r.bottom <= 0; // out of view: leave it at rest, fully visible
+    s.querySelector('.chapter__text').style.setProperty('--o', off ? '1' : (Math.min(enter, leave)).toFixed(3));
+    if (r.top < vh * 0.5 && r.bottom > vh * 0.5) chapter = i;
+  });
+  $('chN').textContent = sections[chapter].dataset.n;
+  $('chName').textContent = t(`c${chapter + 1}`);
+  [...$('dots').children].forEach((d, i) => d.classList.toggle('is-on', i <= chapter));
+  $('hint').style.opacity = progress > 0.97 ? '0' : '1';
+}
+// route position for a page progress: chapters map onto their stretch of the route
+function routeU(p) {
+  const n = sections.length;
+  let acc = 0;
+  for (let i = 0; i < n; i++) {
+    const h = sections[i].offsetHeight;
+    const total = sections.reduce((a, s) => a + s.offsetHeight, 0);
+    const a = acc / total, b = (acc + h) / total;
+    if (p <= b || i === n - 1) {
+      const f = clamp((p - a) / Math.max(1e-6, b - a), 0, 1);
+      return { u: lerp(CH_ROUTE[i], CH_ROUTE[i + 1], f), ch: i, f };
+    }
+    acc += h;
+  }
+  return { u: 1, ch: n - 1, f: 1 };
+}
+
+// ---------------------------------------------------------------- buttons
+$('motionBtn').setAttribute('aria-pressed', String(reduce));
+$('motionBtn').addEventListener('click', () => { reduce = !reduce; $('motionBtn').setAttribute('aria-pressed', String(reduce)); });
+$('clearBtn').addEventListener('click', () => {
+  const on = document.body.classList.toggle('clear');
+  $('clearBtn').setAttribute('aria-pressed', String(on));
+});
+$('soundBtn').addEventListener('click', () => setSound(!soundOn));
+
+// ---------------------------------------------------------------- sound: the game's own recordings
+const audio = { ctx: null, loops: {} };
+async function startAudio() {
+  if (audio.ctx) { audio.ctx.resume(); return; }
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  const ctx = audio.ctx = new AC();
+  audio.master = ctx.createGain(); audio.master.gain.value = 0; audio.master.connect(ctx.destination);
+  const load = async (k, url, a, b) => {
+    try {
+      const buf = await ctx.decodeAudioData(await (await fetch(url)).arrayBuffer());
+      const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true; src.loopStart = a; src.loopEnd = Math.min(b, buf.duration);
+      const g = ctx.createGain(); g.gain.value = 0; src.connect(g).connect(audio.master); src.start(0, a);
+      audio.loops[k] = { src, g };
+    } catch { /* silent is fine */ }
+  };
+  await Promise.all([load('prop', 'assets/sounds/prop.mp3', 0.5, 22.3), load('jet', 'assets/sounds/jet.mp3', 1, 9.5), load('wind', 'assets/sounds/wind.mp3', 0.3, 4.7)]);
+}
+function setSound(on) {
+  soundOn = on;
+  $('soundBtn').setAttribute('aria-pressed', String(on));
+  $('soundBtn').textContent = t(on ? 'soundOn' : 'soundOff');
+  if (on) startAudio();
+  if (audio.ctx) audio.master.gain.setTargetAtTime(on ? 0.55 : 0, audio.ctx.currentTime, 0.4);
+}
+let lastP = 0, rush = 0;
+function updateAudio(dt, engine) {
+  if (!audio.ctx || !soundOn) return;
+  const v = Math.abs(shown - lastP) / Math.max(dt, 1e-3); lastP = shown;
+  rush = lerp(rush, clamp(v * 18, 0, 1), 1 - Math.exp(-dt * 3));
+  const t0 = audio.ctx.currentTime, L = audio.loops;
+  const jet = engine === 'jet';
+  L.prop?.g.gain.setTargetAtTime(jet ? 0 : 0.35 + rush * 0.4, t0, 0.3);
+  L.prop?.src.playbackRate.setTargetAtTime(0.85 + rush * 0.35, t0, 0.3);
+  L.jet?.g.gain.setTargetAtTime(jet ? 0.22 + rush * 0.35 : 0, t0, 0.5);
+  L.jet?.src.playbackRate.setTargetAtTime(0.85 + rush * 0.25, t0, 0.5);
+  L.wind?.g.gain.setTargetAtTime(0.12 + rush * 0.5, t0, 0.3);
+}
+document.addEventListener('visibilitychange', () => { if (audio.ctx) document.hidden ? audio.ctx.suspend() : audio.ctx.resume(); });
+
+// ---------------------------------------------------------------- the gate
+function enter(withSound) {
+  $('gate').classList.add('is-gone');
+  document.documentElement.classList.remove('gated');
+  if (withSound) setSound(true);
+  $('main').focus?.();
+}
+$('enterSound').addEventListener('click', () => enter(true));
+$('enterQuiet').addEventListener('click', () => enter(false));
+function setReady() {
+  if (ready) return;
+  ready = true;
+  $('pct').textContent = '100';
+  $('pctBar').style.transform = 'scaleX(1)';
+  $('gateLine').textContent = t('gateReady');
+  $('gate').classList.add('is-ready');
+  $('enterSound').focus({ preventScroll: true });
+}
+// The gate is skipped when someone arrives deep-linked to a chapter.
+if (location.hash && location.hash !== '#') { $('gate').classList.add('is-gone'); }
+
+// ---------------------------------------------------------------- town search (same as the game's menu)
+const form = $('takeoff'), input = $('town'), msg = $('takeoffMsg'), list = $('townList'), go = $('takeoffBtn');
+function playUrl(r) {
+  const q = new URLSearchParams({
+    fly: '1', lang, lat: r.latitude.toFixed(5), lon: r.longitude.toFixed(5),
+    name: [r.name, r.admin1 && r.admin1 !== r.name ? r.admin1 : r.country].filter(Boolean).join(', '),
+    alt: String(Math.round((r.elevation || 0) + 450)),
+  });
+  if (lastCentury) q.set('ac', lastCentury);
+  return `https://smyrna-pergamum.github.io/skyroam/play.html?${q}`;
+}
+const say = (text, err = false) => { msg.textContent = text; msg.classList.toggle('is-error', err); };
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = input.value.trim();
+  list.hidden = true; list.replaceChildren();
+  if (!name) { say(t('empty'), true); input.focus(); return; }
+  say(t('searching')); go.setAttribute('aria-busy', 'true'); go.disabled = true;
+  try {
+    const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=5&language=${lang}&format=json`);
+    if (!r.ok) throw new Error(r.status);
+    const res = (await r.json()).results || [];
+    if (!res.length) { say(t('none'), true); return; }
+    if (res.length === 1) { location.href = playUrl(res[0]); return; }
+    say(t('pick'));
+    for (const p of res) {
+      const a = document.createElement('a'); a.href = playUrl(p); a.append(p.name);
+      const sub = [p.admin1, p.country].filter(Boolean).join(', ');
+      if (sub) { const s = document.createElement('small'); s.textContent = sub; a.append(s); }
+      const li = document.createElement('li'); li.append(a); list.append(li);
+    }
+    list.hidden = false; list.querySelector('a')?.focus();
+  } catch { say(t('failed'), true); }
+  finally { go.removeAttribute('aria-busy'); go.disabled = false; }
+});
+
+// ---------------------------------------------------------------- the world
+let lastCentury = null;
+function boot() {
+  const C = window.Cesium;
+  if (!C) throw new Error('no cesium');
+  const viewer = new C.Viewer('world', {
+    baseLayer: false, animation: false, timeline: false, baseLayerPicker: false, geocoder: false, homeButton: false,
+    sceneModePicker: false, navigationHelpButton: false, fullscreenButton: false, infoBox: false, selectionIndicator: false,
+    shouldAnimate: false, creditContainer: $('credits'), msaaSamples: 4,
+  });
+  document.documentElement.classList.add('gl');
+  window.skyroamSite = { viewer };
+  const scene = viewer.scene, globe = scene.globe;
+  viewer.screenSpaceEventHandler.removeInputAction(C.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+  scene.screenSpaceCameraController.enableInputs = false; // the page scrolls; the camera follows the flight
+  const day = viewer.imageryLayers.addImageryProvider(new C.UrlTemplateImageryProvider({
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    maximumLevel: 17, credit: new C.Credit('Imagery © Esri, Maxar, Earthstar Geographics'),
+  }));
+  const night = viewer.imageryLayers.addImageryProvider(new C.UrlTemplateImageryProvider({
+    url: 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png',
+    maximumLevel: 8, credit: new C.Credit('City lights: NASA Black Marble'),
+  }));
+  night.alpha = 0; night.brightness = 1.15; night.contrast = 1.1; night.saturation = 0.8;
+  // The real low winter sun would leave the ground almost black, so the dusk is graded by hand:
+  // the imagery dims and warms as you fly, then the city lights come up.
+  globe.enableLighting = false;
+  globe.showGroundAtmosphere = true;
+  globe.dynamicAtmosphereLighting = false;
+  globe.maximumScreenSpaceError = 1.6;
+  globe.baseColor = C.Color.fromCssColorString('#0a1020');
+  scene.highDynamicRange = false;
+  scene.fog.enabled = true; scene.fog.density = 0.00018; scene.fog.minimumBrightness = 0.02;
+  scene.skyAtmosphere.atmosphereLightIntensity = 22;
+  scene.skyAtmosphere.perFragmentAtmosphere = true;
+  scene.sun.glowFactor = 1.3;
+  const bloom = scene.postProcessStages.bloom;
+  bloom.enabled = false;
+  bloom.uniforms.contrast = 119; bloom.uniforms.brightness = -0.3; bloom.uniforms.glowOnly = false;
+  bloom.uniforms.delta = 1.0; bloom.uniforms.sigma = 3.0; bloom.uniforms.stepSize = 1.0;
+
+  const T0j = C.JulianDate.fromIso8601(T0), T1j = C.JulianDate.fromIso8601(T1);
+  const span = C.JulianDate.secondsDifference(T1j, T0j);
+
+  // the golden trail along the whole route
+  const trail = [];
+  for (let i = 0; i <= 600; i++) { const p = at(i / 600); trail.push(C.Cartesian3.fromDegrees(p[1], p[0], p[2] - 6)); }
+  viewer.entities.add({ polyline: { positions: trail, width: 9, arcType: C.ArcType.NONE,
+    material: new C.PolylineGlowMaterialProperty({ glowPower: 0.22, taperPower: 1, color: C.Color.fromCssColorString('#ffbe5c').withAlpha(0.95) }) } });
+
+  // the aircraft: the game's own models
+  const plane = new PlaneModel(scene);
+  let planeId = null, ac = null;
+  function usePlane(id) {
+    if (id === planeId) return;
+    planeId = id;
+    ac = resolveAircraft(baseById(id));
+    plane.build(ac);
+    plane.gear = 0; plane.visible = true;
+    if (CENTURY.includes(id)) { const f = baseById(id).spec || {}; lastCentury = id; $('planeName').textContent = `${f.name}, ${f.year}`; }
+  }
+  usePlane(CH_PLANE[0]);
+
+  // loading figure for the gate: counts up while tiles arrive, 100 once the view is complete
+  const bootAt = performance.now();
+  let loadedFrames = 0;
+  function gateProgress() {
+    if (ready) return;
+    const el = (performance.now() - bootAt) / 1000;
+    loadedFrames = globe.tilesLoaded ? loadedFrames + 1 : 0;
+    const est = loadedFrames > 20 && el > 1.5 ? 100 : Math.min(94, Math.round(94 * (1 - Math.exp(-el / 2.2))));
+    if (est > +$('pct').textContent) { $('pct').textContent = String(est); $('pctBar').style.transform = `scaleX(${est / 100})`; }
+    if (est === 100) setTimeout(setReady, 350);
+  }
+  setTimeout(setReady, 14000); // never keep anyone at the door
+
+  // camera state (smoothed)
+  const cam = { heading: headingAt(0), roll: 0, nose: 0 };
+  const hpr = new C.HeadingPitchRoll();
+  let prev = performance.now();
+  readScroll(); shown = progress;
+
+  scene.preUpdate.addEventListener(() => {
+    const now = performance.now(), dt = Math.min(0.1, (now - prev) / 1000); prev = now;
+    shown = reduce ? progress : lerp(shown, progress, 1 - Math.exp(-dt * 3.2));
+    if (Math.abs(shown - progress) < 1e-5) shown = progress;
+    const { u, ch, f } = routeU(shown);
+
+    // aircraft for this stretch
+    if (ch === 1) usePlane(CENTURY[Math.min(CENTURY.length - 1, Math.floor(f * CENTURY.length))]);
+    else usePlane(CH_PLANE[ch]);
+
+    // time of day follows the flight
+    C.JulianDate.addSeconds(T0j, span * smooth(u), viewer.clock.currentTime);
+    const dusk = smooth(clamp((u - 0.2) / 0.6, 0, 1));
+    day.brightness = lerp(1.0, 0.16, dusk);
+    day.saturation = lerp(1.1, 0.55, dusk);
+    day.gamma = lerp(1.0, 1.25, dusk);
+    day.hue = lerp(0, 0.03, dusk);
+    night.alpha = 0.55 * smooth(clamp((u - 0.55) / 0.35, 0, 1));
+    document.documentElement.style.setProperty('--sun', (Math.sin(Math.PI * clamp(u * 1.25 + 0.15, 0, 1))).toFixed(3));
+    document.documentElement.style.setProperty('--night', dusk.toFixed(3));
+
+    // pose along the route; bank into the turns
+    const p = at(u), hd = headingAt(u), hdAhead = headingAt(u + 0.01);
+    const turn = wrap(hdAhead - hd);
+    const targetRoll = reduce ? 0 : clamp(turn * 5, -0.38, 0.38);
+    cam.roll = lerp(cam.roll, targetRoll, 1 - Math.exp(-dt * 2));
+    const pa = at(u + 0.002), climb = Math.atan2(pa[2] - p[2], 0.002 * SAMPLES[SAMPLES.length - 1].len);
+    const bob = reduce ? 0 : Math.sin(now / 1400) * 0.6;
+    const s = { lat: p[0] * D2R, lon: p[1] * D2R, h: p[2] + bob, heading: hd, pitch: climb * 0.7, roll: cam.roll };
+    plane.update(s);
+
+    // chase camera; in the cockpit chapter it slides in to the nose
+    const noseT = ch === 2 ? smooth(clamp(Math.min(f / 0.25, (1 - f) / 0.2), 0, 1)) : 0;
+    cam.nose = lerp(cam.nose, noseT, 1 - Math.exp(-dt * 4));
+    plane.visible = cam.nose < 0.4;
+    cam.heading = cam.heading + wrap(hd - cam.heading) * (1 - Math.exp(-dt * 2.4));
+    const sp = (ac.span || 20);
+    const back = lerp(sp * 1.9 + 16, -(ac.base?.spec?.len || sp * 0.8) * 0.45, cam.nose);
+    const endT = ch === 4 ? smooth(clamp(f * 1.6, 0, 1)) : 0; // last chapter: the plane drops low in the frame, under the words
+    const up = lerp(sp * 0.38 + 4, 1.2, cam.nose) + endT * sp * 0.55;
+    const side = lerp(Math.sin(now / 5200) * sp * (reduce ? 0 : 0.25), 0, cam.nose);
+    const ch_ = Math.cos(cam.heading), sh_ = Math.sin(cam.heading);
+    const dN = -ch_ * back - sh_ * side, dE = -sh_ * back + ch_ * side;
+    const lat = p[0] + dN / 111320, lon = p[1] + dE / (111320 * Math.cos(p[0] * D2R));
+    hpr.heading = cam.heading;
+    hpr.pitch = lerp(lerp(-0.13, 0.02, endT), -0.05, cam.nose);
+    hpr.roll = cam.roll * lerp(0.3, 0.55, cam.nose);
+    scene.camera.setView({ destination: C.Cartesian3.fromDegrees(lon, lat, p[2] + bob + up), orientation: hpr });
+
+    updateAudio(dt, ac.phys?.engine);
+    chapterUi();
+    gateProgress();
+  });
+}
+
+applyLang();
+readScroll();
+chapterUi();
+try {
+  boot();
+} catch (e) {
+  // No WebGL (or the map library didn't load): the words and the screenshot still tell the story.
+  console.warn('World could not start', e);
+  setReady();
+}
+
+</script>
+</body>
+</html>
