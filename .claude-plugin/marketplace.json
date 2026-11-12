@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "A library of web design skills for AI coding agents: each one teaches a complete visual style, with a reference site, screenshots and copy-ready components.",
-    "version": "1.5.0"
+    "version": "1.6.0"
   },
   "plugins": [
     {
@@ -132,6 +132,15 @@
       "strict": false,
       "skills": [
         "./skills/broadsheet-daily-news"
+      ]
+    },
+    {
+      "name": "rubber-hose-cartoon-app",
+      "description": "Playful, experimental product pages in the style of 1930s–40s theatrical cartoons: cream paper with grain, thick ink outlines and hard shadows, an original rubber-hose mascot in front of a ring target, a line-boil SVG filter, starburst numbers, a cartoon TV with real screenshots, a squash-and-stretch flip card, wooden crates, speech-bubble FAQ and an iris-in download.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/rubber-hose-cartoon-app"
       ]
     }
   ]
