@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atlasio – Language school (demo)</title>
+<meta name="description" content="Atlasio – fictional language school (demo of the ticket-cube-language-school skill). German and English courses, explained in 8 languages.">
+<meta name="theme-color" content="#0F2438">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Manrope:wght@400;500;600;700;800&family=Vazirmatn:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  /* Layout idea: a speech-bubble "portal" — live blob canvas hero, stacked door-cards, a chat finder, every language one tap away */
+  --ink:#0F2438;
+  --night:#08182A;
+  --violet:#0B7A6F;
+  --coral:#FFB627;
+  --lilac:#D3F1EA;
+  --cream:#F7F4EC;
+  --muted:#4E6273;
+  --line:rgba(15,36,56,.14);
+  --display:"Unbounded","Vazirmatn",ui-sans-serif,system-ui,sans-serif;
+  --body:"Manrope","Vazirmatn",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --ease:cubic-bezier(.2,.75,.2,1);
+  color-scheme:light;
+}
+html[dir="rtl"]{--display:"Vazirmatn","Unbounded",sans-serif;--body:"Vazirmatn","Manrope",sans-serif}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font:500 17px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4{font-family:var(--display);margin:0;line-height:1.02;text-wrap:balance;font-weight:800}
+html[dir="rtl"] h1,html[dir="rtl"] h2,html[dir="rtl"] h3{line-height:1.3}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--coral);outline-offset:3px;border-radius:10px}
+.wrap{width:min(1240px,100% - 40px);margin-inline:auto}
+.skip{position:absolute;inset-inline-start:-999px;top:8px;background:var(--coral);color:var(--ink);padding:10px 16px;border-radius:10px;z-index:200;font-weight:700}
+.skip:focus{inset-inline-start:12px}
+.kicker{display:inline-flex;align-items:center;gap:10px;font:700 12px/1 var(--body);letter-spacing:.18em;text-transform:uppercase}
+.kicker::before{content:"";width:22px;height:2px;background:currentColor}
+.ltr{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.btn{display:inline-flex;align-items:center;gap:10px;font:700 15px/1 var(--body);padding:17px 26px;border-radius:999px;border:0;cursor:pointer;text-decoration:none;transition:transform .25s var(--ease),background .2s,color .2s}
+.btn:hover{transform:translateY(-3px)}
+.btn-coral{background:var(--coral);color:var(--ink)}
+.btn-violet{background:var(--violet);color:#fff}
+.btn-line{background:transparent;color:inherit;box-shadow:inset 0 0 0 2px currentColor}
+.btn-sm{padding:12px 18px;font-size:14px}
+.arrow{display:inline-block;transition:transform .25s var(--ease)}
+html[dir="rtl"] .arrow{transform:scaleX(-1)}
+.btn:hover .arrow{transform:translateX(4px)}
+html[dir="rtl"] .btn:hover .arrow{transform:scaleX(-1) translateX(4px)}
+
+/* ===== header ===== */
+header.top{position:fixed;inset-inline:0;top:0;z-index:100;color:#fff;transition:background .3s,color .3s,box-shadow .3s}
+header.top.solid{background:rgba(247,244,236,.92);backdrop-filter:blur(14px);color:var(--ink);box-shadow:0 1px 0 var(--line)}
+.nav{display:flex;align-items:center;gap:22px;height:76px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand-word{font:800 22px/1 "Unbounded",sans-serif;letter-spacing:-.04em}
+.brand-sub{display:block;font:600 11px/1 "Manrope",sans-serif;opacity:.75;margin-top:4px}
+.nav-links{display:flex;gap:4px;list-style:none;margin:0;margin-inline-start:auto;padding:0}
+.nav-links a{text-decoration:none;font-weight:700;font-size:14px;padding:10px 14px;border-radius:999px}
+.nav-links a:hover{background:rgba(110,135,150,.16)}
+.langbox{position:relative}
+.lang-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:inherit;border:1.5px solid currentColor;border-radius:999px;padding:9px 14px;font:700 14px/1 var(--body);cursor:pointer}
+.solid .lang-btn{background:#fff}
+.lang-pop{position:absolute;inset-inline-end:0;top:calc(100% + 10px);width:300px;background:var(--night);color:#fff;border-radius:22px;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:6px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+.lang-pop[hidden]{display:none}
+.lang-pop button{background:rgba(255,255,255,.06);color:#fff;border:0;border-radius:14px;padding:12px;text-align:start;cursor:pointer;font:700 15px/1.2 var(--body)}
+.lang-pop button small{display:block;font:600 11px/1 "Manrope",sans-serif;opacity:.55;margin-top:4px;letter-spacing:.1em}
+.lang-pop button[aria-current="true"]{background:var(--coral);color:var(--ink)}
+.lang-pop button:hover{background:rgba(255,255,255,.14)}
+.lang-pop button[aria-current="true"]:hover{background:var(--coral)}
+.menu-btn{display:none;background:var(--coral);color:var(--ink);border:0;border-radius:14px;width:46px;height:46px;cursor:pointer}
+@media (max-width:980px){
+  .nav-links{display:none}
+  .langbox{margin-inline-start:auto}
+  .menu-btn{display:inline-grid;place-items:center}
+  .nav.open .nav-links{display:flex;flex-direction:column;position:absolute;top:76px;inset-inline:0;background:var(--night);color:#fff;padding:16px 20px 24px}
+  .nav.open .nav-links a{display:block;font-size:20px;padding:14px 6px}
+}
+
+/* ===== hero ===== */
+.hero{position:relative;background:var(--night);color:#fff;padding:150px 0 90px;overflow:hidden;isolation:isolate}
+#blobs{position:absolute;inset:0;width:100%;height:100%;z-index:-2;filter:blur(38px) saturate(1.15);opacity:.95}
+.grain{position:absolute;inset:0;z-index:-1;opacity:.22;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.hero-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:40px;align-items:end}
+.hero .kicker{color:var(--coral)}
+.hero h1{font-size:clamp(40px,7.2vw,108px);letter-spacing:-.045em;margin:22px 0 28px}
+html[dir="rtl"] .hero h1{letter-spacing:0}
+.hero h1 span{display:block}
+.hero h1 .l2{color:var(--coral)}
+.hero h1 .l3{-webkit-text-stroke:2px #fff;color:transparent}
+html[dir="rtl"] .hero h1 .l3{-webkit-text-stroke:0;color:var(--lilac)}
+.hero-lead{font-size:19px;max-width:44ch;color:#D6E3EA}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hero-actions .btn-line{color:#fff}
+.bubble{position:relative;background:var(--cream);color:var(--ink);border-radius:36px;padding:28px 30px 30px;justify-self:end;width:min(100%,360px);transform:rotate(-3deg);box-shadow:0 30px 60px -25px rgba(0,0,0,.6)}
+html[dir="rtl"] .bubble{transform:rotate(3deg);justify-self:start}
+.bubble::after{content:"";position:absolute;bottom:-22px;inset-inline-start:46px;border:24px solid transparent;border-top-color:var(--cream);border-bottom:0;border-inline-start-width:6px}
+.bubble small{font:700 11px/1 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--violet)}
+.greet{font:800 clamp(40px,5vw,64px)/1.1 var(--display);letter-spacing:-.03em;min-height:1.2em;margin:12px 0 10px;transition:opacity .35s,transform .35s var(--ease)}
+.greet.out{opacity:0;transform:translateY(10px)}
+.greet-lang{font-weight:700;color:var(--muted);font-size:14px}
+.hero-facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:56px;padding:0;list-style:none}
+.hero-facts li{border:1.5px solid rgba(255,255,255,.3);border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px}
+@media (max-width:900px){.hero-grid{grid-template-columns:1fr}.bubble,html[dir="rtl"] .bubble{justify-self:start}}
+
+/* marquee */
+.marquee{background:var(--coral);color:var(--ink);overflow:hidden;white-space:nowrap;padding:18px 0;border-block:2px solid var(--ink)}
+.marquee-track{display:inline-flex;gap:40px;animation:marq 40s linear infinite;font:800 28px/1 "Unbounded","Vazirmatn",sans-serif;letter-spacing:-.02em}
+.marquee-track span{display:inline-flex;align-items:center;gap:40px}
+.marquee-track span::after{content:"";width:16px;height:16px;border-radius:50% 50% 50% 0;background:var(--ink)}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* sections */
+section{padding:110px 0}
+.head{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:end;margin-bottom:56px}
+.head h2{font-size:clamp(34px,5.2vw,72px);letter-spacing:-.04em;margin-top:16px}
+html[dir="rtl"] .head h2{letter-spacing:0}
+.head p{color:var(--muted);max-width:46ch;justify-self:end;font-size:18px}
+.head .kicker{color:var(--violet)}
+@media (max-width:820px){.head{grid-template-columns:1fr}.head p{justify-self:start}}
+
+/* ===== door cards (sticky stack) ===== */
+.stack{display:grid;gap:26px}
+.door{position:sticky;top:calc(96px + var(--i) * 18px);min-height:380px;border-radius:40px;padding:44px;display:grid;grid-template-columns:1fr 1fr;gap:36px;overflow:hidden;box-shadow:0 -18px 40px -30px rgba(15,36,56,.6)}
+.door .num{position:absolute;inset-inline-end:-10px;bottom:-60px;font:800 280px/1 "Unbounded",sans-serif;letter-spacing:-.08em;opacity:.16;pointer-events:none}
+.door .tag{display:inline-block;font:800 12px/1 var(--body);letter-spacing:.16em;text-transform:uppercase;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.2);border:1.5px solid currentColor}
+.door h3{font-size:clamp(32px,4vw,56px);letter-spacing:-.04em;margin:20px 0 10px}
+html[dir="rtl"] .door h3{letter-spacing:0}
+.door .sub{font-size:18px;opacity:.85;max-width:30ch}
+.door dl{margin:0;display:grid;gap:0;align-self:center;position:relative}
+.door dl div{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:14px 0;border-top:1.5px solid currentColor;border-color:rgba(110,135,150,.35)}
+.door dt{font:800 11px/1.6 var(--body);letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+.door dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.door .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.d1{background:var(--violet);color:#fff}
+.d2{background:var(--coral);color:var(--ink)}
+.d3{background:var(--ink);color:#fff}
+.d4{background:var(--lilac);color:var(--ink)}
+.d1 .btn-coral,.d3 .btn-coral{color:var(--ink)}
+.d2 .btn-violet,.d4 .btn-violet{color:#fff}
+@media (max-width:860px){.door{grid-template-columns:1fr;padding:30px;border-radius:30px;position:relative;top:auto}.door dl div{grid-template-columns:1fr;gap:2px}.door .num{font-size:180px}}
+
+/* ===== week ===== */
+.week-sec{background:var(--night);color:#fff;position:relative;overflow:hidden}
+.week-sec .head p{color:#B7C7D1}
+.week-sec .kicker{color:var(--coral)}
+.daily{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--violet);border-radius:20px;padding:18px 22px;font-weight:700;margin-bottom:14px}
+.daily b{font-family:var(--display);font-size:18px}
+.grid-scroll{overflow-x:auto;padding-bottom:6px}
+.tgrid{display:grid;grid-template-columns:64px repeat(5,minmax(130px,1fr));min-width:780px;position:relative}
+.tgrid .dh{font:800 13px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:#B7C7D1;padding:0 10px 14px}
+.tcol{position:relative;height:340px;border-inline-start:1px solid rgba(255,255,255,.1)}
+.tcol::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.07) 0 1px,transparent 1px 68px)}
+.hours{position:relative;height:340px}
+.hours span{position:absolute;inset-inline-end:10px;font:700 12px/1 var(--body);color:#8AA0AF;transform:translateY(-50%);direction:ltr}
+.ev{position:absolute;inset-inline:6px;border-radius:16px;padding:10px 12px;font-size:13px;line-height:1.3;font-weight:700;overflow:hidden;transition:transform .2s var(--ease)}
+.ev:hover{transform:scale(1.03)}
+.ev b{display:block;font-size:14px;direction:ltr;unicode-bidi:isolate;text-align:start}
+html[dir="rtl"] .ev b{text-align:end}
+.ev.c{background:var(--coral);color:var(--ink)}
+.ev.e{background:var(--cream);color:var(--ink)}
+.week-note{margin-top:22px;font-size:14px;color:#93A7B5}
+
+/* ===== chat finder ===== */
+.chat{max-width:860px;margin-inline:auto;display:flex;flex-direction:column;gap:14px}
+.msg{max-width:78%;padding:18px 22px;border-radius:26px;font-weight:600;font-size:18px;line-height:1.45}
+.bot{align-self:flex-start;background:#fff;border:1.5px solid var(--line);border-end-start-radius:6px;display:flex;gap:12px;align-items:flex-start}
+.bot svg{flex:none}
+.answers{align-self:flex-end;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;max-width:86%;border:0;padding:0;margin:0 0 10px}
+.answers legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.answers label{position:relative;cursor:pointer}
+.answers input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.answers span{display:inline-block;padding:13px 18px;border-radius:22px;border-end-end-radius:6px;border:1.5px solid var(--violet);color:var(--violet);font-weight:800;font-size:15px;transition:all .2s var(--ease)}
+.answers input:checked+span{background:var(--violet);color:#fff;transform:translateY(-2px);box-shadow:0 10px 20px -12px var(--violet)}
+.answers input:focus-visible+span{outline:3px solid var(--coral);outline-offset:3px}
+.answers[hidden]{display:none}
+.bot[hidden]{display:none}
+.result{align-self:flex-start;max-width:92%;background:var(--coral);color:var(--ink);border-radius:32px;border-end-start-radius:6px;padding:28px 30px;display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.result small{font:800 11px/1 var(--body);letter-spacing:.16em;text-transform:uppercase}
+.result h3{font-size:clamp(26px,3.4vw,40px);letter-spacing:-.03em}
+.result .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.result .note{font-size:14px;opacity:.8}
+@media (max-width:600px){.msg,.result{max-width:100%}.answers{max-width:100%}}
+
+/* ===== apply ===== */
+.apply-sec{background:var(--violet);color:#fff;border-radius:48px;margin-inline:10px;position:relative;overflow:hidden}
+.apply-sec .kicker{color:var(--lilac)}
+.apply{display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;align-items:start}
+.apply aside{position:sticky;top:110px}
+.apply aside h2{font-size:clamp(34px,5vw,68px);letter-spacing:-.04em;margin:16px 0 18px}
+html[dir="rtl"] .apply aside h2{letter-spacing:0}
+.apply aside p{color:#E3F5F1;max-width:40ch}
+.journey{list-style:none;margin:30px 0 0;padding:0;display:grid;gap:8px;counter-reset:j}
+.journey li{counter-increment:j;display:flex;gap:14px;align-items:center;font-weight:700;padding:12px 16px;border-radius:16px;background:rgba(255,255,255,.1)}
+.journey li::before{content:counter(j);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--coral);color:var(--ink);font:800 13px/1 "Unbounded",sans-serif;flex:none}
+form.card{background:var(--cream);color:var(--ink);border-radius:34px;padding:34px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field.full{grid-column:1/-1}
+.field>label,.field .lbl{font-weight:800;font-size:14px}
+input[type=text],input[type=email],input[type=tel],select,textarea{font:500 16px/1.4 var(--body);color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--violet);outline:none;box-shadow:0 0 0 4px rgba(11,122,111,.2)}
+input[type=email],input[type=tel]{direction:ltr;text-align:start}
+html[dir="rtl"] input[type=email],html[dir="rtl"] input[type=tel]{text-align:right}
+.field.err input,.field.err select{border-color:#c62d2d}
+.errmsg{color:#b42020;font-size:13px;font-weight:700}
+.errmsg:empty{display:none}
+.check{display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.5;font-weight:600}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--violet);flex:none}
+.cond{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:18px;border-radius:20px;background:var(--lilac)}
+.cond[hidden]{display:none}
+.cond .answers{align-self:auto;justify-content:flex-start;max-width:100%;margin:0}
+.hp{position:absolute;inset-inline-start:-9999px}
+.form-foot{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.form-foot small{color:var(--muted);font-weight:600}
+.banner{grid-column:1/-1;border-radius:14px;padding:14px 16px;font-size:14px;font-weight:700}
+.banner[hidden]{display:none}
+.banner.warn{background:#fff3cd;color:#6b4e00}
+.banner.bad{background:#fde3e3;color:#8a1b1b}
+.success{background:var(--cream);color:var(--ink);border-radius:34px;padding:40px;display:flex;flex-direction:column;gap:16px}
+.success .ref{font:800 clamp(28px,4vw,44px)/1 "Unbounded",sans-serif;color:var(--violet);direction:ltr;text-align:start}
+.success ol{margin:0;padding-inline-start:20px;color:var(--muted);font-weight:600}
+.spinner{width:18px;height:18px;border-radius:50%;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:940px){.apply{grid-template-columns:1fr}.apply aside{position:static}.apply-sec{border-radius:32px}}
+@media (max-width:560px){form.card,.cond{grid-template-columns:1fr;padding:22px}}
+
+/* ===== faq ===== */
+.faq{display:grid;gap:0;border-top:2px solid var(--ink)}
+details{border-bottom:2px solid var(--ink)}
+summary{cursor:pointer;list-style:none;padding:26px 0;font:800 clamp(18px,2.2vw,26px)/1.25 var(--display);display:flex;justify-content:space-between;gap:20px;letter-spacing:-.02em}
+html[dir="rtl"] summary{letter-spacing:0}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";flex:none;width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--cream);display:grid;place-items:center;font:500 24px/1 var(--body);transition:transform .3s var(--ease),background .2s}
+details[open] summary::after{transform:rotate(45deg);background:var(--coral);color:var(--ink)}
+details p{padding:0 0 26px;color:var(--muted);max-width:70ch;font-size:18px}
+
+/* ===== footer ===== */
+footer{background:var(--night);color:#D3DEE4;padding:90px 0 0;overflow:hidden;position:relative}
+.foot-cta{display:flex;justify-content:space-between;align-items:end;gap:30px;flex-wrap:wrap;padding-bottom:60px;border-bottom:1px solid rgba(255,255,255,.12)}
+.foot-cta h2{color:#fff;font-size:clamp(30px,4.4vw,60px);letter-spacing:-.04em;max-width:16ch}
+html[dir="rtl"] .foot-cta h2{letter-spacing:0}
+.foot-cta h2 em{font-style:normal;color:var(--coral);white-space:nowrap;unicode-bidi:isolate}
+.foot-grid{display:grid;grid-template-columns:1.15fr 1fr .8fr 1.35fr;gap:40px;padding:60px 0}
+footer h4{font:800 12px/1 var(--body);letter-spacing:.18em;text-transform:uppercase;color:var(--coral);margin-bottom:20px}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+footer a{text-decoration:none}
+footer a:hover{color:#fff;text-decoration:underline;text-underline-offset:4px}
+.contact li{display:flex;gap:12px;align-items:flex-start}
+.contact svg{flex:none;margin-top:4px}
+.azav{display:flex;gap:16px;align-items:center;margin-top:26px}
+.azav svg{flex:none}
+.azav p{font-size:14px;line-height:1.5;color:#fff;font-weight:700}
+.social{display:flex;flex-wrap:wrap;gap:8px}
+.social a{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:999px;border:1.5px solid rgba(255,255,255,.22);font-weight:700;font-size:13px;transition:background .2s,color .2s,border-color .2s}
+.social a:hover{background:var(--coral);border-color:var(--coral);color:var(--ink);text-decoration:none}
+.langs-foot{display:flex;flex-wrap:wrap;gap:6px;margin-top:28px}
+.langs-foot button{background:transparent;border:1.5px solid rgba(255,255,255,.2);color:#D3DEE4;border-radius:999px;padding:7px 12px;font:700 13px/1 var(--body);cursor:pointer}
+.langs-foot button[aria-current="true"]{background:#fff;color:var(--ink);border-color:#fff}
+.comm{color:#fff;font-weight:700;font-size:16px;line-height:1.45;margin-bottom:14px;max-width:30ch}
+.comm-links{margin-bottom:22px}
+.comm-links a{font:800 18px/1 var(--display);color:#fff}
+.soc-h{font:800 11px/1 var(--body);letter-spacing:.16em;text-transform:uppercase;color:#93A7B5;margin-bottom:12px}
+.foot-langs{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:0 0 50px}
+.foot-langs h4{margin:0}
+.foot-langs .langs-foot{margin:0}
+.mega{font:800 clamp(64px,19vw,300px)/.8 "Unbounded",sans-serif;letter-spacing:-.07em;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.18);white-space:nowrap;text-align:center;margin-bottom:-.12em;user-select:none;direction:ltr}
+.bottom{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:22px 0;border-top:1px solid rgba(255,255,255,.12);font-size:13px;color:#93A7B5;position:relative;z-index:1;background:var(--night)}
+@media (max-width:980px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.foot-grid{grid-template-columns:1fr}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* ================= v3: ticket system ================= */
+:root{--paper:#E8F7F3;--hard:0 6px 0 var(--ink);--mono:"JetBrains Mono",ui-monospace,monospace}
+.tix{border:1.5px solid var(--ink);box-shadow:var(--hard)}
+
+/* ticket nav */
+header.top{position:fixed;top:14px;inset-inline:0;z-index:100;color:var(--ink);background:none!important;box-shadow:none!important;backdrop-filter:none!important}
+.nav{height:auto;gap:12px;align-items:stretch}
+.tbar{flex:1;display:flex;align-items:stretch;background:var(--paper);border:1.5px solid var(--ink);border-radius:16px;box-shadow:0 5px 0 var(--ink);min-height:58px}
+.tbar>*{position:relative;display:flex;align-items:center;padding:0 18px}
+.tbar>*+*{border-inline-start:1.5px solid var(--ink)}
+.tbar>*+*::before,.tbar>*+*::after{content:"";position:absolute;inset-inline-start:-8px;width:14px;height:14px;border-radius:50%;background:var(--cream);border:1.5px solid var(--ink)}
+.tbar>*+*::before{top:-8px}.tbar>*+*::after{bottom:-8px}
+.tbar .brand{padding-inline-end:22px}
+.tbar .brand-word{font-size:20px}
+.tbar .brand-sub{white-space:nowrap}
+.tbar .navi{flex:1;text-decoration:none;font-weight:800;font-size:14px;gap:8px;transition:background .2s}
+.tbar .navi:hover{background:#fff}
+.tbar .navi small{font:500 10px/1 var(--mono);opacity:.55}
+.tbar .langbox{padding:0 10px}
+.lang-btn{background:#fff!important;color:var(--ink)!important;border:1.5px solid var(--ink)}
+.cta-pill{display:inline-flex;align-items:center;gap:12px;background:var(--ink);color:#fff;text-decoration:none;border-radius:999px;padding:6px 6px 6px 22px;font-weight:800;font-size:14px;box-shadow:0 5px 0 var(--violet);white-space:nowrap;align-self:center}
+html[dir="rtl"] .cta-pill{padding:6px 22px 6px 6px}
+.cta-pill i{width:42px;height:42px;border-radius:50%;background:var(--coral);color:var(--ink);display:grid;place-items:center;font-style:normal;font-size:18px;transition:transform .3s var(--ease)}
+html[dir="rtl"] .cta-pill i{transform:scaleX(-1)}
+.cta-pill:hover i{transform:rotate(-45deg)}
+.menu-btn{align-self:center}
+@media (max-width:1100px){.tbar .navi small{display:none}.tbar>*{padding:0 12px}}
+@media (max-width:980px){
+  .tbar .navi{display:none}.tbar .langbox{margin-inline-start:auto}.cta-pill{display:none}
+  .nav.open .navlinks-m{display:flex}
+}
+.navlinks-m{display:none;position:absolute;top:78px;inset-inline:20px;flex-direction:column;background:var(--paper);border:1.5px solid var(--ink);border-radius:18px;box-shadow:var(--hard);padding:10px}
+.navlinks-m a{padding:14px;font-weight:800;text-decoration:none;font-size:18px;border-radius:12px}
+.navlinks-m a:hover{background:#fff}
+
+/* hero with cube */
+.hero3{padding:130px 0 40px;position:relative;overflow:hidden;background:var(--cream)}
+.h3grid{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:20px;align-items:center;min-height:540px}
+.ticket{position:relative;border:1.5px solid var(--ink);border-radius:16px;box-shadow:var(--hard);padding:16px 24px 22px;display:grid;gap:6px;max-width:300px}
+.ticket::before,.ticket::after{content:"";position:absolute;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;background:var(--cream);border:1.5px solid var(--ink)}
+.ticket::before{inset-inline-start:-10px}.ticket::after{inset-inline-end:-10px}
+.ticket small{font:500 11px/1 var(--mono);letter-spacing:.06em;opacity:.75}
+.ticket b{font:800 clamp(30px,3.6vw,48px)/1.1 var(--display);letter-spacing:-.03em;text-align:center;padding:10px 0 2px}
+.ticket .perf{position:absolute;inset-block:12px;inset-inline-end:46px;border-inline-start:1.5px dashed currentColor;opacity:.35}
+.t-left{background:var(--lilac);color:var(--ink);transform:rotate(-2deg)}
+.t-right{background:var(--violet);color:#fff;justify-self:end;transform:rotate(2deg)}
+html[dir="rtl"] .t-right{justify-self:start}
+.side{display:flex;flex-direction:column;gap:30px;min-width:0}
+.side.right{align-items:flex-end;text-align:end}
+html[dir="rtl"] .side.right{align-items:flex-start}
+.hero3 h1{font-size:clamp(26px,2.5vw,38px);letter-spacing:-.04em;line-height:1.05}
+.hero3 h1 span{display:block}
+.hero3 h1 .l2{color:#A86400}
+.hero3 h1 .l3{color:var(--violet);-webkit-text-stroke:0}
+html[dir="rtl"] .hero3 h1{letter-spacing:0;line-height:1.35}
+.hero3 .lead3{color:var(--muted);font-size:16px;max-width:32ch}
+.meaning{font-weight:800}
+.meaning small{display:block;font-weight:600;color:var(--muted);font-size:13px}
+.dots{display:flex;gap:8px}
+.dots button{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--ink);background:#fff;font:700 12px/1 var(--mono);cursor:pointer;color:var(--ink);transition:transform .2s var(--ease)}
+.dots button:hover{transform:translateY(-3px)}
+.dots button[aria-pressed="true"]{background:var(--ink);color:#fff}
+
+.stage{position:relative;height:520px;display:grid;place-items:center;perspective:1200px;touch-action:pan-y;cursor:grab;user-select:none}
+.stage:active{cursor:grabbing}
+.floor{position:absolute;width:380px;height:380px;bottom:0;left:50%;margin-left:-190px;background:var(--lilac);border:1.5px solid var(--ink);box-shadow:8px 8px 0 var(--ink);transform:rotateX(70deg) rotateZ(45deg);border-radius:12px;opacity:.95}
+.cube{--s:300px;position:relative;width:var(--s);height:var(--s);transform-style:preserve-3d;will-change:transform;margin-bottom:60px}
+.face{position:absolute;inset:0;background:var(--cream);border:1.5px solid var(--ink);border-radius:10px;padding:16px 16px 0;display:flex;flex-direction:column;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.face .inner{flex:1;border-radius:6px;display:flex;flex-direction:column;justify-content:space-between;padding:18px;overflow:hidden;position:relative}
+.face .inner .n{font:800 92px/.85 "Unbounded",sans-serif;letter-spacing:-.08em;opacity:.95}
+.face .inner h3{font-size:24px;letter-spacing:-.03em;line-height:1.1}
+html[dir="rtl"] .face .inner h3{letter-spacing:0;line-height:1.35}
+.face .inner .chip{align-self:flex-start;font:700 10px/1 var(--mono);letter-spacing:.06em;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,.22);border:1px solid currentColor;text-transform:uppercase}
+.face .cap{height:40px;display:flex;align-items:center;justify-content:center;font:500 11px/1 var(--mono);letter-spacing:.08em}
+.f0{transform:translateZ(calc(var(--s)/2))}
+.f1{transform:rotateY(90deg) translateZ(calc(var(--s)/2))}
+.f2{transform:rotateY(180deg) translateZ(calc(var(--s)/2))}
+.f3{transform:rotateY(-90deg) translateZ(calc(var(--s)/2))}
+.ftop{transform:rotateX(90deg) translateZ(calc(var(--s)/2));background:var(--ink);display:grid;place-items:center;padding:0}
+.fbot{transform:rotateX(-90deg) translateZ(calc(var(--s)/2));background:var(--ink)}
+.i1{background:var(--violet);color:#fff}.i2{background:var(--coral);color:var(--ink)}.i3{background:var(--ink);color:#fff}.i4{background:var(--lilac);color:var(--ink)}
+.hint{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font:500 11px/1 var(--mono);color:var(--muted);white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:1000px){
+  .h3grid{grid-template-columns:1fr;min-height:0}
+  .stage{height:420px;order:-1}
+  .cube{--s:230px}
+  .floor{width:300px;height:300px;margin-left:-150px}
+  .side,.side.right{align-items:flex-start;text-align:start}
+  .t-right{justify-self:start}
+  .sides-row{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+}
+@media (max-width:600px){.sides-row{grid-template-columns:1fr}}
+
+.bighead{font:800 clamp(44px,9.5vw,150px)/.92 var(--display);letter-spacing:-.06em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:0 30px;color:var(--ink);padding-top:30px}
+.bighead span:last-child{color:var(--violet)}
+html[dir="rtl"] .bighead{letter-spacing:0;line-height:1.25}
+
+/* boarding-pass accordion */
+.passes{display:flex;gap:16px;height:500px;margin-top:40px}
+.pass{position:relative;flex:1;min-width:0;border:1.5px solid var(--ink);border-radius:22px;box-shadow:var(--hard);overflow:hidden;transition:flex .6s var(--ease);cursor:pointer;display:flex}
+.pass[data-open="true"]{flex:3.6;cursor:default}
+.pass .closed{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:22px 18px;transition:opacity .3s;background:none;border:0;color:inherit;text-align:start;cursor:pointer;font:inherit}
+.pass[data-open="true"] .closed{opacity:0;pointer-events:none}
+.pass .vlabel{writing-mode:vertical-rl;font:800 13px/1 var(--body);letter-spacing:.2em;text-transform:uppercase}
+.pass .bign{font:800 64px/1 "Unbounded",sans-serif;letter-spacing:-.06em}
+.pass .open{flex:1;display:flex;flex-direction:column;opacity:0;transition:opacity .35s .15s;min-width:520px}
+.pass[data-open="true"] .open{opacity:1}
+.pass:not([data-open="true"]) .open{visibility:hidden}
+.strip{display:flex;justify-content:space-between;align-items:center;padding:16px 28px;font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;border-bottom:1.5px dashed currentColor}
+.route{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:26px 28px 6px;font:800 clamp(48px,6vw,88px)/1 "Unbounded",sans-serif;letter-spacing:-.04em}
+.route .plane{font-size:.55em}
+html[dir="rtl"] .route .plane{transform:scaleX(-1)}
+.pass h3{font-size:clamp(24px,2.6vw,34px);letter-spacing:-.03em;padding:14px 28px 4px}
+html[dir="rtl"] .pass h3{letter-spacing:0}
+.pass .psub{padding:0 28px;opacity:.82;font-weight:600}
+.pfields{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px 28px;margin-top:auto}
+.pfields small{display:block;font:500 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-bottom:6px}
+.pfields b{font-weight:800;font-size:14px;line-height:1.35;text-transform:none}
+.pacts{display:flex;gap:10px;flex-wrap:wrap;padding:0 28px 26px}
+.pass.c1{background:var(--violet);color:#fff}.pass.c2{background:var(--coral);color:var(--ink)}.pass.c3{background:var(--ink);color:#fff}.pass.c4{background:var(--lilac);color:var(--ink)}
+.pass.c1 .btn-coral,.pass.c3 .btn-coral{color:var(--ink)}
+.pass .notch{position:absolute;top:56px;width:22px;height:22px;border-radius:50%;background:var(--cream);border:1.5px solid var(--ink)}
+.pass .notch.l{inset-inline-start:-12px}.pass .notch.r{inset-inline-end:-12px}
+@media (max-width:900px){
+  .passes{flex-direction:column;height:auto}
+  .pass{flex:none!important;min-height:84px}
+  .pass .closed{flex-direction:row;align-items:center}
+  .pass .vlabel{writing-mode:horizontal-tb}
+  .pass .bign{font-size:40px}
+  .pass .open{min-width:0}
+  .pass:not([data-open="true"]) .open{display:none}
+  .pfields{grid-template-columns:1fr}
+}
+
+/* week: ticket frame */
+.week-sec{margin-inline:10px;border-radius:40px;border:1.5px solid var(--ink);box-shadow:var(--hard)}
+
+/* form hard shadow */
+form.card,.success{border:1.5px solid var(--ink);box-shadow:0 8px 0 var(--ink)}
+.apply-sec{border:1.5px solid var(--ink);box-shadow:var(--hard)}
+.result{border:1.5px solid var(--ink);box-shadow:var(--hard)}
+.bot{border-color:var(--ink);box-shadow:0 4px 0 var(--ink)}
+
+/* faq split-flap */
+.faqwrap{display:grid;grid-template-columns:.75fr 1.6fr;gap:28px;align-items:start}
+.qcard{position:relative;background:var(--lilac);border:1.5px solid var(--ink);border-radius:0 22px 22px 22px;box-shadow:var(--hard);padding:40px 30px;margin-top:30px}
+html[dir="rtl"] .qcard{border-radius:22px 0 22px 22px}
+.qcard::before{content:"";position:absolute;top:-30px;inset-inline-start:-1.5px;width:45%;height:30px;background:var(--lilac);border:1.5px solid var(--ink);border-bottom:0;border-radius:16px 16px 0 0}
+.qcard h2{font-size:clamp(30px,3.4vw,46px);letter-spacing:-.04em;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+html[dir="rtl"] .qcard h2{letter-spacing:0}
+.qcard h2 i{font-style:normal;width:48px;height:48px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:26px}
+.qcard p{margin-top:16px;font:800 22px/1.2 var(--display);color:var(--violet)}
+.qpanel{background:var(--ink);border:1.5px solid var(--ink);border-radius:26px;box-shadow:0 6px 0 var(--violet);padding:14px;display:grid;gap:12px}
+.qpanel details{border:0;background:rgba(255,255,255,.06);border-radius:16px;padding:0 18px;color:#fff}
+.qpanel summary{font:700 clamp(16px,1.8vw,20px)/1.35 var(--body);padding:18px 0;letter-spacing:0;align-items:center;justify-content:flex-start;gap:14px}
+.qpanel summary::after{margin-inline-start:auto;width:16px;height:16px;border-radius:50%;background:transparent;border:1.5px solid rgba(255,255,255,.5);content:"";transform:none!important}
+.qpanel details[open] summary::after{background:var(--coral);border-color:var(--coral)}
+.flap{display:inline-flex;gap:3px;flex:none}
+.flap span{width:26px;height:34px;display:grid;place-items:center;background:#051220;border-radius:5px;font:700 17px/1 var(--mono);color:var(--lilac);position:relative;overflow:hidden}
+.flap span::after{content:"";position:absolute;inset-inline:0;top:50%;height:1px;background:rgba(255,255,255,.18)}
+.qpanel details p{background:var(--cream);color:var(--ink);border-radius:12px;padding:14px 16px;margin:0 0 16px;font-size:16px}
+@media (max-width:860px){.faqwrap{grid-template-columns:1fr}}
+
+.ph1{background-image:url(assets/p1.jpg)}
+.ph2{background-image:url(assets/p2.jpg)}
+.ph3{background-image:url(assets/p3.jpg)}
+.ph4{background-image:url(assets/p4.jpg)}
+
+.ph{background-size:cover;background-position:center;border:1.5px solid var(--ink);border-radius:50%;flex:none}
+.avatars{display:flex;align-items:center;gap:12px}
+.avatars .row{display:flex}
+.avatars .ph{width:46px;height:46px;box-shadow:0 3px 0 var(--ink)}
+.avatars .ph+.ph{margin-inline-start:-14px}
+.avatars small{font:500 11px/1.3 var(--mono);color:var(--muted);max-width:18ch}
+.face .inner .ph{position:absolute;top:14px;inset-inline-end:14px;width:68px;height:68px;border:2px solid currentColor}
+.pass .route{position:relative}
+.pass .pph{width:84px;height:84px;border:2px solid currentColor;box-shadow:0 4px 0 var(--ink)}
+.qphoto{height:200px;border:1.5px solid var(--ink);border-radius:22px 22px 0 0;border-bottom:0;background-size:cover;background-position:center;margin-top:30px}
+.qcard.withphoto{margin-top:0;border-radius:0 0 22px 22px}
+.qcard.withphoto::before{display:none}
+/* message */
+textarea#f-msg{min-height:150px;resize:vertical;font:500 16px/1.5 var(--body)}
+/* consent */
+.ck-back{position:fixed;inset:0;z-index:300;background:rgba(8,24,42,.55);backdrop-filter:blur(4px);display:grid;place-items:end center;padding:16px}
+.ck-back[hidden]{display:none}
+.ck{width:min(640px,100%);max-height:calc(100% - 20px);overflow:auto;background:var(--cream);color:var(--ink);border:1.5px solid var(--ink);border-radius:26px;box-shadow:0 8px 0 var(--ink);padding:26px 26px 22px;position:relative;margin-bottom:10px}
+@media (min-width:700px){.ck-back{place-items:center}}
+.ck-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.ck h2{font-size:24px;letter-spacing:-.03em;display:flex;align-items:center;gap:10px}
+html[dir="rtl"] .ck h2{letter-spacing:0}
+.ck-langs{display:flex;flex-wrap:wrap;gap:4px}
+.ck-langs button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:5px 9px;font:700 12px/1 var(--body);cursor:pointer;color:var(--ink)}
+.ck-langs button[aria-current="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ck>p{font-size:15px;line-height:1.55;color:#3A4D5E}
+.ck-links{display:flex;gap:16px;margin:10px 0 16px;font-weight:700;font-size:14px}
+.ck-cats{display:grid;gap:10px;margin:0 0 16px}
+.ck-cats[hidden]{display:none}
+.ck-cat{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:14px 16px}
+.ck-cat b{display:block;font-size:15px}
+.ck-cat span{font-size:13px;color:var(--muted);line-height:1.45}
+.sw{position:relative;display:inline-block;width:46px;height:26px;flex:none}
+.sw input{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0;z-index:1}
+.sw i{position:absolute;inset:0;border-radius:999px;background:#CCD8DF;border:1.5px solid var(--ink);transition:background .2s}
+.sw i::after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:19px;height:19px;border-radius:50%;background:#fff;border:1.5px solid var(--ink);transition:transform .2s var(--ease)}
+.sw input:checked+i{background:var(--violet)}
+.sw input:checked+i::after{transform:translateX(20px)}
+html[dir="rtl"] .sw input:checked+i::after{transform:translateX(-20px)}
+.sw input:disabled+i{opacity:.6}
+.sw input:focus-visible+i{outline:3px solid var(--coral);outline-offset:2px}
+.ck-always{font:500 11px/1 var(--mono);color:var(--muted);white-space:nowrap;margin-top:4px}
+.ck-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ck-btns .btn{justify-content:center;padding:15px 14px}
+.ck-btns .full{grid-column:1/-1}
+.btn-ink{background:var(--ink);color:#fff}
+.btn-out{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.linkbtn{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+footer .linkbtn{text-decoration:none}footer .linkbtn:hover{color:#fff;text-decoration:underline}
+#installBtn[hidden],.ck [hidden]{display:none!important}
+.credits{font-size:12px;color:#8299A8}
+.credits a{text-decoration:underline}
+
+.app-chip{display:inline-flex;align-items:center;gap:8px;background:var(--coral);color:var(--ink);border:1.5px solid var(--ink);border-radius:999px;padding:8px 14px;font:800 14px/1 var(--body);cursor:pointer;align-self:center;margin:0 10px;box-shadow:0 3px 0 var(--ink)}
+.app-chip:hover{transform:translateY(-1px)}
+.tbar>.app-wrap{padding:0 4px}
+.app-note{font-size:14px;background:var(--lilac);border-radius:12px;padding:10px 12px;margin-top:10px;color:var(--ink)!important}
+.app-how{margin:14px 0 18px;background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:14px 16px}
+.app-how b{display:block;margin-bottom:4px}
+.app-how p{font-size:15px;color:#3A4D5E}
+.foot-cta .acts{display:flex;gap:12px;flex-wrap:wrap}
+.foot-cta .btn-line{color:#fff}
+@media (max-width:600px){.app-chip span{display:none}.app-chip{padding:9px}}
+@media (prefers-reduced-motion:reduce){.pass,.pass .open,.pass .closed{transition:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main" data-i="skip">Zum Inhalt springen</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="lg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#1FB5A4"/><stop offset="1" stop-color="#0B7A6F"/></linearGradient>
+    <symbol id="logo" viewBox="0 0 88 72">
+      <path d="M11 9C-1 20 0 47 13 55L10 68 26 60C46 66 58 51 58 35 58 13 28 -3 11 9Z" fill="url(#lg)"/>
+      <path d="M45 15C62 3 82 12 83 31c1 10-4 18-13 22l4 13-16-9c-9 1-16-3-20-10" fill="#FFB627"/>
+      <path d="M22 20 18 43c10-4 16-1 25 7 7-10 16-12 26-7l-4-20c-9-3-17 2-22 11-6-10-12-14-21-14Z" fill="#fff"/>
+      <path d="M43 35v15" stroke="#0F2438" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="globe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2c3 3.5 3 16.5 0 20M12 2c-3 3.5-3 16.5 0 20"/></g></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5" fill="currentColor"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></g></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></symbol>
+  </defs>
+</svg>
+
+<header class="top" id="top">
+  <div class="wrap nav" id="nav">
+    <div class="tbar">
+      <a class="brand" href="#main" aria-label="atlasio – language school (demo)">
+        <svg width="40" height="33" aria-hidden="true"><use href="#logo"/></svg>
+        <span><span class="brand-word">atlasio</span><span class="brand-sub">Language school · demo</span></span>
+      </a>
+      <a class="navi" href="#wege"><span data-i="nav1">Lernwege</span><small>01</small></a>
+      <a class="navi" href="#woche"><span data-i="nav2">Woche</span><small>02</small></a>
+      <a class="navi" href="#finder"><span data-i="nav3">Weg finden</span><small>03</small></a>
+      <a class="navi" href="#faq"><span>FAQ</span><small>04</small></a>
+      <div class="app-wrap" style="display:flex;align-items:center"><button type="button" class="app-chip" data-app aria-haspopup="dialog"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14"/></svg><span data-i="appBtn">App</span></button></div>
+      <div class="langbox">
+        <button class="lang-btn" type="button" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-controls="langPop">
+          <svg width="18" height="18" aria-hidden="true"><use href="#globe"/></svg><span id="langName">Deutsch</span>
+        </button>
+        <div class="lang-pop" id="langPop" hidden role="group" aria-label="Language"></div>
+      </div>
+    </div>
+    <a class="cta-pill" href="#anmelden"><span data-i="nav4">Anmelden</span><i aria-hidden="true">→</i></a>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+      <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path d="M0 1h20M0 7h20M0 13h20" stroke="currentColor" stroke-width="2.4"/></svg>
+    </button>
+    <nav class="navlinks-m" id="menu">
+      <a href="#wege" data-i="nav1">Lernwege</a><a href="#woche" data-i="nav2">Woche</a><a href="#finder" data-i="nav3">Weg finden</a><a href="#anmelden" data-i="nav4">Anmelden</a><a href="#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero3" aria-labelledby="h1">
+    <div class="wrap">
+      <div class="h3grid">
+        <div class="side left">
+          <div class="ticket t-left"><small id="tlTop">Auf Deutsch</small><b id="tlWord">Hallo</b></div>
+          <div>
+            <h1 id="h1"><span class="l1" data-i="h1a">Lerne.</span> <span class="l2" data-i="h1b">Sprich.</span> <span class="l3" data-i="h1c">Schreib deine Geschichte.</span></h1>
+            <p class="lead3" data-i="lead" style="margin-top:14px">Vier Lernwege für Deutsch und Englisch.</p>
+          </div>
+          <div class="avatars" aria-hidden="true"><div class="row"><span class="ph ph1"></span><span class="ph ph2"></span><span class="ph ph3"></span><span class="ph ph4"></span></div></div>
+          <a class="cta-pill" href="#finder" style="display:inline-flex;align-self:flex-start"><span data-i="cta1">Meinen Weg finden</span><i aria-hidden="true">→</i></a>
+        </div>
+
+        <div class="stage" id="stage" aria-roledescription="3D carousel" aria-label="Lernwege">
+          <div class="floor" aria-hidden="true"></div>
+          <div class="cube" id="cube"></div>
+          <p class="hint" data-i="tap">Ziehen, tippen oder mit der Maus bewegen</p>
+          <p class="sr" aria-live="polite" id="cubeLive"></p>
+        </div>
+
+        <div class="side right">
+          <div class="ticket t-right"><small data-i="first">Dein erstes Wort</small><b id="trWord" lang="de">Hallo</b></div>
+          <p class="meaning"><span id="mean">Hallo · heißt Merhaba</span><small id="meanSub">Deutsch lernen · 01</small></p>
+          <div class="dots" role="group" aria-label="Lernwege" id="dots"></div>
+        </div>
+      </div>
+      <p class="bighead" aria-hidden="true"><span data-i="pK">Vier Türen</span> <span data-i="pH">Wähle deine Tür.</span></p>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true" dir="ltr"><div class="marquee-track" id="marq"></div></div>
+
+  <section id="wege" aria-labelledby="wege-h">
+    <div class="wrap">
+      <div class="head" style="margin-bottom:0">
+        <div><span class="kicker" data-i="pass">Lernpass</span><h2 id="wege-h" data-i="pH">Wähle deine Tür.</h2></div>
+        <p data-i="pL">Jeder Weg führt in höchstens drei Schritten zur Anmeldung.</p>
+      </div>
+      <div class="passes" id="passes"></div>
+    </div>
+  </section>
+
+  <section id="woche" class="week-sec" aria-labelledby="woche-h">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="kicker" data-i="wK">Wochenplan</span><h2 id="woche-h" data-i="wH">Deine Woche.</h2></div>
+        <p data-i="wL">Alle Präsenzangebote in der Musterstraße 12 auf einen Blick.</p>
+      </div>
+      <div class="daily"><b data-i="dailyB">Mo–Fr · Deutschkurs</b><span data-i="dailyS">5 Unterrichtsstunden pro Tag, 25 pro Woche. Die Uhrzeit deiner Gruppe erfährst du bei der Anmeldung.</span></div>
+      <div class="grid-scroll" tabindex="0" aria-label="Timetable">
+        <div class="tgrid" id="tgrid"></div>
+      </div>
+      <p class="week-note" data-i="wNote">Quelle: Atlasio-Programmseiten. Termine vor Veröffentlichung im CMS prüfen.</p>
+    </div>
+  </section>
+
+
+  <section id="finder" aria-labelledby="finder-h">
+    <div class="wrap">
+      <div class="head">
+        <div><span class="kicker" data-i="fK">Weg finden</span><h2 id="finder-h" data-i="fH">Lass uns kurz reden.</h2></div>
+        <p data-i="fL">Kein Einstufungstest. Nur ein paar Fragen, damit du den passenden Einstieg findest.</p>
+      </div>
+      <form class="chat" id="chat" onsubmit="return false"></form>
+    </div>
+  </section>
+
+
+  <section id="anmelden" class="apply-sec" aria-labelledby="apply-h">
+    <div class="wrap apply">
+      <aside>
+        <span class="kicker" data-i="aK">Anmeldung</span>
+        <h2 id="apply-h" data-i="aH">Dein Platz. Deine Geschichte.</h2>
+        <p data-i="aL">Wir fragen nur, was wir für dein Angebot wirklich brauchen. Die endgültige Zusage gibt das Atlasio-Team.</p>
+        <ol class="journey" id="journey"></ol>
+      </aside>
+      <div id="formWrap">
+        <form class="card" id="applyForm" novalidate>
+          <div class="field full">
+            <label for="f-program" data-i="lProgram">Angebot</label>
+            <select id="f-program" name="program"></select>
+            <span class="errmsg" id="e-program"></span>
+          </div>
+          <div class="field">
+            <label for="f-first" data-i="lFirst">Vorname</label>
+            <input type="text" id="f-first" name="first" autocomplete="given-name">
+            <span class="errmsg" id="e-first"></span>
+          </div>
+          <div class="field">
+            <label for="f-last" data-i="lLast">Nachname</label>
+            <input type="text" id="f-last" name="last" autocomplete="family-name">
+            <span class="errmsg" id="e-last"></span>
+          </div>
+          <div class="field">
+            <label for="f-email" data-i="lEmail">E-Mail</label>
+            <input type="email" id="f-email" name="email" autocomplete="email">
+            <span class="errmsg" id="e-email"></span>
+          </div>
+          <div class="field">
+            <label for="f-phone" data-i="lPhone">Telefon (optional)</label>
+            <input type="tel" id="f-phone" name="phone" autocomplete="tel">
+          </div>
+          <div class="cond" id="c-course" hidden>
+            <div class="field">
+              <label for="f-level" data-i="lLevel">Dein Deutschniveau</label>
+              <select id="f-level" name="level"></select>
+              <span class="errmsg" id="e-level"></span>
+            </div>
+            <div class="field">
+              <label for="f-start" data-i="lStart">Ab wann?</label>
+              <select id="f-start" name="start"></select>
+            </div>
+          </div>
+          <div class="cond" id="c-cafe" hidden>
+            <div class="field full">
+              <span class="lbl" id="l-group" data-i="lGroup">Welche Gruppe?</span>
+              <div class="answers" role="radiogroup" aria-labelledby="l-group">
+                <label><input type="radio" name="group" value="tue" id="f-g1" checked><span id="gTue"></span></label>
+                <label><input type="radio" name="group" value="wed" id="f-g2"><span id="gWed"></span></label>
+              </div>
+            </div>
+          </div>
+          <div class="cond" id="c-coursera" hidden>
+            <div class="field">
+              <label for="f-goal" data-i="lGoal">Wofür brauchst du Englisch?</label>
+              <select id="f-goal" name="goal"></select>
+              <span class="errmsg" id="e-goal"></span>
+            </div>
+            <div class="field">
+              <label for="f-device" data-i="lDevice">Gerät mit Internet?</label>
+              <select id="f-device" name="device"></select>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label for="f-msg" data-i="lMsg">Nachricht (optional)</label>
+            <textarea id="f-msg" name="msg" rows="6"></textarea>
+          </div>
+          <div class="hp" aria-hidden="true"><label for="f-web">Website</label><input type="text" id="f-web" name="web" tabindex="-1" autocomplete="off"></div>
+          <div class="field full">
+            <label class="check"><input type="checkbox" id="f-consent" name="consent"><span data-i="lConsent">Ich willige ein, dass Atlasio meine Angaben zur Bearbeitung dieser Anmeldung speichert.</span></label>
+            <span class="errmsg" id="e-consent"></span>
+          </div>
+          <div id="formBanner" class="banner" hidden></div>
+          <div class="form-foot">
+            <small data-i="req">Pflichtfelder: Angebot, Name, E-Mail, Einwilligung.</small>
+            <button class="btn btn-violet" type="submit" id="submitBtn"><span data-i="submit">Anmeldung senden</span></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="faq" aria-labelledby="faq-h">
+    <div class="wrap faqwrap">
+      <div><div class="qphoto ph2" aria-hidden="true"></div><div class="qcard withphoto"><h2 id="faq-h"><span data-i="qAsk">Noch Fragen</span><i aria-hidden="true">?</i></h2><p data-i="qAns">Beantwortet.</p></div></div>
+      <div class="qpanel" id="faqList"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-cta">
+      <h2 id="footH" data-ih="footH">Deine Geschichte beginnt in der <em>Musterstraße 12</em>.</h2>
+      <div class="acts"><button type="button" class="btn btn-line" data-app><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14"/></svg><span data-i="install">App installieren</span></button><a class="btn btn-coral" href="#anmelden"><span data-i="cta3">Jetzt anmelden</span><span class="arrow" aria-hidden="true">→</span></a></div>
+    </div>
+    <div class="foot-grid">
+      <div>
+        <a class="brand" href="#main" style="color:#fff">
+          <svg width="48" height="40" aria-hidden="true"><use href="#logo"/></svg>
+          <span><span class="brand-word">atlasio</span><span class="brand-sub">Language school · demo</span></span>
+        </a>
+        <p style="margin-top:22px;max-width:30ch;color:#fff;font-weight:700" data-i="lead">Vier Lernwege für Deutsch und Englisch.</p>
+      </div>
+      <div>
+        <h4 data-i="hContact">Kontakt</h4>
+        <ul class="contact">
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-pin"/></svg><span class="ltr">Musterstraße 12<br>10115 Berlin (example)</span></li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-mail"/></svg><a class="ltr" href="mailto:hello@atlasio.example">hello@atlasio.example</a></li>
+          <li><svg width="18" height="18" aria-hidden="true"><use href="#i-phone"/></svg><span class="ltr">+49 30 000 000 (example)</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i="hAbout">Rechtliches</h4>
+        <ul>
+          <li><a href="#"><span data-i="privacy">Datenschutz</span> ↗</a></li>
+          <li><a href="#"><span data-i="transp">Transparenz</span> ↗</a></li>
+          <li><a href="#"><span data-i="imprint">Impressum</span> ↗</a></li>
+          <li><button type="button" class="linkbtn" id="ckOpen" data-i="cookieLink">Cookie-Einstellungen</button></li>
+          <li><button type="button" class="linkbtn" data-app data-i="install">App installieren</button></li>
+        </ul>
+      </div>
+      <div>
+        <h4 data-i="hFollow">Community</h4>
+        <p class="comm" data-i="commDesc">Entdecke Atlasio und die Menschen hinter den Programmen.</p>
+        <ul class="comm-links">
+          <li><a href="#">atlasio.example ↗</a></li>
+        </ul>
+        <p class="soc-h" data-i="socH">Atlasio in den sozialen Medien</p>
+        <div class="social">
+          <a href="#">Instagram</a>
+          <a href="#">YouTube</a>
+          <a href="#">LinkedIn</a>
+          <a href="#">TikTok</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="mega" aria-hidden="true">atlasio</div>
+  <div class="bottom"><div class="wrap" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap">
+    <span>© 2026 Atlasio · fictional demo brand · <span data-i="rights">Alle Rechte vorbehalten.</span></span>
+  </div></div>
+</footer>
+
+
+
+<div class="ck-back" id="appBack" hidden>
+  <div class="ck" role="dialog" aria-modal="true" aria-labelledby="appTitle">
+    <div class="ck-top"><h2 id="appTitle"><img src="icons/icon-192.png" width="40" height="40" alt="" style="border-radius:10px"><span data-i="appT">Atlasio als App</span></h2></div>
+    <div id="appBody"></div>
+    <div class="ck-btns">
+      <button type="button" class="btn btn-out" id="appClose" data-i="close">Schließen</button>
+      <button type="button" class="btn btn-violet" id="appGo">Jetzt installieren</button>
+    </div>
+  </div>
+</div>
+<div class="ck-back" id="ckBack" hidden>
+  <div class="ck" role="dialog" aria-modal="true" aria-labelledby="ckTitle" aria-describedby="ckText">
+    <div class="ck-top">
+      <h2 id="ckTitle"><svg width="34" height="28" aria-hidden="true"><use href="#logo"/></svg><span data-i="ckT">Deine Privatsphäre</span></h2>
+      <div class="ck-langs" id="ckLangs" role="group" aria-label="Language"></div>
+    </div>
+    <p id="ckText" data-i="ckP"></p>
+    <div class="ck-links"><a href="#"><span data-i="privacy">Datenschutz</span> ↗</a><a href="#"><span data-i="imprint">Impressum</span> ↗</a></div>
+    <div class="ck-cats" id="ckCats" hidden>
+      <div class="ck-cat"><div><b data-i="ckNecT">Notwendig</b><span data-i="ckNecD"></span></div><div style="text-align:center"><label class="sw"><input type="checkbox" checked disabled aria-labelledby="ckNecL"><i></i></label><div class="ck-always" id="ckNecL" data-i="ckAlways">Immer aktiv</div></div></div>
+      <div class="ck-cat"><div><b id="ckPrefL" data-i="ckPrefT">Komfort</b><span data-i="ckPrefD"></span></div><label class="sw"><input type="checkbox" id="ckPref" aria-labelledby="ckPrefL"><i></i></label></div>
+    </div>
+    <div class="ck-btns">
+      <button type="button" class="btn btn-ink" id="ckNecBtn" data-i="ckNec">Nur notwendige</button>
+      <button type="button" class="btn btn-ink" id="ckAllBtn" data-i="ckAll">Alle akzeptieren</button>
+      <button type="button" class="btn btn-out full" id="ckSet" aria-expanded="false" aria-controls="ckCats" data-i="ckSet">Einstellungen</button>
+      <button type="button" class="btn btn-violet full" id="ckSave" hidden data-i="ckSave">Auswahl speichern</button>
+    </div>
+  </div>
+</div>
+<script>
+const LANGS=[
+ {c:"de",n:"Deutsch",hi:"Hallo"},{c:"en",n:"English",hi:"Hello"},{c:"tr",n:"Türkçe",hi:"Merhaba"},
+ {c:"ar",n:"العربية",hi:"مرحبا",rtl:1},{c:"fa",n:"فارسی",hi:"سلام",rtl:1},{c:"uk",n:"Українська",hi:"Привіт"},
+ {c:"ru",n:"Русский",hi:"Привет"},{c:"fr",n:"Français",hi:"Bonjour"}
+];
+const T={"de":{"inLang":"Auf Deutsch","first":"Dein erstes Wort","means":"heißt","tap":"Ziehen, tippen oder mit der Maus bewegen","pass":"Lernpass","qAsk":"Noch Fragen","qAns":"Beantwortet.","iSpeak":"Ich spreche","iLearn":"Ich lerne","skip":"Zum Inhalt springen","nav1":"Lernwege","nav2":"Woche","nav3":"Weg finden","nav4":"Anmelden","kick":"Berlin · Musterstraße 12","h1a":"Lerne.","h1b":"Sprich.","h1c":"Schreib deine Geschichte.","lead":"Vier Lernwege für Deutsch und Englisch. Kostenlos vor Ort oder online. Erklärt in acht Sprachen.","cta1":"Meinen Weg finden","cta2":"Alle Lernwege","cta3":"Jetzt anmelden","sayHi":"Sag hallo auf","fact1":"4 Lernwege","fact2":"3 × kostenlos vor Ort","fact3":"8 Sprachen","pK":"Vier Türen","pH":"Wähle deine Tür.","pL":"Jeder Weg führt in höchstens drei Schritten zur Anmeldung. Termine und freie Plätze bestätigt das Atlasio-Team.","tDe":"Deutsch","tEn":"Englisch","dLevel":"Niveau","dWhen":"Wann","dWhere":"Ort","dCost":"Kosten","free":"Kostenlos","onsite":"Vor Ort","online":"Online","apply":"Anmelden","source":"Quelle","p1t":"Deutsch lernen","p1s":"Deutschkurs · Atlasio Intensive","p1l":"A1 bis Fortgeschritten","p1w":"Mo–Fr · 5 Stunden am Tag","p2t":"Deutsch sprechen","p2s":"Deutsches Sprachcafé","p2l":"A1–A2 · B1+","p2w":"Di 16:00–18:30 (B1+) · Mi 15:00–17:30 (A1–A2)","p3t":"English Speaking Café","p3s":"Englisch sprechen in der Gruppe, über Alltagsthemen","p3l":"Alle Niveaus","p3w":"Jeden Dienstag 18:30–20:00","p4t":"English Learning","p4s":"Englisch lernen über Atlasio Online, für Ausbildung, Arbeit und Alltag","p4l":"Flexibel, im eigenen Tempo","p4w":"Jederzeit","p4where":"Online über Atlasio Online","p4cost":"Nach Bewerbung und Eignungsprüfung, Plätze begrenzt","wK":"Wochenplan","wH":"Deine Woche.","wL":"Alle Präsenzangebote in der Musterstraße 12 auf einen Blick.","dailyB":"Mo–Fr · Deutschkurs","dailyS":"5 Unterrichtsstunden pro Tag, 25 pro Woche. Die Uhrzeit deiner Gruppe erfährst du bei der Anmeldung.","days":["Montag","Dienstag","Mittwoch","Donnerstag","Freitag"],"evB":"Sprachcafé B1+","evA":"Sprachcafé A1–A2","evE":"English Speaking Café","wNote":"Quelle: Atlasio-Programmseiten. Termine vor Veröffentlichung im CMS prüfen.","fK":"Weg finden","fH":"Lass uns kurz reden.","fL":"Kein Einstufungstest. Nur ein paar Fragen, damit du den passenden Einstieg findest.","b1":"Hallo! Welche Sprache möchtest du lernen?","b2":"Was ist dir gerade wichtiger?","b2a":"Systematisch lernen","b2b":"Sprechen üben","b3":"Wie viel Zeit hast du?","b3a":"Jeden Werktag","b3b":"Einmal pro Woche","b3c":"Flexibel, online","b4":"Wie gut ist dein Deutsch heute? Schätz einfach.","b4a":"Anfang (A0–A2)","b4b":"B1 oder besser","rK":"Mein Vorschlag","rGo":"Dafür anmelden","rSee":"Details","rNote":"Unsicher? Das Team hilft dir vor Ort, das richtige Niveau zu finden.","why1":"Du willst systematisch lernen und hast werktags Zeit.","why2a":"Zum Sprechenüben, in der Mittwochsgruppe für A1–A2.","why2b":"Zum Sprechenüben, in der Dienstagsgruppe für B1+.","why3":"Einmal pro Woche Englisch sprechen, in entspannter Runde.","why4":"Flexibel und online Englisch lernen.","why5":"Online-Deutsch gibt es gerade nicht. Am nächsten kommt der Präsenzkurs.","aK":"Anmeldung","aH":"Dein Platz. Deine Geschichte.","aL":"Wir fragen nur, was wir für dein Angebot wirklich brauchen. Die endgültige Zusage gibt das Atlasio-Team.","journey":["Formular ausfüllen","Wir prüfen die Angaben","Bestätigung mit Anmeldenummer per E-Mail","Das Team meldet sich mit der Zusage"],"lProgram":"Angebot","choose":"Bitte wählen","lFirst":"Vorname","lLast":"Nachname","lEmail":"E-Mail","lPhone":"Telefon (optional)","lLevel":"Dein Deutschniveau","levels":["Keine Kenntnisse (A0)","A1","A2","B1","B2 oder höher","Weiß ich nicht"],"lStart":"Ab wann?","starts":["So bald wie möglich","Nächsten Monat","Später, bitte informieren"],"lGroup":"Welche Gruppe?","gTue":"Dienstag 16:00–18:30 · B1+","gWed":"Mittwoch 15:00–17:30 · A1–A2","lGoal":"Wofür brauchst du Englisch?","goals":["Ausbildung / Studium","Arbeit","Alltag"],"lDevice":"Gerät mit Internet?","devices":["Laptop / PC","Nur Smartphone","Keins"],"lMsg":"Nachricht (optional)","lConsent":"Ich willige ein, dass Atlasio meine Angaben zur Bearbeitung dieser Anmeldung speichert. Widerruf jederzeit möglich, Details im Datenschutz.","req":"Pflichtfelder: Angebot, Name, E-Mail, Einwilligung.","submit":"Anmeldung senden","sending":"Wird gesendet …","eReq":"Bitte ausfüllen.","eSel":"Bitte etwas auswählen.","eEmail":"Bitte eine gültige E-Mail-Adresse angeben, z. B. name@beispiel.de.","eConsent":"Ohne Einwilligung können wir die Anmeldung nicht bearbeiten.","eSum":"Bitte prüfe die markierten Felder.","dup":"Mit dieser E-Mail gibt es schon eine Anmeldung für dieses Angebot. Klicke noch einmal, um trotzdem zu senden.","okRef":"Deine Anmeldenummer","okH":"Danke! Deine Anmeldung ist da.","okSteps":["Du bekommst eine Bestätigung per E-Mail.","Das Team prüft Plätze und Termine.","Wir melden uns mit der Zusage oder einer Frage."],"okProto":"Demo: Es wurden keine Daten gesendet.","again":"Weitere Anmeldung","qH":"Häufige Fragen","faq":[["Sind die Angebote wirklich kostenlos?","Ja. Deutschkurs, Sprachcafé und English Speaking Café in der Musterstraße 12 sind kostenlos. Für English Learning über Atlasio Online gibt es eine Bewerbung und Eignungsprüfung, die Plätze sind begrenzt."],["Ich kenne mein Niveau nicht. Was tun?","Wähle bei der Anmeldung „Weiß ich nicht“. Das Team hilft dir, die passende Gruppe zu finden."],["Muss ich Deutsch können, um diese Seite zu nutzen?","Nein. Die Seite gibt es in acht Sprachen. Wähle oben deine Sprache."],["Wann bekomme ich eine Zusage?","Nach dem Absenden bekommst du eine Antwort-E-Mail zu deiner Anmeldung. Dort stehen alle Details."],["Was passiert mit meinen Daten?","Wir speichern nur, was für deine Anmeldung nötig ist, und nur so lange wie nötig. Details stehen im Datenschutz."]],"footH":"Deine Geschichte beginnt in der <em>Musterstraße 12</em>.","hContact":"Kontakt","hAbout":"Rechtliches","hFollow":"Community","commDesc":"Entdecke Atlasio und die Menschen hinter den Programmen.","socH":"Atlasio in den sozialen Medien","hLangs":"Sprachen","privacy":"Datenschutz","transp":"Transparenz","imprint":"Impressum","rights":"Alle Rechte vorbehalten.","proto":"Prototyp. Das Formular sendet keine Daten.","ckT":"Deine Privatsphäre","ckP":"Wir verwenden keine Tracking- oder Werbe-Cookies. Notwendige Speicherungen sorgen dafür, dass die Seite funktioniert. Mit deiner Einwilligung merken wir uns zusätzlich deine Sprache und speichern die Seite für die Offline-Nutzung als App. Du kannst deine Wahl jederzeit unter „Cookie-Einstellungen“ ändern.","ckAll":"Alle akzeptieren","ckNec":"Nur notwendige","ckSave":"Auswahl speichern","ckSet":"Einstellungen","ckNecT":"Notwendig","ckNecD":"Speichert deine Cookie-Entscheidung. Ohne diese Speicherung funktioniert die Seite nicht wie erwartet.","ckPrefT":"Komfort","ckPrefD":"Merkt sich deine Sprache und speichert Dateien im Browser, damit die Seite offline und als App funktioniert (Service Worker).","ckAlways":"Immer aktiv","cookieLink":"Cookie-Einstellungen","install":"App installieren","photos":"Symbolfotos"},"en":{"inLang":"In English","first":"Your first word","means":"means","tap":"Drag, tap or move your mouse","pass":"Learning pass","qAsk":"Got questions","qAns":"Answered.","iSpeak":"I speak","iLearn":"I learn","skip":"Skip to content","nav1":"Paths","nav2":"Week","nav3":"Find your path","nav4":"Apply","kick":"Berlin · Musterstraße 12","h1a":"Learn.","h1b":"Speak.","h1c":"Write your story.","lead":"Four learning paths for German and English. Free in person or online. Explained in eight languages.","cta1":"Find my path","cta2":"All paths","cta3":"Apply now","sayHi":"Say hello in","fact1":"4 learning paths","fact2":"3 × free in person","fact3":"8 languages","pK":"Four doors","pH":"Choose your door.","pL":"Every path gets you to the application in three steps or fewer. The Atlasio team confirms dates and places.","tDe":"German","tEn":"English","dLevel":"Level","dWhen":"When","dWhere":"Where","dCost":"Cost","free":"Free","onsite":"In person","online":"Online","apply":"Apply","source":"Source","p1t":"Learn German","p1s":"German course · Atlasio Intensive","p1l":"A1 to advanced","p1w":"Mon–Fri · 5 lessons a day","p2t":"Speak German","p2s":"German Sprachcafé","p2l":"A1–A2 · B1+","p2w":"Tue 16:00–18:30 (B1+) · Wed 15:00–17:30 (A1–A2)","p3t":"English Speaking Café","p3s":"Speak English in a group about everyday topics","p3l":"All levels","p3w":"Every Tuesday 18:30–20:00","p4t":"English Learning","p4s":"Learn English on Atlasio Online, for education, work and everyday life","p4l":"Flexible, at your own pace","p4w":"Any time","p4where":"Online via Atlasio Online","p4cost":"After application and eligibility check, limited places","wK":"Weekly plan","wH":"Your week.","wL":"All in-person programs at Musterstraße 12 at a glance.","dailyB":"Mon–Fri · German course","dailyS":"5 lessons a day, 25 a week. You'll get your group's time when you apply.","days":["Monday","Tuesday","Wednesday","Thursday","Friday"],"evB":"Sprachcafé B1+","evA":"Sprachcafé A1–A2","evE":"English Speaking Café","wNote":"Source: Atlasio program pages. Check dates in the CMS before publishing.","fK":"Find your path","fH":"Let's talk for a minute.","fL":"Not a placement test. Just a few questions to help you find a good place to start.","b1":"Hi! Which language do you want to learn?","b2":"What matters more right now?","b2a":"Learn step by step","b2b":"Practise speaking","b3":"How much time do you have?","b3a":"Every weekday","b3b":"Once a week","b3c":"Flexible, online","b4":"How good is your German today? Just guess.","b4a":"Beginner (A0–A2)","b4b":"B1 or better","rK":"My suggestion","rGo":"Apply for this","rSee":"Details","rNote":"Not sure? The team helps you find the right level on site.","why1":"You want to learn step by step and have time on weekdays.","why2a":"To practise speaking, in the Wednesday group for A1–A2.","why2b":"To practise speaking, in the Tuesday group for B1+.","why3":"Speak English once a week in a relaxed group.","why4":"Learn English flexibly and online.","why5":"There's no online German right now. The in-person course is the closest fit.","aK":"Application","aH":"Your place. Your story.","aL":"We only ask for what your program really needs. The Atlasio team gives the final confirmation.","journey":["Fill in the form","We check your details","Email confirmation with reference number","The team gets back with a confirmation"],"lProgram":"Program","choose":"Please choose","lFirst":"First name","lLast":"Last name","lEmail":"Email","lPhone":"Phone (optional)","lLevel":"Your German level","levels":["No German yet (A0)","A1","A2","B1","B2 or higher","I don't know"],"lStart":"From when?","starts":["As soon as possible","Next month","Later, keep me posted"],"lGroup":"Which group?","gTue":"Tuesday 16:00–18:30 · B1+","gWed":"Wednesday 15:00–17:30 · A1–A2","lGoal":"What do you need English for?","goals":["Education / university","Work","Everyday life"],"lDevice":"Device with internet?","devices":["Laptop / PC","Smartphone only","None"],"lMsg":"Message (optional)","lConsent":"I agree that Atlasio may store my details to process this application. I can withdraw at any time; details in the privacy policy.","req":"Required: program, name, email, consent.","submit":"Send application","sending":"Sending …","eReq":"Please fill this in.","eSel":"Please choose an option.","eEmail":"Please enter a valid email, e.g. name@example.com.","eConsent":"We can't process your application without your consent.","eSum":"Please check the highlighted fields.","dup":"There's already an application for this program with this email. Click again to send anyway.","okRef":"Your reference number","okH":"Thank you! We got your application.","okSteps":["You'll get a confirmation by email.","The team checks places and dates.","We'll get back to you with a confirmation or a question."],"okProto":"Demo: no data was sent.","again":"New application","qH":"Frequently asked questions","faq":[["Are the programs really free?","Yes. The German course, Sprachcafé and English Speaking Café at Musterstraße 12 are free. English Learning on Atlasio Online needs an application and eligibility check, and places are limited."],["I don't know my level. What do I do?","Choose “I don't know” when you apply. The team will help you find the right group."],["Do I need German to use this site?","No. The site is available in eight languages. Pick yours at the top."],["When will I hear back?","After you send the form, you'll get a reply email about your application. All the details are in there."],["What happens to my data?","We only keep what your application needs, and only as long as needed. Details are in the privacy policy."]],"footH":"Your story starts at <em>Musterstraße 12</em>.","hContact":"Contact","hAbout":"Legal","hFollow":"Community","commDesc":"Discover Atlasio and the people behind the programs.","socH":"Atlasio on social media","hLangs":"Languages","privacy":"Privacy policy","transp":"Transparency","imprint":"Imprint","rights":"All rights reserved.","proto":"Prototype. The form sends no data.","ckT":"Your privacy","ckP":"We don't use tracking or advertising cookies. Necessary storage keeps the site working. With your consent, we also remember your language and save the site for offline use as an app. You can change your choice at any time under “Cookie settings”.","ckAll":"Accept all","ckNec":"Necessary only","ckSave":"Save selection","ckSet":"Settings","ckNecT":"Necessary","ckNecD":"Stores your cookie choice. Without it, the site won't work as expected.","ckPrefT":"Convenience","ckPrefD":"Remembers your language and stores files in your browser so the site works offline and as an app (service worker).","ckAlways":"Always on","cookieLink":"Cookie settings","install":"Install app","photos":"Stock photos"},"tr":{"inLang":"Türkçe","first":"İlk kelimen","means":"demek","tap":"Sürükle, dokun ya da fareyi gezdir","pass":"Öğrenme kartı","qAsk":"Sorun mu var","qAns":"Cevapladık.","iSpeak":"Konuştuğum dil","iLearn":"Öğrendiğim dil","skip":"İçeriğe geç","nav1":"Yollar","nav2":"Hafta","nav3":"Yolunu bul","nav4":"Başvur","kick":"Berlin · Musterstraße 12","h1a":"Öğren.","h1b":"Konuş.","h1c":"Hikâyeni yaz.","lead":"Almanca ve İngilizce için dört öğrenme yolu. Yüz yüze ücretsiz ya da çevrim içi. Sekiz dilde anlatılıyor.","cta1":"Yolumu bul","cta2":"Tüm yollar","cta3":"Hemen başvur","sayHi":"Merhaba de:","fact1":"4 öğrenme yolu","fact2":"3 × yüz yüze ücretsiz","fact3":"8 dil","pK":"Dört kapı","pH":"Kapını seç.","pL":"Her yoldan en fazla üç adımda başvuruya ulaşırsın. Tarih ve kontenjanı Atlasio ekibi onaylar.","tDe":"Almanca","tEn":"İngilizce","dLevel":"Seviye","dWhen":"Ne zaman","dWhere":"Yer","dCost":"Ücret","free":"Ücretsiz","onsite":"Yüz yüze","online":"Çevrim içi","apply":"Başvur","source":"Kaynak","p1t":"Almanca öğren","p1s":"Almanca kursu · Atlasio Intensive","p1l":"A1'den ileri seviyeye","p1w":"Pzt–Cum · günde 5 ders","p2t":"Almanca konuş","p2s":"Almanca Sprachcafé","p2l":"A1–A2 · B1+","p2w":"Salı 16:00–18:30 (B1+) · Çarşamba 15:00–17:30 (A1–A2)","p3t":"English Speaking Café","p3s":"Grupla, gündelik konularda İngilizce konuşma","p3l":"Tüm seviyeler","p3w":"Her salı 18:30–20:00","p4t":"English Learning","p4s":"Atlasio Online üzerinden İngilizce; eğitim, iş ve günlük hayat için","p4l":"Esnek, kendi hızında","p4w":"İstediğin zaman","p4where":"Atlasio Online üzerinden çevrim içi","p4cost":"Başvuru ve uygunluk kontrolü sonrası, kontenjan sınırlı","wK":"Haftalık plan","wH":"Senin haftan.","wL":"Musterstraße 12'teki tüm yüz yüze programlar tek bakışta.","dailyB":"Pzt–Cum · Almanca kursu","dailyS":"Günde 5 ders, haftada 25 ders. Grubunun saatini başvuruda öğrenirsin.","days":["Pazartesi","Salı","Çarşamba","Perşembe","Cuma"],"evB":"Sprachcafé B1+","evA":"Sprachcafé A1–A2","evE":"English Speaking Café","wNote":"Kaynak: Atlasio program sayfaları. Yayından önce tarihleri CMS'te kontrol edin.","fK":"Yolunu bul","fH":"Biraz konuşalım.","fL":"Seviye sınavı değil. Sana uygun başlangıcı bulman için birkaç soru.","b1":"Merhaba! Hangi dili öğrenmek istiyorsun?","b2":"Şu an senin için hangisi daha önemli?","b2a":"Düzenli öğrenmek","b2b":"Konuşma pratiği","b3":"Ne kadar vaktin var?","b3a":"Her hafta içi","b3b":"Haftada bir","b3c":"Esnek, çevrim içi","b4":"Bugün Almancan ne durumda? Tahmin etmen yeterli.","b4a":"Başlangıç (A0–A2)","b4b":"B1 veya üstü","rK":"Önerim","rGo":"Buna başvur","rSee":"Detaylar","rNote":"Emin değil misin? Ekip yerinde doğru seviyeyi bulmana yardım eder.","why1":"Düzenli öğrenmek istiyorsun ve hafta içi vaktin var.","why2a":"Konuşma pratiği için A1–A2 çarşamba grubu.","why2b":"Konuşma pratiği için B1+ salı grubu.","why3":"Haftada bir, rahat bir grupta İngilizce konuş.","why4":"Esnek ve çevrim içi İngilizce öğren.","why5":"Şu an çevrim içi Almanca yok. En yakın seçenek yüz yüze kurs.","aK":"Başvuru","aH":"Senin yerin. Senin hikâyen.","aL":"Sadece programın için gerçekten gereken bilgileri soruyoruz. Kesin onayı Atlasio ekibi verir.","journey":["Formu doldur","Bilgilerini kontrol ederiz","Başvuru numaralı onay e-postası","Ekip kesin onayla döner"],"lProgram":"Program","choose":"Lütfen seç","lFirst":"Ad","lLast":"Soyad","lEmail":"E-posta","lPhone":"Telefon (isteğe bağlı)","lLevel":"Almanca seviyen","levels":["Hiç bilmiyorum (A0)","A1","A2","B1","B2 veya üstü","Bilmiyorum"],"lStart":"Ne zamandan itibaren?","starts":["En kısa sürede","Gelecek ay","Daha sonra, haber verin"],"lGroup":"Hangi grup?","gTue":"Salı 16:00–18:30 · B1+","gWed":"Çarşamba 15:00–17:30 · A1–A2","lGoal":"İngilizceye ne için ihtiyacın var?","goals":["Eğitim / üniversite","İş","Günlük hayat"],"lDevice":"İnternetli cihaz?","devices":["Laptop / PC","Sadece akıllı telefon","Yok"],"lMsg":"Mesaj (isteğe bağlı)","lConsent":"Atlasio'ın bilgilerimi bu başvuruyu işlemek için saklamasına onay veriyorum. İstediğim zaman geri alabilirim; ayrıntılar gizlilik politikasında.","req":"Zorunlu: program, ad, e-posta, onay.","submit":"Başvuruyu gönder","sending":"Gönderiliyor …","eReq":"Lütfen doldur.","eSel":"Lütfen bir seçim yap.","eEmail":"Geçerli bir e-posta gir, ör. ad@ornek.com.","eConsent":"Onay olmadan başvurunu işleyemeyiz.","eSum":"Lütfen işaretli alanları kontrol et.","dup":"Bu e-postayla bu programa zaten başvuru var. Yine de göndermek için bir kez daha tıkla.","okRef":"Başvuru numaran","okH":"Teşekkürler! Başvurun bize ulaştı.","okSteps":["E-postayla bir onay alacaksın.","Ekip kontenjan ve tarihleri kontrol eder.","Kesin onay veya bir soruyla sana döneriz."],"okProto":"Demo: Hiçbir veri gönderilmedi.","again":"Yeni başvuru","qH":"Sık sorulan sorular","faq":[["Programlar gerçekten ücretsiz mi?","Evet. Musterstraße 12'teki Almanca kursu, Sprachcafé ve English Speaking Café ücretsiz. Atlasio Online üzerinden English Learning için başvuru ve uygunluk kontrolü var, kontenjan sınırlı."],["Seviyemi bilmiyorum. Ne yapmalıyım?","Başvuruda „Bilmiyorum“ seç. Ekip doğru grubu bulmana yardım eder."],["Bu siteyi kullanmak için Almanca bilmem gerekiyor mu?","Hayır. Site sekiz dilde. Yukarıdan dilini seç."],["Onayı ne zaman alırım?","Gönderdikten sonra başvurun için bir cevap maili alacaksın. Ayrıntılar orada."],["Verilerime ne olur?","Sadece başvurun için gerekeni ve gerektiği kadar saklarız. Ayrıntılar gizlilik politikasında."]],"footH":"Hikâyen <em>Musterstraße 12</em>'te başlıyor.","hContact":"İletişim","hAbout":"Yasal","hFollow":"Topluluk","commDesc":"Atlasio’ı ve programların arkasındaki insanları keşfet.","socH":"Atlasio sosyal medyada","hLangs":"Diller","privacy":"Gizlilik politikası","transp":"Şeffaflık","imprint":"Künye","rights":"Tüm hakları saklıdır.","proto":"Prototip. Form veri göndermez.","ckT":"Gizliliğin","ckP":"İzleme ya da reklam çerezi kullanmıyoruz. Zorunlu kayıtlar sitenin çalışmasını sağlar. Onay verirsen ayrıca dilini hatırlar ve siteyi çevrim dışı kullanım için uygulama olarak kaydederiz. Seçimini istediğin zaman „Çerez ayarları“ bölümünden değiştirebilirsin.","ckAll":"Tümünü kabul et","ckNec":"Sadece zorunlu","ckSave":"Seçimi kaydet","ckSet":"Ayarlar","ckNecT":"Zorunlu","ckNecD":"Çerez tercihini saklar. Bu olmadan site beklendiği gibi çalışmaz.","ckPrefT":"Kolaylık","ckPrefD":"Dilini hatırlar ve sitenin çevrim dışı ve uygulama olarak çalışması için dosyaları tarayıcında saklar (service worker).","ckAlways":"Her zaman açık","cookieLink":"Çerez ayarları","install":"Uygulamayı yükle","photos":"Temsilî fotoğraflar"},"ar":{"inLang":"بالعربية","first":"كلمتك الأولى","means":"تعني","tap":"اسحب أو اضغط أو حرّك الفأرة","pass":"بطاقة التعلّم","qAsk":"لديك أسئلة","qAns":"إليك الإجابات.","iSpeak":"أتحدّث","iLearn":"أتعلّم","skip":"انتقل إلى المحتوى","nav1":"المسارات","nav2":"الأسبوع","nav3":"اعثر على مسارك","nav4":"سجّل","kick":"برلين · Musterstraße 12","h1a":"تعلّم.","h1b":"تحدّث.","h1c":"اكتب قصتك.","lead":"أربعة مسارات لتعلّم الألمانية والإنجليزية. مجانًا حضوريًا أو عبر الإنترنت. بثماني لغات.","cta1":"اعثر على مساري","cta2":"كل المسارات","cta3":"سجّل الآن","sayHi":"قل مرحبًا بلغة","fact1":"4 مسارات تعلّم","fact2":"3 برامج حضورية مجانية","fact3":"8 لغات","pK":"أربعة أبواب","pH":"اختر بابك.","pL":"كل مسار يوصلك إلى التسجيل في ثلاث خطوات أو أقل. يؤكّد فريق Atlasio المواعيد والأماكن المتاحة.","tDe":"الألمانية","tEn":"الإنجليزية","dLevel":"المستوى","dWhen":"متى","dWhere":"أين","dCost":"التكلفة","free":"مجاني","onsite":"حضوري","online":"عبر الإنترنت","apply":"سجّل","source":"المصدر","p1t":"تعلّم الألمانية","p1s":"دورة اللغة الألمانية · Atlasio Intensive","p1l":"من A1 حتى المستوى المتقدم","p1w":"من الاثنين إلى الجمعة · 5 حصص يوميًا","p2t":"تحدّث الألمانية","p2s":"مقهى اللغة الألمانية (Sprachcafé)","p2l":"A1–A2 · B1+","p2w":"الثلاثاء 16:00–18:30 (B1+) · الأربعاء 15:00–17:30 (A1–A2)","p3t":"English Speaking Café","p3s":"تحدّث الإنجليزية في مجموعة عن مواضيع الحياة اليومية","p3l":"جميع المستويات","p3w":"كل ثلاثاء 18:30–20:00","p4t":"English Learning","p4s":"تعلّم الإنجليزية عبر Atlasio Online للدراسة والعمل والحياة اليومية","p4l":"مرن وبالسرعة التي تناسبك","p4w":"في أي وقت","p4where":"عبر الإنترنت على Atlasio Online","p4cost":"بعد التقديم والتحقق من الأهلية، الأماكن محدودة","wK":"الجدول الأسبوعي","wH":"أسبوعك.","wL":"كل البرامج الحضورية في Musterstraße 12 بنظرة واحدة.","dailyB":"الاثنين–الجمعة · دورة الألمانية","dailyS":"5 حصص يوميًا، 25 حصة أسبوعيًا. ستعرف موعد مجموعتك عند التسجيل.","days":["الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"],"evB":"مقهى اللغة B1+","evA":"مقهى اللغة A1–A2","evE":"English Speaking Café","wNote":"المصدر: صفحات برامج Atlasio. يجب التحقق من المواعيد قبل النشر.","fK":"اعثر على مسارك","fH":"لنتحدّث قليلًا.","fL":"هذا ليس اختبار تحديد مستوى. مجرد أسئلة قليلة لتجد البداية المناسبة.","b1":"مرحبًا! أي لغة تريد أن تتعلّم؟","b2":"ما الأهم بالنسبة لك الآن؟","b2a":"التعلّم خطوة بخطوة","b2b":"ممارسة المحادثة","b3":"كم لديك من الوقت؟","b3a":"كل أيام الأسبوع","b3b":"مرة في الأسبوع","b3c":"مرن، عبر الإنترنت","b4":"ما مستوى ألمانيتك اليوم؟ قدّره فقط.","b4a":"مبتدئ (A0–A2)","b4b":"B1 أو أعلى","rK":"اقتراحي","rGo":"سجّل في هذا","rSee":"التفاصيل","rNote":"لست متأكدًا؟ سيساعدك الفريق في المكان على إيجاد المستوى المناسب.","why1":"تريد التعلّم بشكل منظّم ولديك وقت في أيام الأسبوع.","why2a":"لممارسة المحادثة، في مجموعة الأربعاء لمستوى A1–A2.","why2b":"لممارسة المحادثة، في مجموعة الثلاثاء لمستوى B1+.","why3":"تحدّث الإنجليزية مرة في الأسبوع في جو مريح.","why4":"تعلّم الإنجليزية بمرونة عبر الإنترنت.","why5":"لا توجد دورة ألمانية عبر الإنترنت حاليًا. الأقرب هو الدورة الحضورية.","aK":"التسجيل","aH":"مكانك. قصتك.","aL":"نسأل فقط عمّا يحتاجه برنامجك فعلًا. التأكيد النهائي يصدر عن فريق Atlasio.","journey":["املأ النموذج","نراجع بياناتك","تأكيد برقم التسجيل عبر البريد الإلكتروني","يتواصل الفريق معك بالتأكيد"],"lProgram":"البرنامج","choose":"يرجى الاختيار","lFirst":"الاسم الأول","lLast":"اسم العائلة","lEmail":"البريد الإلكتروني","lPhone":"الهاتف (اختياري)","lLevel":"مستواك في الألمانية","levels":["لا أعرف الألمانية (A0)","A1","A2","B1","B2 أو أعلى","لا أعرف"],"lStart":"متى يمكنك البدء؟","starts":["في أقرب وقت","الشهر القادم","لاحقًا، أبلغوني"],"lGroup":"أي مجموعة؟","gTue":"الثلاثاء 16:00–18:30 · B1+","gWed":"الأربعاء 15:00–17:30 · A1–A2","lGoal":"لماذا تحتاج الإنجليزية؟","goals":["الدراسة / الجامعة","العمل","الحياة اليومية"],"lDevice":"جهاز متصل بالإنترنت؟","devices":["حاسوب","هاتف ذكي فقط","لا يوجد"],"lMsg":"رسالة (اختياري)","lConsent":"أوافق على أن تحفظ Atlasio بياناتي لمعالجة هذا التسجيل. يمكنني سحب موافقتي في أي وقت؛ التفاصيل في سياسة الخصوصية.","req":"حقول إلزامية: البرنامج، الاسم، البريد الإلكتروني، الموافقة.","submit":"أرسل التسجيل","sending":"جارٍ الإرسال …","eReq":"يرجى ملء هذا الحقل.","eSel":"يرجى اختيار خيار.","eEmail":"يرجى إدخال بريد إلكتروني صحيح، مثل name@example.com.","eConsent":"لا يمكننا معالجة التسجيل دون موافقتك.","eSum":"يرجى مراجعة الحقول المحددة.","dup":"يوجد تسجيل سابق بهذا البريد لهذا البرنامج. اضغط مرة أخرى للإرسال على أي حال.","okRef":"رقم تسجيلك","okH":"شكرًا! وصلنا تسجيلك.","okSteps":["ستصلك رسالة تأكيد بالبريد الإلكتروني.","يراجع الفريق الأماكن والمواعيد.","سنتواصل معك بالتأكيد أو بسؤال."],"okProto":"عرض توضيحي: لم يتم إرسال أي بيانات.","again":"تسجيل جديد","qH":"أسئلة شائعة","faq":[["هل البرامج مجانية فعلًا؟","نعم. دورة الألمانية ومقهى اللغة وEnglish Speaking Café في Musterstraße 12 مجانية. أما English Learning عبر Atlasio Online فيتطلب تقديمًا وتحققًا من الأهلية، والأماكن محدودة."],["لا أعرف مستواي. ماذا أفعل؟","اختر «لا أعرف» عند التسجيل، وسيساعدك الفريق في إيجاد المجموعة المناسبة."],["هل أحتاج الألمانية لاستخدام هذا الموقع؟","لا. الموقع متاح بثماني لغات. اختر لغتك في الأعلى."],["متى أحصل على التأكيد؟","بعد الإرسال ستصلك رسالة رد بالبريد الإلكتروني بخصوص تسجيلك. ستجد فيها كل التفاصيل."],["ماذا يحدث لبياناتي؟","نحتفظ فقط بما يلزم لتسجيلك وللمدة اللازمة فقط. التفاصيل في سياسة الخصوصية."]],"footH":"قصتك تبدأ في <em>Musterstraße 12</em>.","hContact":"تواصل معنا","hAbout":"معلومات قانونية","hFollow":"المجتمع","commDesc":"تعرّف على Atlasio والأشخاص الذين يقفون وراء البرامج.","socH":"Atlasio على وسائل التواصل","hLangs":"اللغات","privacy":"سياسة الخصوصية","transp":"الشفافية","imprint":"بيانات الناشر","rights":"جميع الحقوق محفوظة.","proto":"نموذج أولي. النموذج لا يرسل أي بيانات.","ckT":"خصوصيتك","ckP":"لا نستخدم ملفات تعريف ارتباط للتتبع أو الإعلانات. التخزين الضروري يضمن عمل الموقع. وبموافقتك نتذكّر لغتك أيضًا ونحفظ الموقع لاستخدامه دون اتصال كتطبيق. يمكنك تغيير اختيارك في أي وقت من «إعدادات ملفات تعريف الارتباط».","ckAll":"قبول الكل","ckNec":"الضروري فقط","ckSave":"حفظ الاختيار","ckSet":"الإعدادات","ckNecT":"ضروري","ckNecD":"يحفظ قرارك بشأن ملفات تعريف الارتباط. بدونه لن يعمل الموقع كما ينبغي.","ckPrefT":"الراحة","ckPrefD":"يتذكّر لغتك ويحفظ ملفات في متصفحك ليعمل الموقع دون اتصال وكتطبيق (Service Worker).","ckAlways":"مفعّل دائمًا","cookieLink":"إعدادات ملفات تعريف الارتباط","install":"تثبيت التطبيق","photos":"صور توضيحية"},"fa":{"inLang":"به فارسی","first":"اولین کلمه‌ات","means":"یعنی","tap":"بکش، بزن یا ماوس را حرکت بده","pass":"کارت یادگیری","qAsk":"سؤالی داری","qAns":"جواب‌ها اینجاست.","iSpeak":"زبان من","iLearn":"یاد می‌گیرم","skip":"رفتن به محتوا","nav1":"مسیرها","nav2":"هفته","nav3":"مسیرت را پیدا کن","nav4":"ثبت‌نام","kick":"برلین · Musterstraße 12","h1a":"یاد بگیر.","h1b":"حرف بزن.","h1c":"داستانت را بنویس.","lead":"چهار مسیر یادگیری برای آلمانی و انگلیسی. رایگان و حضوری یا آنلاین. به هشت زبان.","cta1":"مسیرم را پیدا کن","cta2":"همه مسیرها","cta3":"همین حالا ثبت‌نام کن","sayHi":"سلام کن به زبان","fact1":"۴ مسیر یادگیری","fact2":"۳ برنامه حضوری رایگان","fact3":"۸ زبان","pK":"چهار در","pH":"درِ خودت را انتخاب کن.","pL":"هر مسیر حداکثر با سه قدم به ثبت‌نام می‌رسد. تیم Atlasio تاریخ‌ها و ظرفیت را تأیید می‌کند.","tDe":"آلمانی","tEn":"انگلیسی","dLevel":"سطح","dWhen":"زمان","dWhere":"مکان","dCost":"هزینه","free":"رایگان","onsite":"حضوری","online":"آنلاین","apply":"ثبت‌نام","source":"منبع","p1t":"آلمانی یاد بگیر","p1s":"دوره زبان آلمانی · Atlasio Intensive","p1l":"از A1 تا سطح پیشرفته","p1w":"دوشنبه تا جمعه · روزی ۵ جلسه","p2t":"آلمانی حرف بزن","p2s":"کافه زبان آلمانی (Sprachcafé)","p2l":"A1–A2 · B1+","p2w":"سه‌شنبه 16:00–18:30 (B1+) · چهارشنبه 15:00–17:30 (A1–A2)","p3t":"English Speaking Café","p3s":"گفت‌وگوی گروهی به انگلیسی درباره موضوعات روزمره","p3l":"همه سطح‌ها","p3w":"هر سه‌شنبه 18:30–20:00","p4t":"English Learning","p4s":"یادگیری انگلیسی در Atlasio Online برای تحصیل، کار و زندگی روزمره","p4l":"منعطف، با سرعت خودت","p4w":"هر زمان","p4where":"آنلاین در Atlasio Online","p4cost":"پس از درخواست و بررسی شرایط، ظرفیت محدود","wK":"برنامه هفتگی","wH":"هفته تو.","wL":"همه برنامه‌های حضوری در Musterstraße 12 در یک نگاه.","dailyB":"دوشنبه–جمعه · دوره آلمانی","dailyS":"روزی ۵ جلسه، هفته‌ای ۲۵ جلسه. ساعت گروهت را هنگام ثبت‌نام می‌فهمی.","days":["دوشنبه","سه‌شنبه","چهارشنبه","پنجشنبه","جمعه"],"evB":"کافه زبان B1+","evA":"کافه زبان A1–A2","evE":"English Speaking Café","wNote":"منبع: صفحه‌های برنامه Atlasio. پیش از انتشار تاریخ‌ها را بررسی کنید.","fK":"مسیرت را پیدا کن","fH":"بیا کمی حرف بزنیم.","fL":"این آزمون تعیین سطح نیست. فقط چند سؤال تا شروع مناسب را پیدا کنی.","b1":"سلام! کدام زبان را می‌خواهی یاد بگیری؟","b2":"الان کدام برایت مهم‌تر است؟","b2a":"یادگیری منظم","b2b":"تمرین مکالمه","b3":"چقدر وقت داری؟","b3a":"هر روز کاری","b3b":"هفته‌ای یک بار","b3c":"منعطف، آنلاین","b4":"آلمانی‌ات امروز در چه سطحی است؟ فقط حدس بزن.","b4a":"مبتدی (A0–A2)","b4b":"B1 یا بالاتر","rK":"پیشنهاد من","rGo":"برای این ثبت‌نام کن","rSee":"جزئیات","rNote":"مطمئن نیستی؟ تیم در محل کمکت می‌کند سطح مناسب را پیدا کنی.","why1":"می‌خواهی منظم یاد بگیری و در روزهای کاری وقت داری.","why2a":"برای تمرین مکالمه، در گروه چهارشنبه برای A1–A2.","why2b":"برای تمرین مکالمه، در گروه سه‌شنبه برای B1+.","why3":"هفته‌ای یک بار در جمعی راحت انگلیسی حرف بزن.","why4":"انگلیسی را منعطف و آنلاین یاد بگیر.","why5":"فعلاً آلمانی آنلاین نداریم. نزدیک‌ترین گزینه دوره حضوری است.","aK":"ثبت‌نام","aH":"جای تو. داستان تو.","aL":"فقط چیزهایی را می‌پرسیم که برنامه‌ات واقعاً لازم دارد. تأیید نهایی با تیم Atlasio است.","journey":["فرم را پر کن","اطلاعاتت را بررسی می‌کنیم","ایمیل تأیید با شماره ثبت‌نام","تیم با تأیید نهایی با تو تماس می‌گیرد"],"lProgram":"برنامه","choose":"لطفاً انتخاب کن","lFirst":"نام","lLast":"نام خانوادگی","lEmail":"ایمیل","lPhone":"تلفن (اختیاری)","lLevel":"سطح آلمانی تو","levels":["هنوز آلمانی بلد نیستم (A0)","A1","A2","B1","B2 یا بالاتر","نمی‌دانم"],"lStart":"از چه زمانی؟","starts":["هر چه زودتر","ماه آینده","بعداً، خبرم کنید"],"lGroup":"کدام گروه؟","gTue":"سه‌شنبه 16:00–18:30 · B1+","gWed":"چهارشنبه 15:00–17:30 · A1–A2","lGoal":"انگلیسی را برای چه می‌خواهی؟","goals":["تحصیل / دانشگاه","کار","زندگی روزمره"],"lDevice":"دستگاه با اینترنت؟","devices":["لپ‌تاپ / کامپیوتر","فقط گوشی","ندارم"],"lMsg":"پیام (اختیاری)","lConsent":"موافقم که Atlasio اطلاعاتم را برای رسیدگی به این ثبت‌نام نگه دارد. هر زمان می‌توانم رضایتم را پس بگیرم؛ جزئیات در سیاست حریم خصوصی.","req":"الزامی: برنامه، نام، ایمیل، رضایت.","submit":"ارسال ثبت‌نام","sending":"در حال ارسال …","eReq":"لطفاً این بخش را پر کن.","eSel":"لطفاً یک گزینه انتخاب کن.","eEmail":"لطفاً یک ایمیل معتبر وارد کن، مثلاً name@example.com.","eConsent":"بدون رضایت تو نمی‌توانیم ثبت‌نام را بررسی کنیم.","eSum":"لطفاً بخش‌های مشخص‌شده را بررسی کن.","dup":"با این ایمیل قبلاً برای این برنامه ثبت‌نام شده است. برای ارسال دوباره یک بار دیگر کلیک کن.","okRef":"شماره ثبت‌نام تو","okH":"ممنون! ثبت‌نامت به دست ما رسید.","okSteps":["یک ایمیل تأیید دریافت می‌کنی.","تیم ظرفیت و تاریخ‌ها را بررسی می‌کند.","با تأیید یا یک سؤال با تو تماس می‌گیریم."],"okProto":"نسخه نمایشی: هیچ داده‌ای ارسال نشد.","again":"ثبت‌نام جدید","qH":"پرسش‌های رایج","faq":[["آیا برنامه‌ها واقعاً رایگان‌اند؟","بله. دوره آلمانی، کافه زبان و English Speaking Café در Musterstraße 12 رایگان‌اند. برای English Learning در Atlasio Online درخواست و بررسی شرایط لازم است و ظرفیت محدود است."],["سطحم را نمی‌دانم. چه کنم؟","هنگام ثبت‌نام «نمی‌دانم» را انتخاب کن. تیم کمکت می‌کند گروه مناسب را پیدا کنی."],["برای استفاده از این سایت باید آلمانی بلد باشم؟","نه. سایت به هشت زبان است. زبانت را از بالا انتخاب کن."],["کی جواب می‌گیرم؟","بعد از ارسال، یک ایمیل پاسخ درباره ثبت‌نامت دریافت می‌کنی. همه جزئیات در آن است."],["با اطلاعاتم چه می‌شود؟","فقط چیزی را که برای ثبت‌نامت لازم است و فقط تا زمانی که لازم است نگه می‌داریم. جزئیات در سیاست حریم خصوصی."]],"footH":"داستانت در <em>Musterstraße 12</em> شروع می‌شود.","hContact":"تماس","hAbout":"اطلاعات حقوقی","hFollow":"جامعه","commDesc":"Atlasio و آدم‌های پشت این برنامه‌ها را بشناس.","socH":"Atlasio در شبکه‌های اجتماعی","hLangs":"زبان‌ها","privacy":"حریم خصوصی","transp":"شفافیت","imprint":"اطلاعات حقوقی","rights":"همه حقوق محفوظ است.","proto":"نمونه اولیه. فرم هیچ داده‌ای ارسال نمی‌کند.","ckT":"حریم خصوصی تو","ckP":"ما از کوکی‌های ردیابی یا تبلیغاتی استفاده نمی‌کنیم. ذخیره‌سازی ضروری باعث می‌شود سایت کار کند. با رضایت تو، زبانت را هم به خاطر می‌سپاریم و سایت را برای استفاده آفلاین به‌صورت اپ ذخیره می‌کنیم. هر زمان می‌توانی انتخابت را در «تنظیمات کوکی» تغییر دهی.","ckAll":"پذیرش همه","ckNec":"فقط ضروری","ckSave":"ذخیره انتخاب","ckSet":"تنظیمات","ckNecT":"ضروری","ckNecD":"تصمیم تو درباره کوکی‌ها را ذخیره می‌کند. بدون آن سایت درست کار نمی‌کند.","ckPrefT":"راحتی","ckPrefD":"زبانت را به خاطر می‌سپارد و فایل‌ها را در مرورگر ذخیره می‌کند تا سایت آفلاین و به‌صورت اپ کار کند (Service Worker).","ckAlways":"همیشه فعال","cookieLink":"تنظیمات کوکی","install":"نصب اپ","photos":"عکس‌های نمایشی"},"uk":{"inLang":"Українською","first":"Твоє перше слово","means":"означає","tap":"Тягни, торкайся або рухай мишею","pass":"Навчальний квиток","qAsk":"Є питання","qAns":"Відповідаємо.","iSpeak":"Я говорю","iLearn":"Я вчу","skip":"Перейти до змісту","nav1":"Напрями","nav2":"Тиждень","nav3":"Знайти свій шлях","nav4":"Записатися","kick":"Берлін · Musterstraße 12","h1a":"Вчися.","h1b":"Говори.","h1c":"Пиши свою історію.","lead":"Чотири напрями для вивчення німецької та англійської. Безкоштовно наживо або онлайн. Вісьмома мовами.","cta1":"Знайти мій шлях","cta2":"Усі напрями","cta3":"Записатися зараз","sayHi":"Привітайся мовою","fact1":"4 напрями навчання","fact2":"3 × безкоштовно наживо","fact3":"8 мов","pK":"Чотири двері","pH":"Обери свої двері.","pL":"Кожен напрям веде до запису щонайбільше за три кроки. Дати й вільні місця підтверджує команда Atlasio.","tDe":"Німецька","tEn":"Англійська","dLevel":"Рівень","dWhen":"Коли","dWhere":"Де","dCost":"Вартість","free":"Безкоштовно","onsite":"Наживо","online":"Онлайн","apply":"Записатися","source":"Джерело","p1t":"Вивчати німецьку","p1s":"Курс німецької · Atlasio Intensive","p1l":"Від A1 до просунутого","p1w":"Пн–Пт · 5 уроків на день","p2t":"Говорити німецькою","p2s":"Німецьке мовне кафе (Sprachcafé)","p2l":"A1–A2 · B1+","p2w":"Вт 16:00–18:30 (B1+) · Ср 15:00–17:30 (A1–A2)","p3t":"English Speaking Café","p3s":"Розмови англійською в групі на щоденні теми","p3l":"Усі рівні","p3w":"Щовівторка 18:30–20:00","p4t":"English Learning","p4s":"Англійська на Atlasio Online для навчання, роботи й повсякдення","p4l":"Гнучко, у власному темпі","p4w":"Будь-коли","p4where":"Онлайн на Atlasio Online","p4cost":"Після заявки й перевірки відповідності, місць обмаль","wK":"Розклад на тиждень","wH":"Твій тиждень.","wL":"Усі очні заняття на Musterstraße 12 одним поглядом.","dailyB":"Пн–Пт · Курс німецької","dailyS":"5 уроків на день, 25 на тиждень. Час своєї групи дізнаєшся під час запису.","days":["Понеділок","Вівторок","Середа","Четвер","П'ятниця"],"evB":"Мовне кафе B1+","evA":"Мовне кафе A1–A2","evE":"English Speaking Café","wNote":"Джерело: сторінки програм Atlasio. Перевірте дати перед публікацією.","fK":"Знайти свій шлях","fH":"Давай трохи поговоримо.","fL":"Це не тест на рівень. Лише кілька питань, щоб знайти зручний старт.","b1":"Привіт! Яку мову ти хочеш вивчати?","b2":"Що для тебе зараз важливіше?","b2a":"Вчитися системно","b2b":"Практикувати розмову","b3":"Скільки в тебе часу?","b3a":"Щобудня","b3b":"Раз на тиждень","b3c":"Гнучко, онлайн","b4":"Яка в тебе зараз німецька? Просто оціни.","b4a":"Початківець (A0–A2)","b4b":"B1 або вище","rK":"Моя порада","rGo":"Записатися сюди","rSee":"Деталі","rNote":"Не впевнений? Команда на місці допоможе визначити рівень.","why1":"Ти хочеш вчитися системно і маєш час у будні.","why2a":"Для розмовної практики, у середовій групі A1–A2.","why2b":"Для розмовної практики, у вівторковій групі B1+.","why3":"Раз на тиждень говорити англійською в невимушеній компанії.","why4":"Вчити англійську гнучко й онлайн.","why5":"Онлайн-курсу німецької зараз немає. Найближчий варіант — очний курс.","aK":"Запис","aH":"Твоє місце. Твоя історія.","aL":"Ми питаємо лише те, що справді потрібно для твоєї програми. Остаточне підтвердження дає команда Atlasio.","journey":["Заповни форму","Ми перевіряємо дані","Підтвердження з номером заявки на e-mail","Команда зв'яжеться з тобою"],"lProgram":"Програма","choose":"Будь ласка, оберіть","lFirst":"Ім'я","lLast":"Прізвище","lEmail":"E-mail","lPhone":"Телефон (необов'язково)","lLevel":"Твій рівень німецької","levels":["Ще не знаю німецької (A0)","A1","A2","B1","B2 або вище","Не знаю"],"lStart":"З якого часу?","starts":["Якомога швидше","Наступного місяця","Пізніше, повідомте мене"],"lGroup":"Яка група?","gTue":"Вівторок 16:00–18:30 · B1+","gWed":"Середа 15:00–17:30 · A1–A2","lGoal":"Для чого тобі англійська?","goals":["Навчання / університет","Робота","Повсякдення"],"lDevice":"Пристрій з інтернетом?","devices":["Ноутбук / ПК","Лише смартфон","Немає"],"lMsg":"Повідомлення (необов'язково)","lConsent":"Я погоджуюся, що Atlasio зберігатиме мої дані для обробки цієї заявки. Згоду можна відкликати будь-коли; деталі в політиці конфіденційності.","req":"Обов'язково: програма, ім'я, e-mail, згода.","submit":"Надіслати заявку","sending":"Надсилання …","eReq":"Будь ласка, заповніть.","eSel":"Будь ласка, оберіть варіант.","eEmail":"Введіть дійсний e-mail, напр. name@example.com.","eConsent":"Без згоди ми не можемо обробити заявку.","eSum":"Будь ласка, перевірте позначені поля.","dup":"З цим e-mail уже є заявка на цю програму. Натисни ще раз, щоб надіслати все одно.","okRef":"Номер твоєї заявки","okH":"Дякуємо! Заявку отримано.","okSteps":["Ти отримаєш підтвердження на e-mail.","Команда перевірить місця й дати.","Ми зв'яжемося з підтвердженням або запитанням."],"okProto":"Демо: дані не надсилалися.","again":"Нова заявка","qH":"Часті запитання","faq":[["Чи справді заняття безкоштовні?","Так. Курс німецької, мовне кафе та English Speaking Café на Musterstraße 12 безкоштовні. Для English Learning на Atlasio Online потрібні заявка й перевірка відповідності, місць обмаль."],["Я не знаю свого рівня. Що робити?","Під час запису обери «Не знаю». Команда допоможе знайти потрібну групу."],["Чи потрібна німецька, щоб користуватися сайтом?","Ні. Сайт доступний вісьмома мовами. Обери свою вгорі."],["Коли я отримаю підтвердження?","Після надсилання ти отримаєш лист-відповідь щодо своєї заявки. Усі деталі будуть там."],["Що буде з моїми даними?","Ми зберігаємо лише те, що потрібно для заявки, і лише стільки, скільки потрібно. Деталі в політиці конфіденційності."]],"footH":"Твоя історія починається на <em>Musterstraße 12</em>.","hContact":"Контакти","hAbout":"Правова інформація","hFollow":"Спільнота","commDesc":"Познайомся з Atlasio і людьми, які стоять за програмами.","socH":"Atlasio у соцмережах","hLangs":"Мови","privacy":"Конфіденційність","transp":"Прозорість","imprint":"Вихідні дані","rights":"Усі права захищено.","proto":"Прототип. Форма не надсилає даних.","ckT":"Твоя приватність","ckP":"Ми не використовуємо файли cookie для відстеження чи реклами. Необхідне збереження забезпечує роботу сайту. За твоєю згодою ми також запам'ятовуємо мову й зберігаємо сайт для офлайн-доступу як застосунок. Змінити вибір можна будь-коли в «Налаштуваннях cookie».","ckAll":"Прийняти все","ckNec":"Лише необхідні","ckSave":"Зберегти вибір","ckSet":"Налаштування","ckNecT":"Необхідні","ckNecD":"Зберігає твій вибір щодо cookie. Без цього сайт не працюватиме належним чином.","ckPrefT":"Зручність","ckPrefD":"Запам'ятовує мову й зберігає файли в браузері, щоб сайт працював офлайн і як застосунок (service worker).","ckAlways":"Завжди увімкнено","cookieLink":"Налаштування cookie","install":"Встановити застосунок","photos":"Ілюстративні фото"},"ru":{"inLang":"По-русски","first":"Твоё первое слово","means":"значит","tap":"Тяни, нажимай или двигай мышью","pass":"Учебный билет","qAsk":"Есть вопросы","qAns":"Отвечаем.","iSpeak":"Я говорю","iLearn":"Я учу","skip":"Перейти к содержанию","nav1":"Направления","nav2":"Неделя","nav3":"Найти свой путь","nav4":"Записаться","kick":"Берлин · Musterstraße 12","h1a":"Учись.","h1b":"Говори.","h1c":"Пиши свою историю.","lead":"Четыре направления для изучения немецкого и английского. Бесплатно очно или онлайн. На восьми языках.","cta1":"Найти мой путь","cta2":"Все направления","cta3":"Записаться сейчас","sayHi":"Поздоровайся на","fact1":"4 направления","fact2":"3 × бесплатно очно","fact3":"8 языков","pK":"Четыре двери","pH":"Выбери свою дверь.","pL":"Каждое направление ведёт к записи максимум за три шага. Даты и свободные места подтверждает команда Atlasio.","tDe":"Немецкий","tEn":"Английский","dLevel":"Уровень","dWhen":"Когда","dWhere":"Где","dCost":"Стоимость","free":"Бесплатно","onsite":"Очно","online":"Онлайн","apply":"Записаться","source":"Источник","p1t":"Учить немецкий","p1s":"Курс немецкого · Atlasio Intensive","p1l":"От A1 до продвинутого","p1w":"Пн–Пт · 5 уроков в день","p2t":"Говорить по-немецки","p2s":"Немецкое языковое кафе (Sprachcafé)","p2l":"A1–A2 · B1+","p2w":"Вт 16:00–18:30 (B1+) · Ср 15:00–17:30 (A1–A2)","p3t":"English Speaking Café","p3s":"Разговоры на английском в группе на повседневные темы","p3l":"Все уровни","p3w":"Каждый вторник 18:30–20:00","p4t":"English Learning","p4s":"Английский на Atlasio Online для учёбы, работы и повседневной жизни","p4l":"Гибко, в своём темпе","p4w":"В любое время","p4where":"Онлайн на Atlasio Online","p4cost":"После заявки и проверки соответствия, мест немного","wK":"Расписание","wH":"Твоя неделя.","wL":"Все очные занятия на Musterstraße 12 на одном экране.","dailyB":"Пн–Пт · Курс немецкого","dailyS":"5 уроков в день, 25 в неделю. Время своей группы узнаешь при записи.","days":["Понедельник","Вторник","Среда","Четверг","Пятница"],"evB":"Языковое кафе B1+","evA":"Языковое кафе A1–A2","evE":"English Speaking Café","wNote":"Источник: страницы программ Atlasio. Проверьте даты перед публикацией.","fK":"Найти свой путь","fH":"Давай немного поговорим.","fL":"Это не тест на уровень. Просто пара вопросов, чтобы найти подходящий старт.","b1":"Привет! Какой язык ты хочешь учить?","b2":"Что для тебя сейчас важнее?","b2a":"Учиться системно","b2b":"Практиковать разговор","b3":"Сколько у тебя времени?","b3a":"Каждый будний день","b3b":"Раз в неделю","b3c":"Гибко, онлайн","b4":"Какой у тебя сейчас немецкий? Просто оцени.","b4a":"Начальный (A0–A2)","b4b":"B1 или выше","rK":"Мой совет","rGo":"Записаться сюда","rSee":"Подробнее","rNote":"Не уверен? Команда на месте поможет определить уровень.","why1":"Ты хочешь учиться системно и свободен в будни.","why2a":"Для разговорной практики, в группе по средам для A1–A2.","why2b":"Для разговорной практики, в группе по вторникам для B1+.","why3":"Раз в неделю говорить по-английски в непринуждённой компании.","why4":"Учить английский гибко и онлайн.","why5":"Онлайн-курса немецкого сейчас нет. Ближе всего очный курс.","aK":"Запись","aH":"Твоё место. Твоя история.","aL":"Мы спрашиваем только то, что действительно нужно для твоей программы. Окончательное подтверждение даёт команда Atlasio.","journey":["Заполни форму","Мы проверим данные","Подтверждение с номером заявки по e-mail","Команда свяжется с тобой"],"lProgram":"Программа","choose":"Пожалуйста, выберите","lFirst":"Имя","lLast":"Фамилия","lEmail":"E-mail","lPhone":"Телефон (необязательно)","lLevel":"Твой уровень немецкого","levels":["Пока не знаю немецкого (A0)","A1","A2","B1","B2 или выше","Не знаю"],"lStart":"С какого времени?","starts":["Как можно скорее","В следующем месяце","Позже, сообщите мне"],"lGroup":"Какая группа?","gTue":"Вторник 16:00–18:30 · B1+","gWed":"Среда 15:00–17:30 · A1–A2","lGoal":"Для чего тебе английский?","goals":["Учёба / университет","Работа","Повседневная жизнь"],"lDevice":"Устройство с интернетом?","devices":["Ноутбук / ПК","Только смартфон","Нет"],"lMsg":"Сообщение (необязательно)","lConsent":"Я согласен(на), что Atlasio сохранит мои данные для обработки этой заявки. Согласие можно отозвать в любое время; подробности в политике конфиденциальности.","req":"Обязательно: программа, имя, e-mail, согласие.","submit":"Отправить заявку","sending":"Отправка …","eReq":"Пожалуйста, заполните.","eSel":"Пожалуйста, выберите вариант.","eEmail":"Введите корректный e-mail, напр. name@example.com.","eConsent":"Без согласия мы не можем обработать заявку.","eSum":"Пожалуйста, проверьте отмеченные поля.","dup":"С этим e-mail уже есть заявка на эту программу. Нажми ещё раз, чтобы всё равно отправить.","okRef":"Номер твоей заявки","okH":"Спасибо! Заявка получена.","okSteps":["Ты получишь подтверждение по e-mail.","Команда проверит места и даты.","Мы свяжемся с подтверждением или вопросом."],"okProto":"Демо: данные не отправлялись.","again":"Новая заявка","qH":"Частые вопросы","faq":[["Занятия правда бесплатные?","Да. Курс немецкого, языковое кафе и English Speaking Café на Musterstraße 12 бесплатны. Для English Learning на Atlasio Online нужны заявка и проверка соответствия, мест немного."],["Я не знаю свой уровень. Что делать?","При записи выбери «Не знаю». Команда поможет подобрать группу."],["Нужен ли немецкий, чтобы пользоваться сайтом?","Нет. Сайт доступен на восьми языках. Выбери свой наверху."],["Когда я получу подтверждение?","После отправки ты получишь письмо-ответ по своей заявке. Все подробности будут там."],["Что будет с моими данными?","Мы храним только то, что нужно для заявки, и только столько, сколько нужно. Подробности в политике конфиденциальности."]],"footH":"Твоя история начинается на <em>Musterstraße 12</em>.","hContact":"Контакты","hAbout":"Правовая информация","hFollow":"Сообщество","commDesc":"Познакомься с Atlasio и людьми, которые стоят за программами.","socH":"Atlasio в соцсетях","hLangs":"Языки","privacy":"Конфиденциальность","transp":"Прозрачность","imprint":"Выходные данные","rights":"Все права защищены.","proto":"Прототип. Форма не отправляет данные.","ckT":"Твоя конфиденциальность","ckP":"Мы не используем cookie для отслеживания или рекламы. Необходимое хранение обеспечивает работу сайта. С твоего согласия мы также запоминаем язык и сохраняем сайт для офлайн-доступа как приложение. Изменить выбор можно в любое время в «Настройках cookie».","ckAll":"Принять все","ckNec":"Только необходимые","ckSave":"Сохранить выбор","ckSet":"Настройки","ckNecT":"Необходимые","ckNecD":"Сохраняет твой выбор по cookie. Без этого сайт не будет работать как надо.","ckPrefT":"Удобство","ckPrefD":"Запоминает язык и сохраняет файлы в браузере, чтобы сайт работал офлайн и как приложение (service worker).","ckAlways":"Всегда включено","cookieLink":"Настройки cookie","install":"Установить приложение","photos":"Иллюстративные фото"},"fr":{"inLang":"En français","first":"Ton premier mot","means":"veut dire","tap":"Fais glisser, touche ou bouge la souris","pass":"Pass d'apprentissage","qAsk":"Des questions","qAns":"On répond.","iSpeak":"Je parle","iLearn":"J'apprends","skip":"Aller au contenu","nav1":"Parcours","nav2":"Semaine","nav3":"Trouver mon parcours","nav4":"S'inscrire","kick":"Berlin · Musterstraße 12","h1a":"Apprends.","h1b":"Parle.","h1c":"Écris ton histoire.","lead":"Quatre parcours pour l'allemand et l'anglais. Gratuits sur place ou en ligne. Expliqués en huit langues.","cta1":"Trouver mon parcours","cta2":"Tous les parcours","cta3":"S'inscrire maintenant","sayHi":"Dis bonjour en","fact1":"4 parcours","fact2":"3 × gratuit sur place","fact3":"8 langues","pK":"Quatre portes","pH":"Choisis ta porte.","pL":"Chaque parcours mène à l'inscription en trois étapes maximum. L'équipe Atlasio confirme les dates et les places.","tDe":"Allemand","tEn":"Anglais","dLevel":"Niveau","dWhen":"Quand","dWhere":"Où","dCost":"Prix","free":"Gratuit","onsite":"Sur place","online":"En ligne","apply":"S'inscrire","source":"Source","p1t":"Apprendre l'allemand","p1s":"Cours d'allemand · Atlasio Intensive","p1l":"De A1 au niveau avancé","p1w":"Lun–Ven · 5 cours par jour","p2t":"Parler allemand","p2s":"Café linguistique allemand (Sprachcafé)","p2l":"A1–A2 · B1+","p2w":"Mar 16:00–18:30 (B1+) · Mer 15:00–17:30 (A1–A2)","p3t":"English Speaking Café","p3s":"Parler anglais en groupe sur des sujets du quotidien","p3l":"Tous niveaux","p3w":"Chaque mardi 18:30–20:00","p4t":"English Learning","p4s":"Apprendre l'anglais sur Atlasio Online, pour les études, le travail et le quotidien","p4l":"Flexible, à ton rythme","p4w":"Quand tu veux","p4where":"En ligne via Atlasio Online","p4cost":"Après candidature et vérification d'éligibilité, places limitées","wK":"Planning","wH":"Ta semaine.","wL":"Toutes les offres sur place, Musterstraße 12, en un coup d'œil.","dailyB":"Lun–Ven · Cours d'allemand","dailyS":"5 cours par jour, 25 par semaine. Tu connaîtras l'horaire de ton groupe à l'inscription.","days":["Lundi","Mardi","Mercredi","Jeudi","Vendredi"],"evB":"Café linguistique B1+","evA":"Café linguistique A1–A2","evE":"English Speaking Café","wNote":"Source : pages de programmes Atlasio. Vérifier les dates avant publication.","fK":"Trouver mon parcours","fH":"Parlons un instant.","fL":"Ce n'est pas un test de niveau. Juste quelques questions pour trouver le bon point de départ.","b1":"Salut ! Quelle langue veux-tu apprendre ?","b2":"Qu'est-ce qui compte le plus pour toi ?","b2a":"Apprendre pas à pas","b2b":"Pratiquer l'oral","b3":"Combien de temps as-tu ?","b3a":"Chaque jour de semaine","b3b":"Une fois par semaine","b3c":"Flexible, en ligne","b4":"Ton allemand aujourd'hui ? Une estimation suffit.","b4a":"Débutant (A0–A2)","b4b":"B1 ou plus","rK":"Ma suggestion","rGo":"S'inscrire ici","rSee":"Détails","rNote":"Pas sûr ? L'équipe t'aide sur place à trouver le bon niveau.","why1":"Tu veux apprendre pas à pas et tu es libre en semaine.","why2a":"Pour pratiquer l'oral, dans le groupe du mercredi (A1–A2).","why2b":"Pour pratiquer l'oral, dans le groupe du mardi (B1+).","why3":"Parler anglais une fois par semaine dans une ambiance détendue.","why4":"Apprendre l'anglais de façon flexible, en ligne.","why5":"Il n'y a pas d'allemand en ligne pour l'instant. Le cours sur place est l'option la plus proche.","aK":"Inscription","aH":"Ta place. Ton histoire.","aL":"Nous ne demandons que ce dont ton programme a vraiment besoin. La confirmation finale vient de l'équipe Atlasio.","journey":["Remplis le formulaire","Nous vérifions tes informations","E-mail de confirmation avec numéro","L'équipe revient vers toi"],"lProgram":"Programme","choose":"Choisis","lFirst":"Prénom","lLast":"Nom","lEmail":"E-mail","lPhone":"Téléphone (facultatif)","lLevel":"Ton niveau d'allemand","levels":["Pas encore d'allemand (A0)","A1","A2","B1","B2 ou plus","Je ne sais pas"],"lStart":"À partir de quand ?","starts":["Dès que possible","Le mois prochain","Plus tard, tenez-moi informé"],"lGroup":"Quel groupe ?","gTue":"Mardi 16:00–18:30 · B1+","gWed":"Mercredi 15:00–17:30 · A1–A2","lGoal":"Pourquoi l'anglais ?","goals":["Études / université","Travail","Vie quotidienne"],"lDevice":"Appareil avec internet ?","devices":["Ordinateur","Smartphone seulement","Aucun"],"lMsg":"Message (facultatif)","lConsent":"J'accepte que Atlasio conserve mes données pour traiter cette inscription. Je peux retirer mon accord à tout moment ; détails dans la politique de confidentialité.","req":"Obligatoire : programme, nom, e-mail, accord.","submit":"Envoyer l'inscription","sending":"Envoi …","eReq":"Merci de remplir ce champ.","eSel":"Merci de choisir une option.","eEmail":"Merci d'indiquer un e-mail valide, p. ex. nom@exemple.fr.","eConsent":"Sans ton accord, nous ne pouvons pas traiter l'inscription.","eSum":"Merci de vérifier les champs signalés.","dup":"Une inscription existe déjà avec cet e-mail pour ce programme. Clique encore pour envoyer quand même.","okRef":"Ton numéro d'inscription","okH":"Merci ! Nous avons reçu ton inscription.","okSteps":["Tu recevras une confirmation par e-mail.","L'équipe vérifie les places et les dates.","Nous revenons vers toi avec une confirmation ou une question."],"okProto":"Démo : aucune donnée n'a été envoyée.","again":"Nouvelle inscription","qH":"Questions fréquentes","faq":[["Les offres sont-elles vraiment gratuites ?","Oui. Le cours d'allemand, le café linguistique et l'English Speaking Café, Musterstraße 12, sont gratuits. English Learning sur Atlasio Online demande une candidature et une vérification d'éligibilité ; les places sont limitées."],["Je ne connais pas mon niveau. Que faire ?","Choisis « Je ne sais pas » à l'inscription. L'équipe t'aidera à trouver le bon groupe."],["Faut-il parler allemand pour utiliser ce site ?","Non. Le site existe en huit langues. Choisis la tienne en haut."],["Quand aurai-je une réponse ?","Après l'envoi, tu recevras un e-mail de réponse concernant ton inscription. Tous les détails s'y trouvent."],["Que deviennent mes données ?","Nous gardons uniquement ce qui est nécessaire à ton inscription, et seulement le temps nécessaire. Détails dans la politique de confidentialité."]],"footH":"Ton histoire commence au <em>Musterstraße 12</em>.","hContact":"Contact","hAbout":"Mentions et infos","hFollow":"Communauté","commDesc":"Découvre Atlasio et les personnes derrière les programmes.","socH":"Atlasio sur les réseaux sociaux","hLangs":"Langues","privacy":"Confidentialité","transp":"Transparence","imprint":"Mentions légales","rights":"Tous droits réservés.","proto":"Prototype. Le formulaire n'envoie aucune donnée.","ckT":"Ta vie privée","ckP":"Nous n'utilisons aucun cookie de suivi ni de publicité. Le stockage nécessaire assure le fonctionnement du site. Avec ton accord, nous retenons aussi ta langue et enregistrons le site pour une utilisation hors ligne comme application. Tu peux modifier ton choix à tout moment dans « Paramètres des cookies ».","ckAll":"Tout accepter","ckNec":"Nécessaires uniquement","ckSave":"Enregistrer la sélection","ckSet":"Paramètres","ckNecT":"Nécessaires","ckNecD":"Enregistre ton choix concernant les cookies. Sans cela, le site ne fonctionne pas correctement.","ckPrefT":"Confort","ckPrefD":"Retient ta langue et stocke des fichiers dans ton navigateur pour que le site fonctionne hors ligne et comme application (service worker).","ckAlways":"Toujours actif","cookieLink":"Paramètres des cookies","install":"Installer l'application","photos":"Photos d'illustration"}};
+
+const PATHS=[
+ {id:"p1",c:"c1",i:"i1",lang:"de",on:1,btn:"btn-coral",src:"#"},
+ {id:"p2",c:"c2",i:"i2",lang:"de",on:1,btn:"btn-violet",src:"#"},
+ {id:"p3",c:"c3",i:"i3",lang:"en",on:1,btn:"btn-coral",src:"#"},
+ {id:"p4",c:"c4",i:"i4",lang:"en",on:0,btn:"btn-violet",src:"#"}
+];
+let L="de",face=0,openPass=0,consent=null;const CK_KEY="ls-consent",CK_V=1;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const tm=s=>esc(s).replace(/(\d{1,2}:\d{2}–\d{1,2}:\d{2})/g,'<span class="ltr">$1</span>');
+const rm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- cube ---------- */
+function renderCube(){
+ const t=T[L];
+ $("#cube").innerHTML=PATHS.map((p,i)=>`<div class="face f${i}" aria-hidden="true"><div class="inner ${p.i}"><span class="ph ph${i+1}"></span><span class="chip">${p.lang==="de"?t.tDe:t.tEn} · ${p.on?t.onsite:t.online}</span><div><span class="n">0${i+1}</span><h3>${esc(t[p.id+"t"])}</h3></div></div><div class="cap">${p.on?"Musterstraße 12":"Atlasio Online"}</div></div>`).join("")
+  +`<div class="face ftop" aria-hidden="true"><svg width="120" height="98" viewBox="0 0 88 72"><use href="#logo"/></svg></div><div class="face fbot" aria-hidden="true"></div>`;
+ $("#dots").innerHTML=PATHS.map((p,i)=>`<button type="button" data-face="${i}" aria-pressed="${i===face}" aria-label="${esc(t[p.id+"t"])}">0${i+1}</button>`).join("");
+ updateCubeText();
+}
+function updateCubeText(){
+ const t=T[L],p=PATHS[face],me=LANGS.find(l=>l.c===L),target=p.lang==="de"?"Hallo":"Hello";
+ $("#tlTop").textContent=t.inLang; $("#tlWord").textContent=me.hi; $("#tlWord").dir=me.rtl?"rtl":"ltr";
+ $("#trWord").textContent=target; $("#trWord").lang=p.lang;
+ $("#mean").textContent=`${target} · ${t.means} ${me.hi}`;
+ $("#meanSub").textContent=`${t[p.id+"t"]} · 0${face+1}`;
+ $$("#dots button").forEach((b,i)=>b.setAttribute("aria-pressed",i===face));
+ $("#cubeLive").textContent=`0${face+1} ${t[p.id+"t"]}`;
+}
+let rotY=0,targetY=0,tiltX=-12,targetTiltX=-12,tiltY=0,targetTiltY=0,drag=null,lastInteract=0;
+function goFace(i,dir){
+ const n=PATHS.length; i=((i%n)+n)%n;
+ let cur=Math.round(-targetY/90); let delta=((i-((cur%n)+n)%n)+n)%n; if(dir===-1||delta>2) delta-=n;
+ targetY=-(cur+delta)*90; face=i; updateCubeText(); lastInteract=performance.now();
+ if(openPass!==i){openPass=i;syncPasses();}
+}
+const stage=$("#stage"),cube=$("#cube");
+stage.addEventListener("pointermove",e=>{
+ const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+ if(drag){targetY=drag.y0+(e.clientX-drag.x)*.5;drag.moved=Math.abs(e.clientX-drag.x)>6;return;}
+ targetTiltX=-12-y*26; targetTiltY=x*34;
+});
+stage.addEventListener("pointerleave",()=>{targetTiltX=-12;targetTiltY=0;});
+stage.addEventListener("pointerdown",e=>{drag={x:e.clientX,y0:targetY,moved:false};stage.setPointerCapture(e.pointerId);});
+stage.addEventListener("pointerup",e=>{
+ if(!drag)return; const moved=drag.moved; drag=null;
+ if(moved){const i=Math.round(-targetY/90);targetY=-i*90;face=((i%4)+4)%4;updateCubeText();lastInteract=performance.now();if(openPass!==face){openPass=face;syncPasses();}}
+ else goFace(face+1,1);
+});
+stage.tabIndex=0;
+stage.addEventListener("keydown",e=>{
+ const rtl=document.documentElement.dir==="rtl";
+ if(e.key==="ArrowRight"){e.preventDefault();goFace(face+(rtl?-1:1),rtl?-1:1);}
+ if(e.key==="ArrowLeft"){e.preventDefault();goFace(face+(rtl?1:-1),rtl?1:-1);}
+ if(e.key==="Enter"){location.hash="";$("#"+PATHS[face].id)?.scrollIntoView();}
+});
+document.addEventListener("click",e=>{const d=e.target.closest("[data-face]");if(d)goFace(+d.dataset.face);});
+function frame(t){
+ if(!rm && !drag && t-lastInteract>4500){ targetY-=.08; const i=Math.round(-targetY/90),f=((i%4)+4)%4; if(f!==face && Math.abs(-targetY/90-i)<.05){face=f;updateCubeText();} }
+ const k=rm?1:.09; rotY+=(targetY-rotY)*k; tiltX+=(targetTiltX-tiltX)*k; tiltY+=(targetTiltY-tiltY)*k;
+ cube.style.transform=`rotateX(${tiltX}deg) rotateY(${rotY+tiltY}deg)`;
+ requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ---------- passes ---------- */
+function renderPasses(){
+ const t=T[L];
+ $("#passes").innerHTML=PATHS.map((p,i)=>{const k=p.id,from=L!==p.lang?L.toUpperCase():"A1",to=p.lang.toUpperCase();
+  return `<article class="pass ${p.c}" id="${k}" data-i="${i}" data-open="${i===openPass}" aria-labelledby="${k}-h">
+   <span class="notch l" aria-hidden="true"></span><span class="notch r" aria-hidden="true"></span>
+   <button class="closed" type="button" data-pass="${i}" aria-expanded="${i===openPass}" aria-controls="${k}-o"><span class="vlabel">${p.lang==="de"?t.tDe:t.tEn} · ${esc(t[k+"t"])}</span><span class="bign">0${i+1}</span></button>
+   <div class="open" id="${k}-o">
+    <div class="strip"><span>Atlasio · ${esc(t.pass)} · 0${i+1}</span><span>${p.on?t.onsite:t.online}</span></div>
+    <div class="route" dir="ltr"><span>${from}</span><span class="plane" aria-hidden="true">✈</span><span class="ph pph ph${i+1}" aria-hidden="true"></span><span>${to}</span></div>
+    <h3 id="${k}-h">${esc(t[k+"t"])}</h3><p class="psub">${esc(t[k+"s"])}</p>
+    <div class="pfields"><div><small>${t.dLevel}</small><b>${esc(t[k+"l"])}</b></div><div><small>${t.dWhen}</small><b>${tm(t[k+"w"])}</b></div><div><small>${t.dCost}</small><b>${p.on?t.free:esc(t.p4cost)}</b></div></div>
+    <div class="pacts"><a class="btn ${p.btn} btn-sm" href="#anmelden" data-pick="${k}">${t.apply} <span class="arrow" aria-hidden="true">→</span></a></div>
+   </div></article>`;}).join("");
+}
+function syncPasses(){$$(".pass").forEach((el,i)=>{el.dataset.open=i===openPass;el.querySelector(".closed").setAttribute("aria-expanded",i===openPass);});}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-pass]");if(b){openPass=+b.dataset.pass;syncPasses();goFace(openPass);const o=$("#"+PATHS[openPass].id+"-o a");setTimeout(()=>o&&o.focus({preventScroll:true}),300);}});
+
+function renderWeek(){
+ const t=T[L],H=340,start=15,span=5,pos=(a,b)=>`top:${(a-start)/span*H}px;height:${(b-a)/span*H-4}px`;
+ const ev={1:[[16,18.5,"c","16:00–18:30",t.evB],[18.5,20,"e","18:30–20:00",t.evE]],2:[[15,17.5,"c","15:00–17:30",t.evA]]};
+ let h=`<div></div>`+t.days.map(d=>`<div class="dh">${d}</div>`).join("");
+ h+=`<div class="hours">${[15,16,17,18,19,20].map((x,i)=>`<span style="top:${i/span*H}px">${x}:00</span>`).join("")}</div>`;
+ for(let i=0;i<5;i++) h+=`<div class="tcol">${(ev[i]||[]).map(e=>`<div class="ev ${e[2]}" style="${pos(e[0],e[1])}"><b>${e[3]}</b>${esc(e[4])}</div>`).join("")}</div>`;
+ $("#tgrid").innerHTML=h;
+}
+
+const BOT='<svg width="34" height="28" aria-hidden="true"><use href="#logo"/></svg>';
+let F={fl:"de",fg:"learn",ft:"full",fv:"low"};
+function renderChat(){
+ const t=T[L];
+ const q=(txt,name,opts,hidden)=>`<div class="msg bot"${hidden?" hidden":""}>${BOT}<span>${esc(txt)}</span></div>
+  <fieldset class="answers"${hidden?" hidden":""}><legend>${esc(txt)}</legend>${opts.map(([v,l])=>`<label><input type="radio" name="${name}" value="${v}"${F[name]===v?" checked":""}><span>${esc(l)}</span></label>`).join("")}</fieldset>`;
+ let h=q(t.b1,"fl",[["de",t.tDe],["en",t.tEn]])+q(t.b2,"fg",[["learn",t.b2a],["talk",t.b2b]])+q(t.b3,"ft",[["full",t.b3a],["week",t.b3b],["flex",t.b3c]])+q(t.b4,"fv",[["low",t.b4a],["mid",t.b4b]],F.fl!=="de");
+ let pick,why;
+ if(F.fl==="en"){ if(F.ft==="flex"||F.fg==="learn"){pick="p4";why=t.why4}else{pick="p3";why=t.why3} }
+ else if(F.ft==="flex"){pick="p1";why=t.why5}
+ else if(F.fg==="talk"||F.ft==="week"){pick="p2";why=F.fv==="mid"?t.why2b:t.why2a}
+ else {pick="p1";why=t.why1}
+ h+=`<div class="result" aria-live="polite"><small>${t.rK}</small><h3>${esc(t[pick+"t"])}</h3><p style="font-weight:700">${tm(t[pick+"w"])}</p><p>${esc(why)}</p>
+  <div class="acts"><a class="btn btn-violet btn-sm" href="#anmelden" data-pick="${pick}">${t.rGo} <span class="arrow" aria-hidden="true">→</span></a><a class="btn btn-line btn-sm" href="#${pick}">${t.rSee}</a></div><p class="note">${t.rNote}</p></div>`;
+ $("#chat").innerHTML=h;
+ if(pick==="p2") $(F.fv==="mid"?"#f-g1":"#f-g2").checked=true;
+}
+
+function fill(el,opts){const v=el.value;el.innerHTML=opts.map(([a,b])=>`<option value="${a}">${esc(b)}</option>`).join("");if([...el.options].some(o=>o.value===v))el.value=v;}
+function renderForm(){
+ const t=T[L];
+ fill($("#f-program"),[["",t.choose],["p1",t.p1t],["p2",t.p2t+" · Sprachcafé"],["p3","English Speaking Café"],["p4","English Learning · Atlasio Online"]]);
+ fill($("#f-level"),[["",t.choose],...t.levels.map((x,i)=>["l"+i,x])]);
+ fill($("#f-start"),t.starts.map((x,i)=>["s"+i,x]));
+ fill($("#f-goal"),[["",t.choose],...t.goals.map((x,i)=>["g"+i,x])]);
+ fill($("#f-device"),t.devices.map((x,i)=>["d"+i,x]));
+ $("#gTue").innerHTML=tm(t.gTue); $("#gWed").innerHTML=tm(t.gWed);
+ $("#journey").innerHTML=t.journey.map(s=>`<li>${esc(s)}</li>`).join("");
+ cond();
+}
+function cond(){const p=$("#f-program").value;$("#c-course").hidden=p!=="p1";$("#c-cafe").hidden=p!=="p2";$("#c-coursera").hidden=p!=="p4";}
+
+function renderFaq(){$("#faqList").innerHTML=T[L].faq.map(([q,a],i)=>`<details${i===0?" open":""}><summary><span class="flap" aria-hidden="true" dir="ltr"><span>0</span><span>${i+1}</span></span><span>${esc(q)}</span></summary><p>${esc(a)}</p></details>`).join("");}
+
+function renderLangUI(){
+ const cur=LANGS.find(l=>l.c===L);
+ $("#langName").textContent=cur.n;
+ $("#langPop").innerHTML=LANGS.map(l=>`<button type="button" lang="${l.c}" data-lang="${l.c}" aria-current="${l.c===L}">${l.n}<small>${l.c.toUpperCase()}</small></button>`).join("");
+ if($("#langsFoot"))$("#langsFoot").innerHTML=LANGS.map(l=>`<button type="button" lang="${l.c}" data-lang="${l.c}" aria-current="${l.c===L}">${l.n}</button>`).join("");
+}
+
+function applyLang(c,user){
+ L=T[c]?c:"de"; const t=T[L], meta=LANGS.find(l=>l.c===L);
+ document.documentElement.lang=L; document.documentElement.dir=meta.rtl?"rtl":"ltr";
+ $$("[data-i]").forEach(el=>{const v=t[el.dataset.i]; if(typeof v==="string") el.textContent=v;});
+ $$("[data-ih]").forEach(el=>{el.innerHTML=t[el.dataset.ih];});
+ renderLangUI();renderCube();renderPasses();renderWeek();renderChat();renderForm();renderFaq();
+ if($("#okBox")) showOk(lastRef);
+ if(user){ try{history.replaceState(null,"","#"+L);}catch(e){} if(consent&&consent.pref){try{localStorage.setItem("ls-lang",L);}catch(e){}} }
+}
+
+/* language popover */
+const langBtn=$("#langBtn"),pop=$("#langPop");
+function closePop(){pop.hidden=true;langBtn.setAttribute("aria-expanded","false");}
+langBtn.addEventListener("click",()=>{const o=pop.hidden;pop.hidden=!o;langBtn.setAttribute("aria-expanded",o);if(o)pop.querySelector('[aria-current="true"]').focus();});
+document.addEventListener("click",e=>{
+ const lb=e.target.closest("[data-lang]"); if(lb){applyLang(lb.dataset.lang,true);closePop();langBtn.focus();return;}
+ if(!e.target.closest(".langbox")) closePop();
+ const a=e.target.closest("[data-pick]"); if(a){$("#f-program").value=a.dataset.pick;cond();}
+ if(e.target.closest("#menu a")) closeMenu();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closePop();closeMenu();}});
+$("#chat").addEventListener("change",e=>{F[e.target.name]=e.target.value;renderChat();const el=$(`#chat input[name="${e.target.name}"][value="${e.target.value}"]`);el&&el.focus();});
+$("#f-program").addEventListener("change",cond);
+const menuBtn=$(".menu-btn");
+function closeMenu(){$("#nav").classList.remove("open");menuBtn.setAttribute("aria-expanded","false");}
+menuBtn.addEventListener("click",()=>{const o=$("#nav").classList.toggle("open");menuBtn.setAttribute("aria-expanded",o);});
+
+/* form */
+const sent=new Set();let dupArmed=false,lastRef="",formT=Date.now();
+function setErr(id,msg){const f=$("#e-"+id);if(!f)return;f.textContent=msg||"";const fld=f.closest(".field");fld.classList.toggle("err",!!msg);const inp=fld.querySelector("input,select");if(inp){inp.setAttribute("aria-invalid",msg?"true":"false");if(msg)inp.setAttribute("aria-describedby","e-"+id);}}
+$("#applyForm").addEventListener("submit",e=>{
+ e.preventDefault();const t=T[L],f=e.target,ban=$("#formBanner");ban.hidden=true;ban.className="banner";
+ if(f.web.value)return;
+ const errs=[],chk=(id,bad,msg)=>{setErr(id,bad?msg:"");if(bad)errs.push(id);};
+ const p=f.program.value,em=f.email.value.trim();
+ chk("program",!p,t.eSel);chk("first",!f.first.value.trim(),t.eReq);chk("last",!f.last.value.trim(),t.eReq);
+ chk("email",!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em),em?t.eEmail:t.eReq);
+ chk("level",p==="p1"&&!f.level.value,t.eSel);chk("goal",p==="p4"&&!f.goal.value,t.eSel);chk("consent",!f.consent.checked,t.eConsent);
+ if(errs.length){ban.textContent=t.eSum;ban.classList.add("bad");ban.hidden=false;$("#f-"+errs[0]).focus();return;}
+ const key=em.toLowerCase()+"|"+p;
+ if(sent.has(key)&&!dupArmed){dupArmed=true;ban.textContent=t.dup;ban.classList.add("warn");ban.hidden=false;return;}
+ dupArmed=false;const btn=$("#submitBtn");btn.disabled=true;btn.innerHTML=`<span class="spinner" aria-hidden="true"></span><span>${t.sending}</span>`;
+ const payload={program:p,first:f.first.value,last:f.last.value,email:em,phone:f.phone.value,level:f.level.value,start:f.start.value,group:(f.querySelector("input[name=group]:checked")||{}).value||"",goal:f.goal.value,device:f.device.value,msg:f.msg.value,consent:f.consent.checked,lang:L,web:f.web.value,t:formT};
+ /* DEMO: nothing is sent. In production POST `payload` to your form endpoint (see references/components.md §9). */ void payload; new Promise(r=>setTimeout(r,700)).then(()=>{sent.add(key);lastRef="AT-2026-"+Math.random().toString(36).slice(2,7).toUpperCase();showOk(lastRef);}).catch(()=>{btn.disabled=false;btn.innerHTML=`<span>${T[L].submit}</span>`;ban.textContent=T[L].eSend;ban.className="banner bad";ban.hidden=false;ban.setAttribute("tabindex","-1");ban.focus();});
+});
+function showOk(ref){
+ const t=T[L];$("#applyForm").hidden=true;
+ let b=$("#okBox");if(!b){b=document.createElement("div");b.id="okBox";b.className="success";b.tabIndex=-1;b.setAttribute("role","status");$("#formWrap").appendChild(b);}
+ b.innerHTML=`<span class="kicker" style="color:var(--violet)">${t.okRef}</span><p class="ref">${ref}</p><h3 style="font-size:clamp(24px,3vw,34px)">${t.okH}</h3><ol>${t.okSteps.map(s=>`<li>${s}</li>`).join("")}</ol><p style="font-size:14px;color:var(--muted);font-weight:600">${t.okProto}</p><div><button class="btn btn-violet btn-sm" type="button" id="againBtn">${t.again}</button></div>`;
+ b.focus();
+ $("#againBtn").onclick=()=>{b.remove();formT=Date.now();const f=$("#applyForm");f.reset();f.hidden=false;const s=$("#submitBtn");s.disabled=false;s.innerHTML=`<span>${T[L].submit}</span>`;renderForm();$("#f-program").focus();};
+}
+
+function initLang(){
+ const h=location.hash.slice(1);if(T[h])return h;
+ if(consent&&consent.pref){try{const s=localStorage.getItem("ls-lang");if(T[s])return s;}catch(e){}}
+ const n=(navigator.language||"de").slice(0,2);return T[n]?n:"de";
+}
+/* ---------- consent (DSGVO / TTDSG) ---------- */
+function getCk(){try{const c=JSON.parse(localStorage.getItem(CK_KEY));return c&&c.v===CK_V?c:null;}catch(e){return null;}}
+function applyCk(c){consent=c;
+ if(c&&c.pref){try{localStorage.setItem("ls-lang",L);}catch(e){} enableSW();}
+ else{try{localStorage.removeItem("ls-lang");}catch(e){} disableSW();}}
+function setCk(pref){const c={v:CK_V,pref:!!pref,ts:new Date().toISOString()};try{localStorage.setItem(CK_KEY,JSON.stringify(c));}catch(e){} applyCk(c);closeCk();}
+const ckBack=$("#ckBack");let ckReturn=null;
+function renderCkLangs(){$("#ckLangs").innerHTML=LANGS.map(l=>`<button type="button" lang="${l.c}" data-cklang="${l.c}" aria-current="${l.c===L}">${l.n}</button>`).join("");}
+function openCk(){ckReturn=document.activeElement;renderCkLangs();$("#ckPref").checked=!!(consent&&consent.pref);$("#ckCats").hidden=true;$("#ckSave").hidden=true;$("#ckSet").setAttribute("aria-expanded","false");
+ ckBack.hidden=false;$$("body>header,body>main,body>footer").forEach(el=>el.inert=true);setTimeout(()=>$("#ckNecBtn").focus(),30);}
+function closeCk(){ckBack.hidden=true;$$("body>header,body>main,body>footer").forEach(el=>el.inert=false);if(ckReturn&&ckReturn.focus)ckReturn.focus();}
+$("#ckAllBtn").onclick=()=>setCk(true);
+$("#ckNecBtn").onclick=()=>setCk(false);
+$("#ckSave").onclick=()=>setCk($("#ckPref").checked);
+$("#ckSet").onclick=()=>{const o=$("#ckCats").hidden;$("#ckCats").hidden=!o;$("#ckSave").hidden=!o;$("#ckSet").setAttribute("aria-expanded",o);};
+$("#ckOpen").onclick=openCk;
+$("#ckLangs").addEventListener("click",e=>{const b=e.target.closest("[data-cklang]");if(b){applyLang(b.dataset.cklang,true);renderCkLangs();b&&$(`[data-cklang="${b.dataset.cklang}"]`).focus();}});
+ckBack.addEventListener("keydown",e=>{if(e.key!=="Tab")return;const f=[...ckBack.querySelectorAll("button:not([hidden]),input,a[href]")].filter(x=>x.offsetParent!==null);const first=f[0],last=f[f.length-1];
+ if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}});
+
+const TX={"de":{"appBtn":"App","appT":"Atlasio als App","appP":"Installiere Atlasio auf deinem Handy oder Computer. Dann öffnest du die Seite mit einem Tipp, auch ohne Internet.","appNeed":"Dafür speichert dein Browser Dateien dieser Seite (Einstellung „Komfort“). Mit dem Button unten stimmst du dem zu.","appAllow":"Erlauben und installieren","appInstall":"Jetzt installieren","appHow":"So geht's","appIos":"Tippe in Safari unten auf „Teilen“ (Quadrat mit Pfeil) und dann auf „Zum Home-Bildschirm“.","appAndroid":"Öffne das Browser-Menü (⋮) und tippe auf „App installieren“ oder „Zum Startbildschirm hinzufügen“.","appDesktop":"Klicke in Chrome oder Edge rechts in der Adressleiste auf das Installieren-Symbol oder im Menü (⋮) auf „App installieren“.","appDone":"Atlasio ist auf diesem Gerät schon als App installiert.","close":"Schließen"},"en":{"appBtn":"App","appT":"Atlasio as an app","appP":"Install Atlasio on your phone or computer. Then you open it with one tap, even without internet.","appNeed":"For this, your browser stores files of this site (“Convenience” setting). By using the button below, you agree to this.","appAllow":"Allow and install","appInstall":"Install now","appHow":"How it works","appIos":"In Safari, tap “Share” (square with arrow) at the bottom, then “Add to Home Screen”.","appAndroid":"Open the browser menu (⋮) and tap “Install app” or “Add to Home screen”.","appDesktop":"In Chrome or Edge, click the install icon on the right of the address bar, or open the menu (⋮) and choose “Install app”.","appDone":"Atlasio is already installed as an app on this device.","close":"Close"},"tr":{"appBtn":"Uygulama","appT":"Atlasio uygulaması","appP":"Atlasio'yi telefonuna ya da bilgisayarına kur. Sonra tek dokunuşla, internet olmadan da açabilirsin.","appNeed":"Bunun için tarayıcın bu sitenin dosyalarını saklar („Kolaylık“ ayarı). Aşağıdaki butonla buna onay vermiş olursun.","appAllow":"İzin ver ve kur","appInstall":"Şimdi kur","appHow":"Nasıl yapılır","appIos":"Safari'de alttaki „Paylaş“ simgesine (oklu kare), sonra „Ana Ekrana Ekle“ye dokun.","appAndroid":"Tarayıcı menüsünü (⋮) aç ve „Uygulamayı yükle“ ya da „Ana ekrana ekle“ye dokun.","appDesktop":"Chrome veya Edge'de adres çubuğunun sağındaki yükleme simgesine ya da menüde (⋮) „Uygulamayı yükle“ye tıkla.","appDone":"Atlasio bu cihazda zaten uygulama olarak kurulu.","close":"Kapat"},"ar":{"appBtn":"التطبيق","appT":"Atlasio كتطبيق","appP":"ثبّت Atlasio على هاتفك أو حاسوبك، وافتحه بلمسة واحدة حتى دون إنترنت.","appNeed":"لهذا يحفظ متصفحك ملفات هذا الموقع (إعداد «الراحة»). باستخدام الزر أدناه توافق على ذلك.","appAllow":"السماح والتثبيت","appInstall":"ثبّت الآن","appHow":"طريقة التثبيت","appIos":"في Safari اضغط على «مشاركة» (مربع مع سهم) في الأسفل، ثم على «إضافة إلى الشاشة الرئيسية».","appAndroid":"افتح قائمة المتصفح (⋮) واضغط على «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية».","appDesktop":"في Chrome أو Edge اضغط على رمز التثبيت يمين شريط العنوان، أو اختر «تثبيت التطبيق» من القائمة (⋮).","appDone":"Atlasio مثبّت بالفعل كتطبيق على هذا الجهاز.","close":"إغلاق"},"fa":{"appBtn":"اپ","appT":"Atlasio به‌صورت اپ","appP":"Atlasio را روی گوشی یا کامپیوترت نصب کن تا با یک لمس و حتی بدون اینترنت بازش کنی.","appNeed":"برای این کار مرورگرت فایل‌های این سایت را ذخیره می‌کند (تنظیم «راحتی»). با دکمه زیر با آن موافقت می‌کنی.","appAllow":"اجازه بده و نصب کن","appInstall":"همین حالا نصب کن","appHow":"روش نصب","appIos":"در Safari پایین صفحه روی «اشتراک‌گذاری» (مربع با فلش) و بعد «افزودن به صفحه اصلی» بزن.","appAndroid":"منوی مرورگر (⋮) را باز کن و «نصب برنامه» یا «افزودن به صفحه اصلی» را بزن.","appDesktop":"در Chrome یا Edge روی نماد نصب در سمت راست نوار آدرس کلیک کن یا از منو (⋮) «نصب برنامه» را بزن.","appDone":"Atlasio قبلاً روی این دستگاه به‌صورت اپ نصب شده است.","close":"بستن"},"uk":{"appBtn":"Застосунок","appT":"Atlasio як застосунок","appP":"Встанови Atlasio на телефон або комп'ютер і відкривай одним дотиком, навіть без інтернету.","appNeed":"Для цього браузер зберігає файли сайту (налаштування «Зручність»). Натиснувши кнопку нижче, ти погоджуєшся з цим.","appAllow":"Дозволити й встановити","appInstall":"Встановити зараз","appHow":"Як це зробити","appIos":"У Safari натисни внизу «Поділитися» (квадрат зі стрілкою), а потім «На початковий екран».","appAndroid":"Відкрий меню браузера (⋮) і натисни «Встановити застосунок» або «Додати на головний екран».","appDesktop":"У Chrome чи Edge натисни значок встановлення праворуч в адресному рядку або вибери в меню (⋮) «Встановити застосунок».","appDone":"Atlasio вже встановлено на цьому пристрої як застосунок.","close":"Закрити"},"ru":{"appBtn":"Приложение","appT":"Atlasio как приложение","appP":"Установи Atlasio на телефон или компьютер и открывай одним касанием, даже без интернета.","appNeed":"Для этого браузер сохраняет файлы сайта (настройка «Удобство»). Нажимая кнопку ниже, ты соглашаешься с этим.","appAllow":"Разрешить и установить","appInstall":"Установить сейчас","appHow":"Как это сделать","appIos":"В Safari нажми внизу «Поделиться» (квадрат со стрелкой), затем «На экран „Домой“».","appAndroid":"Открой меню браузера (⋮) и нажми «Установить приложение» или «Добавить на главный экран».","appDesktop":"В Chrome или Edge нажми значок установки справа в адресной строке или выбери в меню (⋮) «Установить приложение».","appDone":"Atlasio уже установлен на этом устройстве как приложение.","close":"Закрыть"},"fr":{"appBtn":"Appli","appT":"Atlasio en appli","appP":"Installe Atlasio sur ton téléphone ou ton ordinateur et ouvre-le d'un seul geste, même sans internet.","appNeed":"Pour cela, ton navigateur enregistre des fichiers du site (réglage « Confort »). En utilisant le bouton ci-dessous, tu acceptes.","appAllow":"Autoriser et installer","appInstall":"Installer maintenant","appHow":"Comment faire","appIos":"Dans Safari, touche « Partager » (carré avec flèche) en bas, puis « Sur l'écran d'accueil ».","appAndroid":"Ouvre le menu du navigateur (⋮) et touche « Installer l'application » ou « Ajouter à l'écran d'accueil ».","appDesktop":"Dans Chrome ou Edge, clique sur l'icône d'installation à droite de la barre d'adresse, ou choisis « Installer l'application » dans le menu (⋮).","appDone":"Atlasio est déjà installé comme appli sur cet appareil.","close":"Fermer"}};
+const TX2={"de":{"eSend":"Das hat leider nicht geklappt. Bitte versuche es noch einmal oder schreib an hello@atlasio.example."},"en":{"eSend":"Sorry, that didn't work. Please try again or write to hello@atlasio.example."},"tr":{"eSend":"Maalesef gönderilemedi. Lütfen tekrar dene ya da hello@atlasio.example adresine yaz."},"ar":{"eSend":"عذرًا، لم يتم الإرسال. حاول مرة أخرى أو راسلنا على hello@atlasio.example."},"fa":{"eSend":"متأسفانه ارسال نشد. دوباره امتحان کن یا به hello@atlasio.example ایمیل بزن."},"uk":{"eSend":"На жаль, не вдалося надіслати. Спробуй ще раз або напиши на hello@atlasio.example."},"ru":{"eSend":"К сожалению, отправить не удалось. Попробуй ещё раз или напиши на hello@atlasio.example."},"fr":{"eSend":"Désolé, l'envoi n'a pas fonctionné. Réessaie ou écris à hello@atlasio.example."}};Object.keys(TX2).forEach(l=>Object.assign(T[l],TX2[l]));
+/* ---------- PWA ---------- */
+Object.keys(TX).forEach(l=>Object.assign(T[l],TX[l]));
+let deferredPrompt=null,appReturn=null;
+const isStandalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const isAndroid=/android/i.test(navigator.userAgent);
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;});
+addEventListener("appinstalled",()=>{deferredPrompt=null;closeApp();syncAppBtns();});
+function syncAppBtns(){$$("[data-app]").forEach(b=>b.hidden=isStandalone());}
+function enableSW(){try{if("serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost")){navigator.serviceWorker.register("sw.js").catch(()=>{});}}catch(e){}}
+function disableSW(){
+ try{if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});}
+  if(window.caches){caches.keys().then(k=>k.filter(n=>n.startsWith("atlasio")).forEach(n=>caches.delete(n))).catch(()=>{});}}catch(e){}}
+function appView(){const t=T[L];
+ if(isStandalone())return `<p>${esc(t.appDone)}</p>`;
+ let h=`<p>${esc(t.appP)}</p>`;
+ if(!(consent&&consent.pref))h+=`<p class="app-note">${esc(t.appNeed)}</p>`;
+ h+=`<div class="app-how"><b>${esc(t.appHow)}</b><p>${esc(isIOS?t.appIos:isAndroid?t.appAndroid:t.appDesktop)}</p></div>`;return h;}
+function renderApp(){const t=T[L],need=!(consent&&consent.pref);$("#appBody").innerHTML=appView();const g=$("#appGo");g.textContent=need?t.appAllow:t.appInstall;g.hidden=isStandalone()||(!need&&!deferredPrompt);}
+function openApp(){appReturn=document.activeElement;renderApp();$("#appBack").hidden=false;$$("body>header,body>main,body>footer").forEach(el=>el.inert=true);setTimeout(()=>($("#appGo").hidden?$("#appClose"):$("#appGo")).focus(),30);}
+function closeApp(){if($("#appBack").hidden)return;$("#appBack").hidden=true;$$("body>header,body>main,body>footer").forEach(el=>el.inert=false);if(appReturn&&appReturn.focus)appReturn.focus();}
+async function promptInstall(){if(!deferredPrompt)return false;const p=deferredPrompt;deferredPrompt=null;p.prompt();try{await p.userChoice;}catch(e){}return true;}
+$("#appGo").onclick=async()=>{
+ if(!(consent&&consent.pref)){const c={v:CK_V,pref:true,ts:new Date().toISOString()};try{localStorage.setItem(CK_KEY,JSON.stringify(c));}catch(e){}applyCk(c);}
+ if(!deferredPrompt){const g=$("#appGo");g.disabled=true;await new Promise(r=>{let n=0;const iv=setInterval(()=>{if(deferredPrompt||++n>16){clearInterval(iv);r();}},250);});g.disabled=false;}
+ if(deferredPrompt){closeApp();await promptInstall();}else renderApp();};
+$("#appClose").onclick=closeApp;
+$("#appBack").addEventListener("keydown",e=>{if(e.key==="Escape")closeApp();});
+$("#appBack").addEventListener("click",e=>{if(e.target.id==="appBack")closeApp();});
+document.addEventListener("click",e=>{if(e.target.closest("[data-app]"))openApp();});
+syncAppBtns();
+
+consent=getCk();
+applyLang(initLang(),false);
+if(consent) applyCk(consent); else openCk();
+addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(T[h]&&h!==L)applyLang(h,false);});
+
+$("#marq").innerHTML=[0,1].map(()=>LANGS.map(l=>`<span lang="${l.c}">${l.hi}</span><span>atlasio</span>`).join("")).join("");
+
+/* reveal dialog */
+
+</script>
+</body>
+</html>

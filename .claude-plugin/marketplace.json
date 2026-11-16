@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "A library of web design skills for AI coding agents: each one teaches a complete visual style, with a reference site, screenshots and copy-ready components.",
-    "version": "1.6.0"
+    "version": "1.7.0"
   },
   "plugins": [
     {
@@ -150,6 +150,15 @@
       "strict": false,
       "skills": [
         "./skills/live-globe-flight-film"
+      ]
+    },
+    {
+      "name": "ticket-cube-language-school",
+      "description": "Experimental multilingual sites for language schools and course programmes in a ticket system: notched ticket-bar nav, a mouse-reactive 3D cube of learning paths, word tickets, boarding-pass accordion cards, a timetable grid, a chat-style course finder, a GDPR cookie popup, an install-as-app dialog and eight UI languages including right-to-left.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/ticket-cube-language-school"
       ]
     }
   ]
